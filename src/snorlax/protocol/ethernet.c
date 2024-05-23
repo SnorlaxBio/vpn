@@ -7,11 +7,15 @@
  * @since       May 22, 2024
  */
 
+#include <arpa/inet.h>
+
 #include "ethernet.h"
 
+#include "internet.h"
+
 #ifdef    SNORLAX_DEBUG
-extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * datagram) {
-    snorlax_protocol_ethernet_t * header = snorlax_protocol_ethernet_header_get(datagram);
+extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * frame) {
+    snorlax_protocol_ethernet_t * header = snorlax_protocol_ethernet_header_get(frame);
     fprintf(stream, "| ethernet ");
     fprintf(stream, "| %02x:%02x:%02x:%02x:%02x:%02x ", header->source[0],
                                                         header->source[1],
@@ -32,7 +36,7 @@ extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * datag
     fprintf(stream, "|\n");
 
     switch(type) {
-        case snorlax_protocol_ethernet_type_ipv4:   snorlax_implement("Internet Protocol Version 4");       break;
+        case snorlax_protocol_ethernet_type_ipv4:   snorlax_protocol_internet_debug(stream, snorlax_protocol_ethernet_datagram_get(frame));     break;
         case snorlax_protocol_ethernet_type_arp:    snorlax_implement("Address Resolution Protocol");       break;
         case snorlax_protocol_ethernet_type_ipv6:   snorlax_implement("Internet Protocol Version 6");       break;
         case snorlax_protocol_ethernet_type_vlan:   snorlax_implement("VLAN Tagged Frame (IEEE 802.1Q)");   break;

@@ -4,4 +4,6 @@
 ### 20240524 | Doxygen, Slide - [Address Mappings](https://datatracker.ietf.org/doc/html/rfc796)
 ### 20240524 | Doxygen, Slide - [Service Mappings](https://datatracker.ietf.org/doc/html/rfc795)
 ### 20240524 | Doxygen, Slide - [Assigned Numbers](https://datatracker.ietf.org/doc/html/rfc790)
+### 20240524 | Implement Internet Protocol Version 4: Address, Fragment, Type of Service, Time to Live, Options, Header Checksum
+### 20240524 | Doxygen, Slide - [User Datagram](https://datatracker.ietf.org/doc/html/rfc768)
 

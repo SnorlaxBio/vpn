@@ -30,8 +30,8 @@ struct snorlax_protocol_ethernet {
 
 typedef struct snorlax_protocol_ethernet snorlax_protocol_ethernet_t;
 
-#define snorlax_protocol_ethernet_header_get(datagram)      ((snorlax_protocol_ethernet_t *) datagram)
-#define snorlax_protocol_ethernet_segment_get(datagram)     addressof(datagram, sizeof(snorlax_protocol_ethernet_t))
+#define snorlax_protocol_ethernet_header_get(frame)     ((snorlax_protocol_ethernet_t *) frame)
+#define snorlax_protocol_ethernet_datagram_get(frame)   addressof(frame, sizeof(snorlax_protocol_ethernet_t))
 
 #ifdef    SNORLAX_DEBUG
 extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * datagram);

@@ -15,12 +15,19 @@ set(SNORLAX_PCAP_HEADER                 src/snorlax/pcap.h)
 set(SNORLAX_PROTOCOL_ETHERNET_SOURCE    src/snorlax/protocol/ethernet.c)
 set(SNORLAX_PROTOCOL_ETHERNET_HEADER    src/snorlax/protocol/ethernet.h)
 
+set(SNORLAX_PROTOCOL_INTERNET_SOURCE    src/snorlax/protocol/internet.c
+                                        src/snorlax/protocol/internet/version4.c)
+set(SNORLAX_PROTOCOL_INTERNET_HEADER    src/snorlax/protocol/internet.h
+                                        src/snorlax/protocol/internet/version4.h)
+
 add_library(snorlax-protocol-stack ${SNORLAX_SOURCE}
                                    ${SNORLAX_HEADER}
                                    ${SNORLAX_PCAP_SOURCE}
                                    ${SNORLAX_PCAP_HEADER}
                                    ${SNORLAX_PROTOCOL_ETHERNET_SOURCE}
-                                   ${SNORLAX_PROTOCOL_ETHERNET_HEADER})
+                                   ${SNORLAX_PROTOCOL_ETHERNET_HEADER}
+                                   ${SNORLAX_PROTOCOL_INTERNET_SOURCE}
+                                   ${SNORLAX_PROTOCOL_INTERNET_HEADER})
 
 target_compile_options(snorlax-protocol-stack PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 
