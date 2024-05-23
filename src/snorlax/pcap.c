@@ -9,6 +9,8 @@
 
 #include "pcap.h"
 
+#include <snorlax/protocol/ethernet.h>
+
 extern int snorlax_pcap_sniff(const char * dev, snorlax_pcap_handler_t callback) {
     pcap_t * handle = nil;
     int snaplen = BUFSIZ;
@@ -33,13 +35,15 @@ extern int snorlax_pcap_sniff(const char * dev, snorlax_pcap_handler_t callback)
 }
 
 #ifdef    SNORLAX_DEBUG
-extern void snorlax_pcap_debug(FILE * stream, const snorlax_pcap_header_t * header, const uint8_t * packet) {
+extern void snorlax_pcap_debug(FILE * stream, const snorlax_pcap_header_t * header, const uint8_t * datagram) {
     fprintf(stdout, "%ld.%06ld\n", header->ts.tv_sec, header->ts.tv_usec);
+
+    snorlax_protocol_ethernet_debug(stream, datagram);
 
     fprintf(stdout, "\n");
 }
 
-extern void snorlax_pcap_handler_debug(uint8_t * user, const snorlax_pcap_header_t * header, const uint8_t * packet) {
-    snorlax_pcap_debug(stdout, header, packet);
+extern void snorlax_pcap_handler_debug(uint8_t * user, const snorlax_pcap_header_t * header, const uint8_t * datagram) {
+    snorlax_pcap_debug(stdout, header, datagram);
 }
 #endif // SNORLAX_DEBUG

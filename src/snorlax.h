@@ -44,4 +44,12 @@
                                                      ##__VA_ARGS__);    \
 } while(0)
 
+#define snorlax_implement(format, ...) do {                             \
+    fprintf(stderr, "[implement|%s:%d|%s] " format "\n", __FILE__,      \
+                                                     __LINE__,          \
+                                                     __func__,          \
+                                                     ##__VA_ARGS__);    \
+    snorlax_debug_exit();                                               \
+} while(0)
+
 #endif // __SNORLAX__H__
