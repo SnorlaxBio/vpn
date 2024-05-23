@@ -86,11 +86,13 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="snorlax_8h__dep__incl.png" border="0" usemap="#asnorlax_8hdep" alt=""/></div>
 <map name="asnorlax_8hdep" id="asnorlax_8hdep">
-<area shape="rect" title=" " alt="" coords="181,5,263,32"/>
+<area shape="rect" title=" " alt="" coords="301,5,383,32"/>
 <area shape="rect" href="pcap_8h.html" title=" " alt="" coords="102,80,219,107"/>
-<area shape="rect" href="snorlax_8c.html" title=" " alt="" coords="244,80,325,107"/>
+<area shape="rect" href="ethernet_8h.html" title=" " alt="" coords="243,80,441,107"/>
+<area shape="rect" href="snorlax_8c.html" title=" " alt="" coords="465,80,547,107"/>
 <area shape="rect" href="main_8c.html" title=" " alt="" coords="5,155,159,181"/>
 <area shape="rect" href="pcap_8c.html" title=" " alt="" coords="183,155,299,181"/>
+<area shape="rect" href="ethernet_8c.html" title=" " alt="" coords="323,155,521,181"/>
 </map>
 </div>
 </div>
@@ -126,6 +128,8 @@ Macros</h2></td></tr>
 <tr class="separator:ad6270a3d0b8146c5ba7dfcfc66938016"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd16f59a515031c00bda1de9b6af0530"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_warning</b>(format, ...)</td></tr>
 <tr class="separator:afd16f59a515031c00bda1de9b6af0530"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab96f652923ba19862cee0aa42ffabc1d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_implement</b>(format, ...)</td></tr>
+<tr class="separator:ab96f652923ba19862cee0aa42ffabc1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>snorlax <a href="#" onclick="location.href='mai'+'lto:'+'ceo'+'@s'+'nor'+'la'+'x.b'+'io'; return false;">ceo@s<span style="display: none;">.nosp@m.</span>norl<span style="display: none;">.nosp@m.</span>ax.bi<span style="display: none;">.nosp@m.</span>o</a> </dd></dl>
@@ -167,6 +171,43 @@ Macros</h2></td></tr>
 <div class="line">} <span class="keywordflow">while</span>(0)</div>
 </div><!-- fragment -->
 <p class="definition">Definition at line <a class="el" href="snorlax_8h_source.html#l00032">32</a> of file <a class="el" href="snorlax_8h_source.html">snorlax.h</a>.</p>
+
+</div>
+</div>
+<a id="ab96f652923ba19862cee0aa42ffabc1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab96f652923ba19862cee0aa42ffabc1d">&#9670;&nbsp;</a></span>snorlax_implement</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define snorlax_implement</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">format, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>...</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">    <span class="keywordflow">do</span> {                             \</div>
+<div class="line">    fprintf(stderr, <span class="stringliteral">&quot;[implement|%s:%d|%s] &quot;</span> format <span class="stringliteral">&quot;\n&quot;</span>, __FILE__,      \</div>
+<div class="line">                                                     __LINE__,          \</div>
+<div class="line">                                                     __func__,          \</div>
+<div class="line">                                                     ##__VA_ARGS__);    \</div>
+<div class="line">    snorlax_debug_exit();                                               \</div>
+<div class="line">} <span class="keywordflow">while</span>(0)</div>
+</div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="snorlax_8h_source.html#l00047">47</a> of file <a class="el" href="snorlax_8h_source.html">snorlax.h</a>.</p>
 
 </div>
 </div>

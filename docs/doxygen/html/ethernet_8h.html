@@ -67,21 +67,79 @@ $(function() {
 </div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">ethernet.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><div class="dynheader">
+<div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
+<code>#include &lt;<a class="el" href="snorlax_8h_source.html">snorlax.h</a>&gt;</code><br />
+</div><div class="textblock"><div class="dynheader">
+Include dependency graph for ethernet.h:</div>
+<div class="dyncontent">
+<div class="center"><img src="ethernet_8h__incl.png" border="0" usemap="#asnorlax_2protocol_2ethernet_8h" alt=""/></div>
+<map name="asnorlax_2protocol_2ethernet_8h" id="asnorlax_2protocol_2ethernet_8h">
+<area shape="rect" title=" " alt="" coords="5,5,204,32"/>
+<area shape="rect" title=" " alt="" coords="19,80,89,107"/>
+<area shape="rect" href="snorlax_8h.html" title=" " alt="" coords="114,80,197,107"/>
+<area shape="rect" title=" " alt="" coords="73,155,144,181"/>
+<area shape="rect" title=" " alt="" coords="169,155,235,181"/>
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="ethernet_8h__dep__incl.png" border="0" usemap="#asnorlax_2protocol_2ethernet_8hdep" alt=""/></div>
 <map name="asnorlax_2protocol_2ethernet_8hdep" id="asnorlax_2protocol_2ethernet_8hdep">
-<area shape="rect" title=" " alt="" coords="5,5,204,32"/>
-<area shape="rect" href="ethernet_8c.html" title=" " alt="" coords="6,80,203,107"/>
+<area shape="rect" title=" " alt="" coords="55,5,253,32"/>
+<area shape="rect" href="pcap_8c.html" title=" " alt="" coords="5,80,121,107"/>
+<area shape="rect" href="ethernet_8c.html" title=" " alt="" coords="146,80,343,107"/>
 </map>
 </div>
 </div>
 <p><a href="ethernet_8h_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Data Structures</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ae477423ac7589e9501d05d8e00b175a2"><td class="memItemLeft" align="right" valign="top"><a id="ae477423ac7589e9501d05d8e00b175a2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_addrlen</b>&#160;&#160;&#160;6</td></tr>
+<tr class="separator:ae477423ac7589e9501d05d8e00b175a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab473b5fcf58113bed18057dfd6047cce"><td class="memItemLeft" align="right" valign="top"><a id="ab473b5fcf58113bed18057dfd6047cce"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_type_ipv4</b>&#160;&#160;&#160;0x0800u</td></tr>
+<tr class="separator:ab473b5fcf58113bed18057dfd6047cce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a816e1c55d5643fea4207e8f3cd2aae82"><td class="memItemLeft" align="right" valign="top"><a id="a816e1c55d5643fea4207e8f3cd2aae82"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_type_arp</b>&#160;&#160;&#160;0x0806u</td></tr>
+<tr class="separator:a816e1c55d5643fea4207e8f3cd2aae82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3068f0e8c79fc3ea90eb7ffe5808260"><td class="memItemLeft" align="right" valign="top"><a id="ad3068f0e8c79fc3ea90eb7ffe5808260"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_type_ipv6</b>&#160;&#160;&#160;0x08DDu</td></tr>
+<tr class="separator:ad3068f0e8c79fc3ea90eb7ffe5808260"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1abcbb4a91e1fcf33844dc844031ef4"><td class="memItemLeft" align="right" valign="top"><a id="ab1abcbb4a91e1fcf33844dc844031ef4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_type_vlan</b>&#160;&#160;&#160;0x8100u</td></tr>
+<tr class="separator:ab1abcbb4a91e1fcf33844dc844031ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad425ef375a48124e9ffe121294506428"><td class="memItemLeft" align="right" valign="top"><a id="ad425ef375a48124e9ffe121294506428"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_type_lldp</b>&#160;&#160;&#160;0x88CCu</td></tr>
+<tr class="separator:ad425ef375a48124e9ffe121294506428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb9736970878041bfbb3c7102497d3c5"><td class="memItemLeft" align="right" valign="top"><a id="adb9736970878041bfbb3c7102497d3c5"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_header_get</b>(datagram)&#160;&#160;&#160;((<a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a> *) datagram)</td></tr>
+<tr class="separator:adb9736970878041bfbb3c7102497d3c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ded55724ce2da05eae7bc3010ca9a50"><td class="memItemLeft" align="right" valign="top"><a id="a0ded55724ce2da05eae7bc3010ca9a50"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_segment_get</b>(datagram)&#160;&#160;&#160;addressof(datagram, sizeof(<a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a>))</td></tr>
+<tr class="separator:a0ded55724ce2da05eae7bc3010ca9a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a3c4c5a1653d3d70b9b769e6555def896"><td class="memItemLeft" align="right" valign="top"><a id="a3c4c5a1653d3d70b9b769e6555def896"></a>
+typedef struct <a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet</a>&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_t</b></td></tr>
+<tr class="separator:a3c4c5a1653d3d70b9b769e6555def896"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>snorlax <a href="#" onclick="location.href='mai'+'lto:'+'ceo'+'@s'+'nor'+'la'+'x.b'+'io'; return false;">ceo@s<span style="display: none;">.nosp@m.</span>norl<span style="display: none;">.nosp@m.</span>ax.bi<span style="display: none;">.nosp@m.</span>o</a> </dd></dl>
 <dl class="section since"><dt>Since</dt><dd>May 22, 2024 </dd></dl>
