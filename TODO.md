@@ -9,6 +9,7 @@
 ### 20240524 | Implement - IP Checksum, User Datagram Checksum
 ### 20240524 | Doxygen, Slide - [Protocol Numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
 ### 20240524 | Doxygen, Slide - [Internet Control Message Protocol](https://datatracker.ietf.org/doc/html/rfc792)
+### 20240524 | 왜 나는 약자를 싫어 하는가?
 
 
 

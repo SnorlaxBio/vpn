@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Snorlax Protocol Stack: snorlax/protocol/internet/control-message.c File Reference</title>
+<title>Snorlax Protocol Stack: snorlax_protocol_internet_control_message_echo Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -61,44 +61,40 @@ $(function() {
 </iframe>
 </div>
 
-<div id="nav-path" class="navpath">
-  <ul>
-<li class="navelem"><a class="el" href="dir_ced9610a1a62f864f4cf0f3a53b60143.html">snorlax</a></li><li class="navelem"><a class="el" href="dir_3181e8f272951e1a54fd20fa0acecb0d.html">protocol</a></li><li class="navelem"><a class="el" href="dir_531eb050ab207f23873829648898d62a.html">internet</a></li>  </ul>
-</div>
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">control-message.c File Reference</div>  </div>
+<div class="title">snorlax_protocol_internet_control_message_echo Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;arpa/inet.h&gt;</code><br />
-<code>#include &quot;<a class="el" href="control-message_8h_source.html">control-message.h</a>&quot;</code><br />
-</div><div class="textblock"><div class="dynheader">
-Include dependency graph for control-message.c:</div>
-<div class="dyncontent">
-<div class="center"><img src="control-message_8c__incl.png" border="0" usemap="#asnorlax_2protocol_2internet_2control-message_8c" alt=""/></div>
-<map name="asnorlax_2protocol_2internet_2control-message_8c" id="asnorlax_2protocol_2internet_2control-message_8c">
-<area shape="rect" title=" " alt="" coords="282,5,465,47"/>
-<area shape="rect" title=" " alt="" coords="257,95,349,121"/>
-<area shape="rect" href="control-message_8h.html" title=" " alt="" coords="373,95,515,121"/>
-<area shape="rect" title=" " alt="" coords="359,408,425,435"/>
-<area shape="rect" title=" " alt="" coords="449,333,519,360"/>
-<area shape="rect" href="protocol_8h.html" title=" " alt="" coords="32,333,171,360"/>
-<area shape="rect" href="internet_8h.html" title=" " alt="" coords="232,169,427,196"/>
-<area shape="rect" href="number_8h.html" title=" " alt="" coords="5,408,197,435"/>
-<area shape="rect" href="snorlax_8h.html" title=" " alt="" coords="240,333,323,360"/>
-<area shape="rect" href="version4_8h.html" title=" " alt="" coords="190,244,373,285"/>
-<area shape="rect" title=" " alt="" coords="246,408,317,435"/>
-</map>
-</div>
-</div>
-<p><a href="control-message_8c_source.html">Go to the source code of this file.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a8e0763cc3b5d2ae72da5dbc1abb7e673"><td class="memItemLeft" align="right" valign="top"><a id="a8e0763cc3b5d2ae72da5dbc1abb7e673"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>type</b></td></tr>
+<tr class="separator:a8e0763cc3b5d2ae72da5dbc1abb7e673"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a356d7f270ed5ae31768402acb1dabcc7"><td class="memItemLeft" align="right" valign="top"><a id="a356d7f270ed5ae31768402acb1dabcc7"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>code</b></td></tr>
+<tr class="separator:a356d7f270ed5ae31768402acb1dabcc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae83e2a44fd8ed2a5604e31d44a3abf93"><td class="memItemLeft" align="right" valign="top"><a id="ae83e2a44fd8ed2a5604e31d44a3abf93"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>checksum</b></td></tr>
+<tr class="separator:ae83e2a44fd8ed2a5604e31d44a3abf93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac010cffe693be648755d02a4ee02d863"><td class="memItemLeft" align="right" valign="top"><a id="ac010cffe693be648755d02a4ee02d863"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>identifier</b></td></tr>
+<tr class="separator:ac010cffe693be648755d02a4ee02d863"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2892b58e61b35506da76ee9361cd0b6"><td class="memItemLeft" align="right" valign="top"><a id="ab2892b58e61b35506da76ee9361cd0b6"></a>
+uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>sequence</b></td></tr>
+<tr class="separator:ab2892b58e61b35506da76ee9361cd0b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section author"><dt>Author</dt><dd>snorlax <a href="#" onclick="location.href='mai'+'lto:'+'ceo'+'@s'+'nor'+'la'+'x.b'+'io'; return false;">ceo@s<span style="display: none;">.nosp@m.</span>norl<span style="display: none;">.nosp@m.</span>ax.bi<span style="display: none;">.nosp@m.</span>o</a> </dd></dl>
-<dl class="section since"><dt>Since</dt><dd>May 24, 2024 </dd></dl>
-
-<p class="definition">Definition in file <a class="el" href="control-message_8c_source.html">control-message.c</a>.</p>
-</div></div><!-- contents -->
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="control-message_8h_source.html#l00073">73</a> of file <a class="el" href="control-message_8h_source.html">control-message.h</a>.</p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
+<li>snorlax/protocol/internet/<a class="el" href="control-message_8h_source.html">control-message.h</a></li>
+</ul>
+</div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1

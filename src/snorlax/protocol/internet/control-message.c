@@ -7,7 +7,100 @@
  * @since       May 24, 2024
  */
 
+#include <arpa/inet.h>
+
 #include "control-message.h"
+
+#ifdef    SNORLAX_DEBUG
+extern void snorlax_protocol_internet_control_message_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    snorlax_protocol_internet_control_message_t * message = (snorlax_protocol_internet_control_message_t *) segment;
+    fprintf(stream, "| internet control message ");
+    fprintf(stream, "| % 3d ", message->type);
+    fprintf(stream, "| % 3d ", message->code);
+    fprintf(stream, "| % 6d ", ntohs(message->checksum));
+
+    switch(message->type) {
+        case snorlax_protocol_internet_control_message_type_echo_req:                   snorlax_protocol_internet_control_message_echo_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_echo_res:                   snorlax_protocol_internet_control_message_echo_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_destination_unreachable:    snorlax_protocol_internet_control_message_destination_unreachable_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_source_quench:              snorlax_protocol_internet_control_message_source_quench_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_redirect:                   snorlax_protocol_internet_control_message_redirect_debug(stream, internet, segment);    break;
+        case snorlax_protocol_internet_control_message_type_time_exceeded:              snorlax_protocol_internet_control_message_time_exceeded_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_parameter_problem:          snorlax_protocol_internet_control_message_parameter_problem_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_timestamp_req:              snorlax_protocol_internet_control_message_timestamp_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_timestamp_res:              snorlax_protocol_internet_control_message_timestamp_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_information_req:            snorlax_protocol_internet_control_message_information_debug(stream, internet, segment); break;
+        case snorlax_protocol_internet_control_message_type_information_res:            snorlax_protocol_internet_control_message_information_debug(stream, internet, segment); break;
+        default:                                                                        snorlax_error("unknown internet control message type => %d", message->type);
+    }
+}
+
+extern void snorlax_protocol_internet_control_message_destination_unreachable_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    // TODO:
+    fprintf(stream, "|\n");
+}
+
+extern void snorlax_protocol_internet_control_message_time_exceeded_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    // TODO:
+    fprintf(stream, "|\n");
+}
+
+extern void snorlax_protocol_internet_control_message_parameter_problem_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    snorlax_protocol_internet_control_message_parameter_problem_t * message = (snorlax_protocol_internet_control_message_parameter_problem_t *) segment;
+
+    fprintf(stream, "| % 3d ", message->pointer);
+    // TODO: 
+    fprintf(stream, "|\n");
+}
+
+extern void snorlax_protocol_internet_control_message_source_quench_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    // TODO:
+    fprintf(stream, "|\n");
+}
+
+extern void snorlax_protocol_internet_control_message_redirect_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    snorlax_protocol_internet_control_message_redirect_t * message = (snorlax_protocol_internet_control_message_redirect_t *) segment;
+
+    fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = message->address }));
+
+    // TODO:
+
+    fprintf(stream, "\n");
+}
+
+extern void snorlax_protocol_internet_control_message_echo_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    snorlax_protocol_internet_control_message_echo_t * message = (snorlax_protocol_internet_control_message_echo_t *) segment;
+
+    fprintf(stream, "| % 6d ", ntohs(message->identifier));
+    fprintf(stream, "| % 6d ", ntohs(message->sequence));
+
+    // TODO:
+
+    fprintf(stream, "|\n");
+}
+
+extern void snorlax_protocol_internet_control_message_timestamp_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    snorlax_protocol_internet_control_message_timestamp_t * message = (snorlax_protocol_internet_control_message_timestamp_t *) segment;
+
+    fprintf(stream, "| % 6d ", ntohs(message->identifier));
+    fprintf(stream, "| % 6d ", ntohs(message->sequence));
+
+    // TODO: 
+
+    fprintf(stream, "|\n");
+}
+
+extern void snorlax_protocol_internet_control_message_information_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
+    snorlax_protocol_internet_control_message_information_t * message = (snorlax_protocol_internet_control_message_information_t *) segment;
+
+    fprintf(stream, "| % 6d ", ntohs(message->identifier));
+    fprintf(stream, "| % 6d ", ntohs(message->sequence));
+
+    // TODO: 
+
+    fprintf(stream, "|\n");
+}
+#endif // SNORLAX_DEBUG
 
 /**
  * @page        InternetControlMessageProtocol      Internet Control Message Protocol
@@ -249,7 +342,7 @@
  * 
  * @subsection      MessageFormats_InformationRequest_or_InformationReplyMessage        Information Request or Information Reply Message
  * 
- * <img src="Internet-Control-Message-Protocol-Information-Request-or-Information-Reply-Message.png" alt-"Information Request or Information Reply Message" width="256">
+ * <img src="Internet-Control-Message-Protocol-Information-Request-or-Information-Reply-Message.png" alt="Information Request or Information Reply Message" width="256">
  * 
  * | Field      | Target | Description |
  * | ---------- | ------ | ----------- |
