@@ -69,6 +69,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">version4.h File Reference</div>  </div>
@@ -77,16 +78,19 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="snorlax_8h_source.html">snorlax.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="protocol_8h_source.html">snorlax/protocol.h</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for version4.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="version4_8h__incl.png" border="0" usemap="#asnorlax_2protocol_2internet_2version4_8h" alt=""/></div>
 <map name="asnorlax_2protocol_2internet_2version4_8h" id="asnorlax_2protocol_2internet_2version4_8h">
-<area shape="rect" title=" " alt="" coords="5,5,188,47"/>
-<area shape="rect" title=" " alt="" coords="31,169,98,196"/>
-<area shape="rect" title=" " alt="" coords="61,95,132,121"/>
-<area shape="rect" href="snorlax_8h.html" title=" " alt="" coords="157,95,239,121"/>
-<area shape="rect" title=" " alt="" coords="163,169,233,196"/>
+<area shape="rect" title=" " alt="" coords="30,5,213,47"/>
+<area shape="rect" title=" " alt="" coords="5,169,72,196"/>
+<area shape="rect" title=" " alt="" coords="35,95,106,121"/>
+<area shape="rect" href="snorlax_8h.html" title=" " alt="" coords="131,95,213,121"/>
+<area shape="rect" href="protocol_8h.html" title=" " alt="" coords="248,95,387,121"/>
+<area shape="rect" title=" " alt="" coords="131,169,202,196"/>
+<area shape="rect" href="number_8h.html" title=" " alt="" coords="227,169,419,196"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -94,9 +98,13 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="version4_8h__dep__incl.png" border="0" usemap="#asnorlax_2protocol_2internet_2version4_8hdep" alt=""/></div>
 <map name="asnorlax_2protocol_2internet_2version4_8hdep" id="asnorlax_2protocol_2internet_2version4_8hdep">
-<area shape="rect" title=" " alt="" coords="111,5,293,47"/>
-<area shape="rect" href="version4_8c.html" title=" " alt="" coords="5,95,188,136"/>
-<area shape="rect" href="internet_8c.html" title=" " alt="" coords="212,102,405,129"/>
+<area shape="rect" title=" " alt="" coords="34,5,217,47"/>
+<area shape="rect" href="version4_8c.html" title=" " alt="" coords="81,259,263,300"/>
+<area shape="rect" href="internet_8c.html" title=" " alt="" coords="29,177,222,203"/>
+<area shape="rect" href="internet_8h.html" title=" " alt="" coords="205,95,400,121"/>
+<area shape="rect" href="ethernet_8c.html" title=" " alt="" coords="247,177,444,203"/>
+<area shape="rect" href="user-datagram_8h.html" title=" " alt="" coords="469,169,627,211"/>
+<area shape="rect" href="user-datagram_8c.html" title=" " alt="" coords="469,259,627,300"/>
 </map>
 </div>
 </div>
@@ -108,6 +116,15 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structsnorlax__protocol__internet__version4__pseudo.html">snorlax_protocol_internet_version4_pseudo</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a3eb17fde17ee2284b52501490c84b111"><td class="memItemLeft" align="right" valign="top"><a id="a3eb17fde17ee2284b52501490c84b111"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_internet_version4_length_header_get</b>(datagram)&#160;&#160;&#160;(((<a class="el" href="structsnorlax__protocol__internet__version4.html">snorlax_protocol_internet_version4_t</a> *) datagram)-&gt;length * 4)</td></tr>
+<tr class="separator:a3eb17fde17ee2284b52501490c84b111"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4d900d534580fe4755abead98b0b6eb"><td class="memItemLeft" align="right" valign="top"><a id="af4d900d534580fe4755abead98b0b6eb"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_internet_version4_segment_get</b>(datagram)&#160;&#160;&#160;addressof(datagram, snorlax_protocol_internet_version4_length_header_get(datagram))</td></tr>
+<tr class="separator:af4d900d534580fe4755abead98b0b6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>

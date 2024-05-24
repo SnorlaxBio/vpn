@@ -72,8 +72,29 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <a href="user-datagram_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="user-datagram_8h.html">user-datagram.h</a>&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;arpa/inet.h&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="user-datagram_8h.html">user-datagram.h</a>&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="application_8h.html">application.h</a>&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#ifdef    SNORLAX_DEBUG</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> snorlax_protocol_user_datagram_debug(FILE * stream, <span class="keyword">const</span> snorlax_protocol_internet_t internet, <span class="keyword">const</span> uint8_t * segment) {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram_t</a> * udp = (<a class="code" href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram_t</a> *)(segment);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    fprintf(stream, <span class="stringliteral">&quot;| user datagram &quot;</span>);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    fprintf(stream, <span class="stringliteral">&quot;| % 6d &quot;</span>, ntohs(udp-&gt;source));</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    fprintf(stream, <span class="stringliteral">&quot;| % 6d &quot;</span>, ntohs(udp-&gt;destination));</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    fprintf(stream, <span class="stringliteral">&quot;| % 6d &quot;</span>, ntohs(udp-&gt;length));</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    fprintf(stream, <span class="stringliteral">&quot;| % 6d &quot;</span>, ntohs(udp-&gt;checksum));</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    fprintf(stream, <span class="stringliteral">&quot;|\n&quot;</span>);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    snorlax_protocol_application_debug(stream, snorlax_protocol_user_datagram_message_get(segment));</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SNORLAX_DEBUG</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="ttc" id="aapplication_8h_html"><div class="ttname"><a href="application_8h.html">application.h</a></div></div>
+<div class="ttc" id="astructsnorlax__protocol__user__datagram_html"><div class="ttname"><a href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram</a></div><div class="ttdef"><b>Definition:</b> <a href="user-datagram_8h_source.html#l00019">user-datagram.h:19</a></div></div>
 <div class="ttc" id="auser-datagram_8h_html"><div class="ttname"><a href="user-datagram_8h.html">user-datagram.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

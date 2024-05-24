@@ -75,7 +75,31 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef   __SNORLAX__PROTOCOL_USER_DATAGRAM__H__</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define   __SNORLAX__PROTOCOL_USER_DATAGRAM__H__</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// __SNORLAX__PROTOCOL_USER_DATAGRAM__H__</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="protocol_8h.html">snorlax/protocol.h</a>&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="internet_8h.html">snorlax/protocol/internet.h</a>&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="structsnorlax__protocol__user__datagram.html">   19</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram</a> {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    uint16_t source;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    uint16_t destination;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    uint16_t length;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    uint16_t checksum;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram</a> <a class="code" href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram_t</a>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#define snorlax_protocol_user_datagram_message_get(segment)         addressof(segment, sizeof(snorlax_protocol_user_datagram_t))</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#ifdef    SNORLAX_DEBUG</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> snorlax_protocol_user_datagram_debug(FILE * stream, <span class="keyword">const</span> snorlax_protocol_internet_t internet, <span class="keyword">const</span> uint8_t * segment);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SNORLAX_DEBUG</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// __SNORLAX__PROTOCOL_USER_DATAGRAM__H__</span></div>
+<div class="ttc" id="ainternet_8h_html"><div class="ttname"><a href="internet_8h.html">internet.h</a></div></div>
+<div class="ttc" id="aprotocol_8h_html"><div class="ttname"><a href="protocol_8h.html">protocol.h</a></div></div>
+<div class="ttc" id="astructsnorlax__protocol__user__datagram_html"><div class="ttname"><a href="structsnorlax__protocol__user__datagram.html">snorlax_protocol_user_datagram</a></div><div class="ttdef"><b>Definition:</b> <a href="user-datagram_8h_source.html#l00019">user-datagram.h:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

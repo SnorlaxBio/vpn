@@ -68,7 +68,8 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#define-members">Macros</a>  </div>
+<a href="#define-members">Macros</a> &#124;
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">internet.h File Reference</div>  </div>
 </div><!--header-->
@@ -76,16 +77,21 @@ $(function() {
 <div class="textblock"><code>#include &lt;stdio.h&gt;</code><br />
 <code>#include &lt;stdint.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="snorlax_8h_source.html">snorlax.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="protocol_8h_source.html">snorlax/protocol.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="version4_8h_source.html">snorlax/protocol/internet/version4.h</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for internet.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="internet_8h__incl.png" border="0" usemap="#asnorlax_2protocol_2internet_8h" alt=""/></div>
 <map name="asnorlax_2protocol_2internet_8h" id="asnorlax_2protocol_2internet_8h">
-<area shape="rect" title=" " alt="" coords="5,5,200,32"/>
-<area shape="rect" title=" " alt="" coords="37,155,104,181"/>
-<area shape="rect" title=" " alt="" coords="67,80,138,107"/>
-<area shape="rect" href="snorlax_8h.html" title=" " alt="" coords="163,80,245,107"/>
-<area shape="rect" title=" " alt="" coords="169,155,239,181"/>
+<area shape="rect" title=" " alt="" coords="98,5,293,32"/>
+<area shape="rect" title=" " alt="" coords="101,244,167,271"/>
+<area shape="rect" title=" " alt="" coords="211,169,281,196"/>
+<area shape="rect" href="snorlax_8h.html" title=" " alt="" coords="53,169,135,196"/>
+<area shape="rect" href="protocol_8h.html" title=" " alt="" coords="306,169,445,196"/>
+<area shape="rect" href="version4_8h.html" title=" " alt="" coords="104,80,287,121"/>
+<area shape="rect" title=" " alt="" coords="5,244,76,271"/>
+<area shape="rect" href="number_8h.html" title=" " alt="" coords="279,244,471,271"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -93,9 +99,12 @@ This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
 <div class="center"><img src="internet_8h__dep__incl.png" border="0" usemap="#asnorlax_2protocol_2internet_8hdep" alt=""/></div>
 <map name="asnorlax_2protocol_2internet_8hdep" id="asnorlax_2protocol_2internet_8hdep">
-<area shape="rect" title=" " alt="" coords="116,5,311,32"/>
-<area shape="rect" href="ethernet_8c.html" title=" " alt="" coords="5,80,203,107"/>
-<area shape="rect" href="internet_8c.html" title=" " alt="" coords="227,80,421,107"/>
+<area shape="rect" title=" " alt="" coords="227,5,421,32"/>
+<area shape="rect" href="ethernet_8c.html" title=" " alt="" coords="5,87,203,114"/>
+<area shape="rect" href="internet_8c.html" title=" " alt="" coords="227,87,421,114"/>
+<area shape="rect" href="user-datagram_8h.html" title=" " alt="" coords="445,80,603,121"/>
+<area shape="rect" href="version4_8c.html" title=" " alt="" coords="335,169,518,211"/>
+<area shape="rect" href="user-datagram_8c.html" title=" " alt="" coords="542,169,701,211"/>
 </map>
 </div>
 </div>
@@ -106,6 +115,12 @@ Macros</h2></td></tr>
 <tr class="memitem:aee958b8a03e62607c14ebcbfaa4aba28"><td class="memItemLeft" align="right" valign="top"><a id="aee958b8a03e62607c14ebcbfaa4aba28"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_internet_version_get</b>(datagram)&#160;&#160;&#160;(datagram[0] &gt;&gt; 4)</td></tr>
 <tr class="separator:aee958b8a03e62607c14ebcbfaa4aba28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:a4fc6524bb7b7b7827a50451a2c4b77f9"><td class="memItemLeft" align="right" valign="top"><a id="a4fc6524bb7b7b7827a50451a2c4b77f9"></a>
+typedef uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_internet_t</b></td></tr>
+<tr class="separator:a4fc6524bb7b7b7827a50451a2c4b77f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>snorlax <a href="#" onclick="location.href='mai'+'lto:'+'ceo'+'@s'+'nor'+'la'+'x.b'+'io'; return false;">ceo@s<span style="display: none;">.nosp@m.</span>norl<span style="display: none;">.nosp@m.</span>ax.bi<span style="display: none;">.nosp@m.</span>o</a> </dd></dl>
