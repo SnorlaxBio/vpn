@@ -26,6 +26,9 @@ set(SNORLAX_PROTOCOL_INTERNET_HEADER            src/snorlax/protocol/internet.h
 set(SNORLAX_PROTOCOL_USER_DATAGRAM_SOURCE       src/snorlax/protocol/user-datagram.c)
 set(SNORLAX_PROTOCOL_USER_DATAGRAM_HEADER       src/snorlax/protocol/user-datagram.h)
 
+set(SNORLAX_PROTOCOL_INTERNET_CONTROL_MESSAGE_SOURCE       src/snorlax/protocol/internet/control-message.c)
+set(SNORLAX_PROTOCOL_INTERNET_CONTROL_MESSAGE_HEADER       src/snorlax/protocol/internet/control-message.h)
+
 set(SNORLAX_PROTOCOL_APPLICATION_SOURCE         src/snorlax/protocol/application.c)
 set(SNORLAX_PROTOCOL_APPLICATION_HEADER         src/snorlax/protocol/application.h)
 
@@ -39,6 +42,8 @@ add_library(snorlax-protocol-stack ${SNORLAX_SOURCE}
                                    ${SNORLAX_PROTOCOL_ETHERNET_HEADER}
                                    ${SNORLAX_PROTOCOL_INTERNET_SOURCE}
                                    ${SNORLAX_PROTOCOL_INTERNET_HEADER}
+                                   ${SNORLAX_PROTOCOL_INTERNET_CONTROL_MESSAGE_SOURCE}
+                                   ${SNORLAX_PROTOCOL_INTERNET_CONTROL_MESSAGE_HEADER}
                                    ${SNORLAX_PROTOCOL_USER_DATAGRAM_SOURCE}
                                    ${SNORLAX_PROTOCOL_USER_DATAGRAM_HEADER}
                                    ${SNORLAX_PROTOCOL_APPLICATION_SOURCE}
