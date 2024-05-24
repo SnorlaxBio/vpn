@@ -15,6 +15,11 @@
 
 #include <snorlax.h>
 
+#include <snorlax/protocol.h>
+#include <snorlax/protocol/internet/version4.h>
+
+typedef uint8_t *       snorlax_protocol_internet_t;
+
 #define snorlax_protocol_internet_version_get(datagram)     (datagram[0] >> 4)
 
 #ifdef    SNORLAX_DEBUG

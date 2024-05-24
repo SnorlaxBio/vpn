@@ -73,8 +73,24 @@ $(function() {
 <div class="contents">
 <a href="internet_8c.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="internet_8h.html">internet.h</a>&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="version4_8h.html">internet/version4.h</a>&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifdef    SNORLAX_DEBUG</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> snorlax_protocol_internet_debug(FILE * stream, <span class="keyword">const</span> uint8_t * datagram) {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    uint8_t version = snorlax_protocol_internet_version_get(datagram);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keywordflow">if</span>(version == 4) {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        snorlax_protocol_internet_version4_debug(stream, datagram);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span>(version == 6) {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;        snorlax_implement(<span class="stringliteral">&quot;internet protocol version 6&quot;</span>);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        snorlax_error(<span class="stringliteral">&quot;unknown internet protocol version =&gt; %d&quot;</span>, version);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SNORLAX_DEBUG</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
 <div class="ttc" id="ainternet_8h_html"><div class="ttname"><a href="internet_8h.html">internet.h</a></div></div>
+<div class="ttc" id="aversion4_8h_html"><div class="ttname"><a href="version4_8h.html">version4.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

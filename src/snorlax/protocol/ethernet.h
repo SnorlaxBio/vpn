@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <snorlax.h>
+#include <snorlax/protocol.h>
 
 #define snorlax_protocol_ethernet_addrlen       6
 

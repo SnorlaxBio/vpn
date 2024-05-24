@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 
 #include "version4.h"
+#include "../user-datagram.h"
 
 #ifdef    SNORLAX_DEBUG
 extern void snorlax_protocol_internet_version4_debug(FILE * stream, const uint8_t * datagram) {
@@ -29,7 +30,10 @@ extern void snorlax_protocol_internet_version4_debug(FILE * stream, const uint8_
     fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = ntohl(header->destination) }));
     fprintf(stream, "|\n");
 
-    snorlax_implement("need to protocol debug");
+    switch(header->protocol) {
+        case snorlax_protocol_number_udp:       snorlax_protocol_user_datagram_debug(stream, (snorlax_protocol_internet_t) datagram, snorlax_protocol_internet_version4_segment_get(datagram));     break;
+        default:                                snorlax_todo("need to implement other protocol => %d", header->protocol);                                                                           break;
+    }
 }
 #endif // SNORLAX_DEBUG
 

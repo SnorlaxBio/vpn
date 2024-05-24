@@ -127,12 +127,12 @@ Macros</h2></td></tr>
 <tr class="memitem:ad425ef375a48124e9ffe121294506428"><td class="memItemLeft" align="right" valign="top"><a id="ad425ef375a48124e9ffe121294506428"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_type_lldp</b>&#160;&#160;&#160;0x88CCu</td></tr>
 <tr class="separator:ad425ef375a48124e9ffe121294506428"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb9736970878041bfbb3c7102497d3c5"><td class="memItemLeft" align="right" valign="top"><a id="adb9736970878041bfbb3c7102497d3c5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_header_get</b>(datagram)&#160;&#160;&#160;((<a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a> *) datagram)</td></tr>
-<tr class="separator:adb9736970878041bfbb3c7102497d3c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ded55724ce2da05eae7bc3010ca9a50"><td class="memItemLeft" align="right" valign="top"><a id="a0ded55724ce2da05eae7bc3010ca9a50"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_segment_get</b>(datagram)&#160;&#160;&#160;addressof(datagram, sizeof(<a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a>))</td></tr>
-<tr class="separator:a0ded55724ce2da05eae7bc3010ca9a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9974f7356e21a9af9482f26a772ecc96"><td class="memItemLeft" align="right" valign="top"><a id="a9974f7356e21a9af9482f26a772ecc96"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_header_get</b>(frame)&#160;&#160;&#160;((<a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a> *) frame)</td></tr>
+<tr class="separator:a9974f7356e21a9af9482f26a772ecc96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6c2e46f8a0cb1214e0e6406b0ec73648"><td class="memItemLeft" align="right" valign="top"><a id="a6c2e46f8a0cb1214e0e6406b0ec73648"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><b>snorlax_protocol_ethernet_datagram_get</b>(frame)&#160;&#160;&#160;addressof(frame, sizeof(<a class="el" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a>))</td></tr>
+<tr class="separator:a6c2e46f8a0cb1214e0e6406b0ec73648"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>

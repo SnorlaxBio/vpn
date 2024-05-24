@@ -44,8 +44,36 @@
                                                      ##__VA_ARGS__);    \
 } while(0)
 
-#define snorlax_implement(format, ...) do {                             \
-    fprintf(stderr, "[implement|%s:%d|%s] " format "\n", __FILE__,      \
+#define snorlax_caution(format, ...) do {                               \
+    fprintf(stderr, "[caution|%s:%d|%s] " format "\n", __FILE__,        \
+                                                     __LINE__,          \
+                                                     __func__,          \
+                                                     ##__VA_ARGS__);    \
+} while(0)
+
+#define snorlax_notice(format, ...) do {                                \
+    fprintf(stderr, "[notice|%s:%d|%s] " format "\n", __FILE__,         \
+                                                     __LINE__,          \
+                                                     __func__,          \
+                                                     ##__VA_ARGS__);    \
+} while(0)
+
+#define snorlax_debug(format, ...) do {                                 \
+    fprintf(stderr, "[debug|%s:%d|%s] " format "\n", __FILE__,          \
+                                                     __LINE__,          \
+                                                     __func__,          \
+                                                     ##__VA_ARGS__);    \
+} while(0)
+
+#define snorlax_verbose(format, ...) do {                               \
+    fprintf(stderr, "[verbose|%s:%d|%s] " format "\n", __FILE__,        \
+                                                     __LINE__,          \
+                                                     __func__,          \
+                                                     ##__VA_ARGS__);    \
+} while(0)
+
+#define snorlax_todo(format, ...) do {                                  \
+    fprintf(stderr, "[todo|%s:%d|%s] " format "\n", __FILE__,           \
                                                      __LINE__,          \
                                                      __func__,          \
                                                      ##__VA_ARGS__);    \

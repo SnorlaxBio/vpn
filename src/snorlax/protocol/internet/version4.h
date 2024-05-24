@@ -14,6 +14,7 @@
 #include <stdint.h>
 
 #include <snorlax.h>
+#include <snorlax/protocol.h>
 
 struct snorlax_protocol_internet_version4 {
 #if       __BYTE_ORDER == __LITTLE_ENDIAN
@@ -45,6 +46,10 @@ struct snorlax_protocol_internet_version4_pseudo {
 typedef struct snorlax_protocol_internet_version4           snorlax_protocol_internet_version4_t;
 typedef struct snorlax_protocol_internet_version4_pseudo    snorlax_protocol_internet_version4_pseudo_t;
 typedef uint8_t *                                           snorlax_protocol_internet_version4_option_t;
+
+#define snorlax_protocol_internet_version4_length_header_get(datagram)  (((snorlax_protocol_internet_version4_t *) datagram)->length * 4)
+
+#define snorlax_protocol_internet_version4_segment_get(datagram)        addressof(datagram, snorlax_protocol_internet_version4_length_header_get(datagram))
 
 /**
  * @todo    function: Address

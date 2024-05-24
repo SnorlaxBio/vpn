@@ -95,8 +95,8 @@ $(function() {
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span><a class="code" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet</a> <a class="code" href="structsnorlax__protocol__ethernet.html">snorlax_protocol_ethernet_t</a>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#define snorlax_protocol_ethernet_header_get(datagram)      ((snorlax_protocol_ethernet_t *) datagram)</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#define snorlax_protocol_ethernet_segment_get(datagram)     addressof(datagram, sizeof(snorlax_protocol_ethernet_t))</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#define snorlax_protocol_ethernet_header_get(frame)     ((snorlax_protocol_ethernet_t *) frame)</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#define snorlax_protocol_ethernet_datagram_get(frame)   addressof(frame, sizeof(snorlax_protocol_ethernet_t))</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#ifdef    SNORLAX_DEBUG</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">extern</span> <span class="keywordtype">void</span> snorlax_protocol_ethernet_debug(FILE * stream, <span class="keyword">const</span> uint8_t * datagram);</div>
