@@ -10,6 +10,6 @@
 ### 20240524 | Doxygen, Slide - [Protocol Numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
 ### 20240524 | Doxygen, Slide - [Internet Control Message Protocol](https://datatracker.ietf.org/doc/html/rfc792)
 ### 20240524 | 왜 나는 약자를 싫어 하는가?
-
+### 20240525 | https://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml
 
 

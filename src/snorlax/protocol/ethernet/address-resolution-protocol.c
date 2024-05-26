@@ -7,7 +7,33 @@
  * @since       May 24, 2024
  */
 
+#include <arpa/inet.h>
+
+#include <snorlax.h>
+
 #include "address-resolution-protocol.h"
+
+#ifdef    SNORLAX_DEBUG
+extern void snorlax_protocol_ethernet_address_resolution_debug(FILE * stream, const uint8_t * datagram) {
+    snorlax_protocol_address_resolution_t * arp = (snorlax_protocol_address_resolution_t *) datagram;
+
+    uint16_t hardware = ntohs(arp->hardware);
+    uint16_t protocol = ntohs(arp->protocol);
+
+    fprintf(stream, "| Address Resolution ");
+    fprintf(stream, "| % 6d ", hardware);
+    fprintf(stream, "| % 6d ", protocol);
+    fprintf(stream, "| % 3d ", arp->length.hardware);
+    fprintf(stream, "| % 3d ", arp->length.protocol);
+    fprintf(stream, "| % 6d ", arp->op);
+
+    uint32_t offset = sizeof(snorlax_protocol_address_resolution_t);
+
+    snorlax_todo("implement sender & target's protocol & hardware address");
+
+    fprintf(stream, "|\n");
+}
+#endif // SNORLAX_DEBUG
 
 /**
  * @page        EthernetAddressResolutionProtocol       An Ethernet Address Resolution Protocol

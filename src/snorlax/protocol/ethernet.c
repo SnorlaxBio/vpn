@@ -12,6 +12,7 @@
 #include "ethernet.h"
 
 #include "internet.h"
+#include "ethernet/address-resolution-protocol.h"
 
 #ifdef    SNORLAX_DEBUG
 extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * frame) {
@@ -35,13 +36,15 @@ extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * frame
     fprintf(stream, "| %04x ", type);
     fprintf(stream, "|\n");
 
+    const uint8_t * datagram = snorlax_protocol_ethernet_datagram_get(frame);
+
     switch(type) {
-        case snorlax_protocol_ethernet_type_ipv4:   snorlax_protocol_internet_debug(stream, snorlax_protocol_ethernet_datagram_get(frame));     break;
-        case snorlax_protocol_ethernet_type_arp:    snorlax_todo("Address Resolution Protocol");                                                break;
-        case snorlax_protocol_ethernet_type_ipv6:   snorlax_todo("Internet Protocol Version 6");                                                break;
-        case snorlax_protocol_ethernet_type_vlan:   snorlax_todo("VLAN Tagged Frame (IEEE 802.1Q)");                                            break;
-        case snorlax_protocol_ethernet_type_lldp:   snorlax_todo("Link Layer Discovery Protocol");                                              break;
-        default:                                    snorlax_todo("Unknown Protocol => %04x", type);                                             break;
+        case snorlax_protocol_ethernet_type_ipv4:   snorlax_protocol_internet_debug(stream, datagram);                      break;
+        case snorlax_protocol_ethernet_type_arp:    snorlax_protocol_ethernet_address_resolution_debug(stream, datagram);   break;
+        case snorlax_protocol_ethernet_type_ipv6:   snorlax_todo("Internet Protocol Version 6");                            break;
+        case snorlax_protocol_ethernet_type_vlan:   snorlax_todo("VLAN Tagged Frame (IEEE 802.1Q)");                        break;
+        case snorlax_protocol_ethernet_type_lldp:   snorlax_todo("Link Layer Discovery Protocol");                          break;
+        default:                                    snorlax_todo("Unknown Protocol => %04x", type);                         break;
     }
 }
 #endif // SNORLAX_DEBUG
