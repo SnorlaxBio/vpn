@@ -12,6 +12,7 @@
 #include <snorlax.h>
 
 #include "address-resolution-protocol.h"
+#include "../ethernet.h"
 
 #ifdef    SNORLAX_DEBUG
 extern void snorlax_protocol_ethernet_address_resolution_debug(FILE * stream, const uint8_t * datagram) {
@@ -22,14 +23,44 @@ extern void snorlax_protocol_ethernet_address_resolution_debug(FILE * stream, co
 
     fprintf(stream, "| Address Resolution ");
     fprintf(stream, "| % 6d ", hardware);
-    fprintf(stream, "| % 6d ", protocol);
+    fprintf(stream, "| %04x ", protocol);
     fprintf(stream, "| % 3d ", arp->length.hardware);
     fprintf(stream, "| % 3d ", arp->length.protocol);
     fprintf(stream, "| % 6d ", arp->op);
 
     uint32_t offset = sizeof(snorlax_protocol_address_resolution_t);
 
-    snorlax_todo("implement sender & target's protocol & hardware address");
+    if(hardware == snorlax_protocol_address_resolution_hardware_type_ethernet) {
+        fprintf(stream, "| ");
+        for(int i = 0; i < arp->length.hardware; i++, offset++) {
+            fprintf(stream, "%02x%c", datagram[offset], i + 1 == arp->length.hardware ? ' ' : ':');
+        }
+    } else {
+        snorlax_todo("unsupported hardware type");
+    }
+
+    if(protocol == snorlax_protocol_ethernet_type_ipv4) {
+        fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = uint32of(datagram, offset) }));
+        offset = offset + arp->length.protocol;
+    } else {
+        snorlax_todo("unsupported protocol type");
+    }
+
+    if(hardware == snorlax_protocol_address_resolution_hardware_type_ethernet) {
+        fprintf(stream, "| ");
+        for(int i = 0; i < arp->length.hardware; i++, offset++) {
+            fprintf(stream, "%02x%c", datagram[offset], i + 1 == arp->length.hardware ? ' ' : ':');
+        }
+    } else {
+        snorlax_todo("unsupported hardware type");
+    }
+
+    if(protocol == snorlax_protocol_ethernet_type_ipv4) {
+        fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = uint32of(datagram, offset) }));
+        offset = offset + arp->length.protocol;
+    } else {
+        snorlax_todo("unsupported protocol type");
+    }
 
     fprintf(stream, "|\n");
 }
@@ -351,4 +382,5 @@ extern void snorlax_protocol_ethernet_address_resolution_debug(FILE * stream, co
  * resolution-liek protocol.
  * 
  * @see         [Ethernet Address Resolution Protocol](https://datatracker.ietf.org/doc/html/rfc826)
+ * @see         [Address Resolution Protocol (ARP) Parameters](https://www.iana.org/assignments/arp-parameters/arp-parameters.xhtml)
  */

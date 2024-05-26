@@ -41,7 +41,7 @@ extern void snorlax_protocol_ethernet_debug(FILE * stream, const uint8_t * frame
     switch(type) {
         case snorlax_protocol_ethernet_type_ipv4:   snorlax_protocol_internet_debug(stream, datagram);                      break;
         case snorlax_protocol_ethernet_type_arp:    snorlax_protocol_ethernet_address_resolution_debug(stream, datagram);   break;
-        case snorlax_protocol_ethernet_type_ipv6:   snorlax_todo("Internet Protocol Version 6");                            break;
+        case snorlax_protocol_ethernet_type_ipv6:   snorlax_protocol_internet_debug(stream, datagram);                      break;
         case snorlax_protocol_ethernet_type_vlan:   snorlax_todo("VLAN Tagged Frame (IEEE 802.1Q)");                        break;
         case snorlax_protocol_ethernet_type_lldp:   snorlax_todo("Link Layer Discovery Protocol");                          break;
         default:                                    snorlax_todo("Unknown Protocol => %04x", type);                         break;

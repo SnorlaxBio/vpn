@@ -9,6 +9,7 @@
 
 #include "internet.h"
 #include "internet/version4.h"
+#include "internet/version6.h"
 
 #ifdef    SNORLAX_DEBUG
 extern void snorlax_protocol_internet_debug(FILE * stream, const uint8_t * datagram) {
@@ -17,7 +18,7 @@ extern void snorlax_protocol_internet_debug(FILE * stream, const uint8_t * datag
     if(version == 4) {
         snorlax_protocol_internet_version4_debug(stream, datagram);
     } else if(version == 6) {
-        snorlax_todo("internet protocol version 6");
+        snorlax_protocol_internet_version6_debug(stream, datagram);
     } else {
         snorlax_error("unknown internet protocol version => %d", version);
     }

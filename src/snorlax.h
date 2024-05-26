@@ -21,6 +21,8 @@
 
 #define addressof(o, offset)        (&o[offset])
 
+#define uint32of(o, offset)         (*((uint32_t *) addressof(o, offset)))
+
 #define snorlax_string_init(s)      (s[0] = 0)
 
 #ifdef    SNORLAX_DEBUG

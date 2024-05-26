@@ -13,6 +13,15 @@
 #include <stdio.h>
 #include <stdint.h>
 
+/**
+ * @see     [Hardware Types](https://www.iana.org/assignments/arp-parameters/arp-parameters.xhtml#arp-parameters-2)
+ */
+#define snorlax_protocol_address_resolution_hardware_type_ethernet      1
+
+/**
+ * @see     [Protocol Type](https://www.iana.org/assignments/arp-parameters/arp-parameters.xhtml#arp-parameters-3)
+ */
+
 struct snorlax_protocol_address_resolution {
     uint16_t hardware;
     uint16_t protocol;

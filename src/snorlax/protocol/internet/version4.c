@@ -27,8 +27,8 @@ extern void snorlax_protocol_internet_version4_debug(FILE * stream, const uint8_
     fprintf(stream, "| % 4d ", header->ttl);
     fprintf(stream, "| % 4d ", header->protocol);
     fprintf(stream, "| % 6d ", ntohs(header->checksum));
-    fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = ntohl(header->source) }));
-    fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = ntohl(header->destination) }));
+    fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = header->source }));
+    fprintf(stream, "| %15s ", inet_ntoa((struct in_addr) { .s_addr = header->destination }));
     fprintf(stream, "|\n");
 
     switch(header->protocol) {

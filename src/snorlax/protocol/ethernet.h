@@ -19,7 +19,7 @@
 
 #define snorlax_protocol_ethernet_type_ipv4     0x0800u     // Internet Protocol Version 4
 #define snorlax_protocol_ethernet_type_arp      0x0806u     // Address Resolution Protocol
-#define snorlax_protocol_ethernet_type_ipv6     0x08DDu     // Internet Protocol Version 6
+#define snorlax_protocol_ethernet_type_ipv6     0x86DDu     // Internet Protocol Version 6
 #define snorlax_protocol_ethernet_type_vlan     0x8100u     // VLAN tagged frame (IEEE 802.1Q)
 #define snorlax_protocol_ethernet_type_lldp     0x88CCu     // Link Layer Discovery Protocol (LLDP)
 

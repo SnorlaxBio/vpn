@@ -19,9 +19,11 @@ set(SNORLAX_PROTOCOL_ETHERNET_SOURCE                    src/snorlax/protocol/eth
 set(SNORLAX_PROTOCOL_ETHERNET_HEADER                    src/snorlax/protocol/ethernet.h)
 
 set(SNORLAX_PROTOCOL_INTERNET_SOURCE                    src/snorlax/protocol/internet.c
-                                                        src/snorlax/protocol/internet/version4.c)
+                                                        src/snorlax/protocol/internet/version4.c
+                                                        src/snorlax/protocol/internet/version6.c)
 set(SNORLAX_PROTOCOL_INTERNET_HEADER                    src/snorlax/protocol/internet.h
-                                                        src/snorlax/protocol/internet/version4.h)
+                                                        src/snorlax/protocol/internet/version4.h
+                                                        src/snorlax/protocol/internet/version6.h)
 
 set(SNORLAX_PROTOCOL_USER_DATAGRAM_SOURCE               src/snorlax/protocol/user-datagram.c)
 set(SNORLAX_PROTOCOL_USER_DATAGRAM_HEADER               src/snorlax/protocol/user-datagram.h)
