@@ -43,6 +43,8 @@ extern void snorlax_protocol_internet_version6_debug(FILE * stream, const uint8_
                                                                   ntohs(internet->destination[6]),
                                                                   ntohs(internet->destination[7]));
     fprintf(stream, "|\n");
+
+    snorlax_todo("check");
 }
 #endif // SNORLAX_DEBUG
 
