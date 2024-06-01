@@ -35,10 +35,10 @@ extern void snorlax_protocol_internet_version4_debug(FILE * stream, const uint8_
     const uint8_t * segment = snorlax_protocol_internet_version4_segment_get(datagram);
 
     switch(header->protocol) {
-        case snorlax_protocol_number_icmp:      snorlax_protocol_internet_control_message_debug(stream, (snorlax_protocol_internet_t) datagram, segment);       break;
-        case snorlax_protocol_number_tcp:       snorlax_protocol_internet_transmission_control_debug(stream, (snorlax_protocol_internet_t) datagram, segment);  break;
-        case snorlax_protocol_number_udp:       snorlax_protocol_user_datagram_debug(stream, (snorlax_protocol_internet_t) datagram, segment);                  break;
-        default:                                snorlax_todo("need to implement other protocol => %d", header->protocol);                                       break;
+        case snorlax_protocol_number_icmp:      snorlax_protocol_internet_control_message_debug(stream, (snorlax_protocol_internet_t) datagram, segment);   break;
+        case snorlax_protocol_number_tcp:       snorlax_protocol_transmission_control_debug(stream, (snorlax_protocol_internet_t) datagram, segment);       break;
+        case snorlax_protocol_number_udp:       snorlax_protocol_user_datagram_debug(stream, (snorlax_protocol_internet_t) datagram, segment);              break;
+        default:                                snorlax_todo("need to implement other protocol => %d", header->protocol);                                   break;
     }
 }
 #endif // SNORLAX_DEBUG

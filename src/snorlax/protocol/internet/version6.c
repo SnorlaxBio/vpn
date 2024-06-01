@@ -44,7 +44,7 @@ extern void snorlax_protocol_internet_version6_debug(FILE * stream, const uint8_
                                                                   ntohs(internet->destination[7]));
     fprintf(stream, "|\n");
 
-    snorlax_todo("check");
+    snorlax_debug("check");
 }
 #endif // SNORLAX_DEBUG
 

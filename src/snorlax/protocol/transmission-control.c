@@ -7,11 +7,28 @@
  * @since       May 26, 2024
  */
 
-#include <transmission-control.h>
+#include <arpa/inet.h>
+
+#include "transmission-control.h"
 
 #ifdef    SNORLAX_DEBUG
 extern void snorlax_protocol_transmission_control_debug(FILE * stream, const snorlax_protocol_internet_t internet, const uint8_t * segment) {
-    snorlax_todo("impelemtn this");
+    
+    snorlax_protocol_transmission_control_t * header = (snorlax_protocol_transmission_control_t *) segment;
+    fprintf(stream, "| transmission control ");
+    fprintf(stream, "| % 6d ", ntohs(header->source));
+    fprintf(stream, "| % 6d ", ntohs(header->destination));
+    fprintf(stream, "| % 12d ", ntohl(header->sequence));
+    fprintf(stream, "| % 12d ", ntohl(header->destination));
+    fprintf(stream, "| % 3d ", header->offset);
+    fprintf(stream, "| %02x ", header->controls);
+    fprintf(stream, "| % 6d ", ntohs(header->window));
+    fprintf(stream, "| % 6d ", ntohs(header->checksum));
+    fprintf(stream, "| % 6d ", ntohs(header->urgent));
+
+    snorlax_debug("implement tcp option & well known application protocol");
+
+    fprintf(stream, "|\n");
 }
 #endif // SNORLAX_DEBUG
 
