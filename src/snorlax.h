@@ -18,6 +18,7 @@
 #define true                        1
 #define false                       0
 #define nil                         ((void *) 0)
+#define invalid                     (-1)
 
 #define addressof(o, offset)        (&o[offset])
 

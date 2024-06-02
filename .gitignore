@@ -54,3 +54,5 @@ dkms.conf
 # Visual Sudio Code
 .vscode
 build
+cmake-build-debug
+
