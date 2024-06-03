@@ -33,6 +33,11 @@ set(SNORLAX_SOCKET_HEADER                               src/snorlax/socket.h)
 set(SNORLAX_EVA_SOURCE                                  src/snorlax/eva.c)
 set(SNORLAX_EVA_HEADER                                  src/snorlax/eva.h)
 
+set(SNORLAX_COLLECTION_SOURCE                           src/snorlax/collection.c
+                                                        src/snorlax/list/linked/double.c)
+set(SNORLAX_COLLECTION_HEADER                           src/snorlax/collection.h
+                                                        src/snorlax/list/linked/double.h)
+
 set(SNORLAX_PROTOCOL_ETHERNET_SOURCE                    src/snorlax/protocol/ethernet.c)
 set(SNORLAX_PROTOCOL_ETHERNET_HEADER                    src/snorlax/protocol/ethernet.h)
 
@@ -66,6 +71,8 @@ add_library(snorlax-protocol-stack ${SNORLAX_SOURCE}
                                    ${SNORLAX_VPN_HEADER}        # TODO: VPN LIB 를 만들고 설정을 분리한다.
                                    ${SNORLAX_SOCKET_SOURCE}
                                    ${SNORLAX_SOCKET_HEADER}
+                                   ${SNORLAX_COLLECTION_SOURCE}
+                                   ${SNORLAX_COLLECTION_HEADER}
                                    ${SNORLAX_EVA_SOURCE}
                                    ${SNORLAX_EVA_HEADER}
                                    ${SNORLAX_PROTOCOL_SOURCE}

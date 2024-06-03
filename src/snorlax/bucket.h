@@ -26,4 +26,6 @@ union snorlax_bucket {
 
 typedef union snorlax_bucket snorlax_bucket_t;
 
+typedef void (*snorlax_bucket_func_get)(snorlax_bucket_t);
+
 #endif // __SNORLAX__BUCKET__H__
