@@ -22,7 +22,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_insert_nod
 static snorlax_list_linked_double_node_t * snorlax_list_linked_double_insert_node_next(snorlax_list_linked_double_t * o, snorlax_list_linked_double_node_t * prev, snorlax_bucket_t bucket);
 static snorlax_list_linked_double_node_t * snorlax_list_linked_double_push_front(snorlax_list_linked_double_t * o, snorlax_bucket_t bucket);
 static snorlax_list_linked_double_node_t * snorlax_list_linked_double_push_back(snorlax_list_linked_double_t * o, snorlax_bucket_t bucket);
-static snorlax_list_linked_double_node_t * snorlax_list_linked_double_delete_node(snorlax_list_linked_double_t * o, snorlax_list_linked_double_node_t * node);
+static snorlax_list_linked_double_node_t * snorlax_list_linked_double_delete_node(snorlax_list_linked_double_t * o, snorlax_list_linked_double_node_t * node, snorlax_bucket_func_get func);
 
 static snorlax_list_linked_double_func_t func = {
     snorlax_list_linked_double_gen,
@@ -89,6 +89,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_add(snorla
     if(o) {
         snorlax_list_linked_double_node_t * node = (snorlax_list_linked_double_node_t *) calloc(1, sizeof(snorlax_list_linked_double_node_t));
         node->bucket = bucket;
+        node->collection = o;
 
         if(o->tail) {
             o->tail->next = node;
@@ -158,6 +159,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_insert_nod
     if(o) {
         snorlax_list_linked_double_node_t * node = (snorlax_list_linked_double_node_t *) calloc(1, sizeof(snorlax_list_linked_double_node_t));
         node->bucket = bucket;
+        node->collection = o;
 
         snorlax_list_linked_double_node_t * prev = next ? next->prev : nil;
 
@@ -187,6 +189,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_insert_nod
     if(o) {
         snorlax_list_linked_double_node_t * node = (snorlax_list_linked_double_node_t *) calloc(1, sizeof(snorlax_list_linked_double_node_t));
         node->bucket = bucket;
+        node->collection = o;
 
         snorlax_list_linked_double_node_t * next = prev ? prev->next : nil;
 
@@ -216,6 +219,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_push_front
     if(o) {
         snorlax_list_linked_double_node_t * node = (snorlax_list_linked_double_node_t *) calloc(1, sizeof(snorlax_list_linked_double_node_t));
         node->bucket = bucket;
+        node->collection = o;
 
         node->next = o->head;
 
@@ -238,6 +242,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_push_back(
     if(o) {
         snorlax_list_linked_double_node_t * node = (snorlax_list_linked_double_node_t *) calloc(1, sizeof(snorlax_list_linked_double_node_t));
         node->bucket = bucket;
+        node->collection = o;
 
         node->prev = o->tail;
 
@@ -256,7 +261,7 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_push_back(
     return nil;
 }
 
-static snorlax_list_linked_double_node_t * snorlax_list_linked_double_delete_node(snorlax_list_linked_double_t * o, snorlax_list_linked_double_node_t * node) {
+static snorlax_list_linked_double_node_t * snorlax_list_linked_double_delete_node(snorlax_list_linked_double_t * o, snorlax_list_linked_double_node_t * node, snorlax_bucket_func_get func) {
     if(o && node) {
         snorlax_list_linked_double_node_t * prev = node->prev;
         snorlax_list_linked_double_node_t * next = node->next;
@@ -274,6 +279,11 @@ static snorlax_list_linked_double_node_t * snorlax_list_linked_double_delete_nod
         }
 
         o->size = o->size -1;
+
+        if(func) {
+            func(node->bucket);
+        }
+
         free(node);
         return nil;
     }

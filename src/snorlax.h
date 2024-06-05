@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #define success                     0
 #define fail                        (-1)
@@ -19,6 +20,23 @@
 #define false                       0
 #define nil                         ((void *) 0)
 #define invalid                     (-1)
+
+typedef void *  object_t;
+
+union bucket {
+    int8_t i8;
+    int16_t i16;
+    int32_t i32;
+    int64_t i64;
+    uint8_t u8;
+    uint16_t u16;
+    uint32_t u32;
+    uint64_t u64;
+    object_t p;
+};
+
+typedef union bucket bucket_t;
+typedef void (*bucket_func_get_t)(bucket_t);
 
 #define addressof(o, offset)        (&o[offset])
 

@@ -29,6 +29,7 @@ struct snorlax_collection {
 };
 
 struct snorlax_collection_node {
+    snorlax_collection_t * collection;
     snorlax_bucket_t bucket;
 };
 

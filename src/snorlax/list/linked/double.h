@@ -35,6 +35,7 @@ struct snorlax_list_linked_double {
 
 struct snorlax_list_linked_double_node {
     // INHERITED COLLECTION NODE
+    snorlax_list_linked_double_t * collection;
     snorlax_bucket_t bucket;
     // SPECIFIED MEMBER OF DOUBLE LINKED LIST ITEM
     snorlax_list_linked_double_node_t * prev;
@@ -61,7 +62,7 @@ struct snorlax_list_linked_double_func {
     snorlax_list_linked_double_node_t * (*insert_node_next)(snorlax_list_linked_double_t *, snorlax_list_linked_double_node_t *, snorlax_bucket_t);
     snorlax_list_linked_double_node_t * (*push_front)(snorlax_list_linked_double_t *, snorlax_bucket_t);
     snorlax_list_linked_double_node_t * (*push_back)(snorlax_list_linked_double_t *, snorlax_bucket_t);
-    snorlax_list_linked_double_node_t * (*delete_node)(snorlax_list_linked_double_t *, snorlax_list_linked_double_node_t *);
+    snorlax_list_linked_double_node_t * (*delete_node)(snorlax_list_linked_double_t *, snorlax_list_linked_double_node_t *, snorlax_bucket_func_get);
 };
 
 #endif // __SNORLAX__LIST_LINKED_DOUBLE__H__
