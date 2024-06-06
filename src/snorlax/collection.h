@@ -13,55 +13,54 @@
 #include <stdint.h>
 
 #include <snorlax.h>
-#include <snorlax/bucket.h>
 
-struct snorlax_collection;
-struct snorlax_collection_func;
-struct snorlax_collection_node;
+struct collection;
+struct collection_func;
+struct collection_node;
 
-typedef struct snorlax_collection snorlax_collection_t;
-typedef struct snorlax_collection_func snorlax_collection_func_t;
-typedef struct snorlax_collection_node snorlax_collection_node_t;
+typedef struct collection collection_t;
+typedef struct collection_node collection_node_t;
+typedef struct collection_func collection_func_t;
 
-struct snorlax_collection {
-    snorlax_collection_func_t * func;
-    uint64_t size;
+typedef void (*collection_node_func_get)(collection_node_t *);
+
+struct collection {
+    collection_func_t * func;       /**!< 콜렉션 타입과 콜렉션에서 사용할 메서드 테이블 */
+    uint64_t            size;       /**!< 콜렉션에 저장된 아이템의 크기 */
 };
 
-struct snorlax_collection_node {
-    snorlax_collection_t * collection;
-    snorlax_bucket_t bucket;
+/**
+ * 콜렉션 노드에 버켓은 사용할 때 정의하자.
+ * 버켓이 필요해보이기도 하다가도, 낭비인 듯 보이고,...
+ * 
+ */
+struct collection_node {
+    collection_t *           collection;    ///!< 노드
 };
 
-struct snorlax_collection_func {
-    snorlax_collection_t * (*gen)(void);
-    snorlax_collection_t * (*rem)(snorlax_collection_t *, snorlax_bucket_func_get);
-    void (*clr)(snorlax_collection_t *, snorlax_bucket_func_get);
-    snorlax_collection_node_t * (*add)(snorlax_collection_t *, snorlax_bucket_t);
-    void (*del)(snorlax_collection_t *, snorlax_bucket_t);
-    snorlax_collection_node_t * (*begin)(snorlax_collection_t *);
-    snorlax_collection_node_t * (*end)(snorlax_collection_t *);
-    snorlax_collection_node_t * (*find)(snorlax_collection_t *, snorlax_bucket_t);
+struct collection_func {
+    collection_t * (*gen)(uint64_t);
+    collection_t * (*rem)(collection_t *, object_func_get);
+    void (*clear)(collection_t *, object_func_get);
+    collection_node_t * (*add)(collection_t *, collection_node_t *);
+    collection_node_t * (*del)(collection_t *, collection_node_t *, object_func_get);
+    collection_node_t * (*begin)(collection_t *);
+    collection_node_t * (*end)(collection_t *);
+    collection_node_t * (*find)(collection_t *, object_t);
+    collection_node_t * (*nodegen)(collection_t *, object_t, uint64_t);
+    collection_node_t * (*noderem)(collection_node_t *, object_func_get);
 };
 
-#define snorlax_collection_size(o)      (((snorlax_collection_t *) o)->size)
+extern collection_t * collection_gen(collection_func_t * func, uint64_t size);
 
-extern snorlax_collection_t * snorlax_collection_gen(const snorlax_collection_func_t * func);
-
-#define snorlax_collection_rem(o, func)     (o ? o->func->rem(o, func) : nil)
-#define snorlax_collection_clr(o, func)     do {    \
-    if(o) {                                         \
-        o->func->clr(o, func);                      \
-    }                                               \
+#define collection_rem(collection, func)    (collection->func->rem(collection, func))
+#define collection_clear(collection, func)  do {    \
+    collection->func->clear(collection, func);      \
 } while(0)
-#define snorlax_collection_add(o, bucket)   (o ? o->func->add(o, bucket) : nil)
-#define snorlax_collection_del(o, bucket)   do {    \
-    if(o) {                                         \
-        o->func->del(o, bucket);                    \
-    }                                               \
-while(0)
-#define snorlax_collection_begin(o)         (o ? o->func->begin(o) : nil)
-#define snorlax_collection_end(o)           (o ? o->func->end(o) : nil)
-#define snorlax_collection_find(o, bucket)  (o ? o->func->find(o) : nil)
+#define collection_add(collection, o)       (collection->func->add(collection, o))
+#define collection_del(collection, o)       (collection->func->del(collection, o))
+#define collection_begin(collection)        (collection->func->begin(collection))
+#define collection_end(collection)          (collection->func->end(collection))
+#define collection_find(collection, o)      (collection->func->find(collection, o))
 
 #endif // __SNORLAX__COLLECTION__H__

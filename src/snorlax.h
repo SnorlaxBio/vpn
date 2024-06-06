@@ -23,6 +23,8 @@
 
 typedef void *  object_t;
 
+typedef void (*object_func_get)(object_t *);
+
 union bucket {
     int8_t i8;
     int16_t i16;
@@ -36,7 +38,7 @@ union bucket {
 };
 
 typedef union bucket bucket_t;
-typedef void (*bucket_func_get_t)(bucket_t);
+typedef void (*bucket_func_get)(bucket_t);
 
 #define addressof(o, offset)        (&o[offset])
 

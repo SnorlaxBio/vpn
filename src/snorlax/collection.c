@@ -9,9 +9,8 @@
 
 #include "collection.h"
 
-extern snorlax_collection_t * snorlax_collection_gen(const snorlax_collection_func_t * func) {
-    /**
-     * implement this
-     */
+extern collection_t * collection_gen(collection_func_t * func, uint64_t size) {
+    snorlax_todo("implement this");
+
     return nil;
 }
