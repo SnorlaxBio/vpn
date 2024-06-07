@@ -31,7 +31,7 @@ struct event_queue {
 
 extern event_queue_t * event_queue_get(void);
 extern void event_queue_push(event_t * e);
-extern event_t * event_queue_pop(void);
+extern event_t * event_queue_pop(event_queue_t * queue);
 extern void event_queue_clear(void);
 
 #endif // __SNORLAX__EVENT_QUEUE__H__
