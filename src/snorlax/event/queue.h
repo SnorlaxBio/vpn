@@ -29,9 +29,10 @@ struct event_queue {
     event_t * tail;
 };
 
-extern event_queue_t * event_queue_get(void);
-extern void event_queue_push(event_t * e);
+extern event_queue_t * event_queue_gen(void);
+extern event_queue_t * event_queue_rem(event_queue_t * queue, event_func_t func);
+extern void event_queue_push(event_queue_t * queue, event_t * e);
 extern event_t * event_queue_pop(event_queue_t * queue);
-extern void event_queue_clear(void);
+extern void event_queue_clear(event_queue_t * queue, event_func_t func);
 
 #endif // __SNORLAX__EVENT_QUEUE__H__

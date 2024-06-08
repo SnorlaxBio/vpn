@@ -20,8 +20,7 @@ extern int event_engine_run(void) {
         for(uint64_t i = 0; i < n; i++) {
             event_t * e = event_queue_pop(engine->queue);
             if(e) {
-                event_on(e);
-                // todo: dispatch event
+                event_on(e, engine);
                 continue;
             }
             break;

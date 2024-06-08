@@ -22,21 +22,24 @@ struct event_queue;
  */
 struct event_generator;
 struct event_processor;
+struct event_engine;
 
 typedef struct event event_t;
+typedef struct event_engine event_engine_t;
 typedef struct event_queue event_queue_t;
 typedef struct event_generator event_generator_t;
 typedef struct event_processor event_processor_t;
 
-typedef int (*event_func_t)(event_t *);
+typedef int (*event_handler_t)(event_t *, event_engine_t *);
+typedef void (*event_func_t)(event_t *);
 
 struct event {
-    event_func_t    on;
+    event_handler_t on;
     event_queue_t * queue;
     event_t *       prev;
     event_t *       next;
 };
 
-#define event_on(e)     (e->on(e))
+#define event_on(e, engine)     (e->on(e, engine))
 
 #endif // __SNORLAX__EVENT__H__
