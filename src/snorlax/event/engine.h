@@ -37,11 +37,19 @@ struct event_engine {
 };
 
 struct event_engine_func {
+    event_engine_t * (*rem)(event_engine_t *);
     int (*wait)(event_engine_t *);
+    int (*reg)(event_engine_t *, event_object_t *);
+    int (*unreg)(event_engine_t *, event_object_t *);
 };
 
 extern int event_engine_run(void);
-#define event_engine_wait(engine)       (engine->func->wait(engine))
+extern int event_engine_on(void);
+extern int event_engine_off(void (*cancel)(event_engine_t *));
 
+#define event_engine_wait(engine)       (engine->func->wait(engine))
+#define event_engine_rem(engine)        (engine->func->rem(engine))
+#define event_engine_reg(engine, o)     (engine->func->reg(engine, o))
+#define event_engine_unreg(engine, o)   (engine->func->unreg(engine, o))
 
 #endif // __SNORLAX__EVENT_ENGINE__H__

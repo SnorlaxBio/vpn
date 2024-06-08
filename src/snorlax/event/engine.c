@@ -34,3 +34,7 @@ extern int event_engine_run(void) {
     
     return success;
 }
+
+extern int event_engine_on(void) {
+    return success;
+}

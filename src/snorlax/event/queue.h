@@ -23,6 +23,8 @@ struct event_queue;
 typedef struct event event_t;
 typedef struct event_queue event_queue_t;
 
+typedef void (*event_func_t)(event_t *);
+
 struct event_queue {
     uint64_t  size;
     event_t * head;
