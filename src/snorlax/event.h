@@ -16,30 +16,25 @@
 
 struct event;
 struct event_queue;
-/**
- * 이벤트 제네레이터와 프로세스를 나눌 필요는 있다.
- * 하지만, 지금은 현 상태를 유지할 것이다.
- */
-struct event_generator;
-struct event_processor;
 struct event_engine;
+struct event_object;
 
 typedef struct event event_t;
+typedef struct event_object event_object_t;
 typedef struct event_engine event_engine_t;
 typedef struct event_queue event_queue_t;
-typedef struct event_generator event_generator_t;
-typedef struct event_processor event_processor_t;
 
-typedef int (*event_handler_t)(event_t *, event_engine_t *);
-typedef void (*event_func_t)(event_t *);
+typedef int (*event_handler_t)(event_object_t *, bucket_t, event_engine_t *);
 
 struct event {
-    event_handler_t on;
-    event_queue_t * queue;
-    event_t *       prev;
-    event_t *       next;
+    event_handler_t     on;
+    event_queue_t *     queue;
+    event_t *           prev;
+    event_t *           next;
+    event_object_t *    object;
+    bucket_t            param;
 };
 
-#define event_on(e, engine)     (e->on(e, engine))
+#define event_on(e, engine)     (e->on(e->object, e->param, engine))
 
 #endif // __SNORLAX__EVENT__H__

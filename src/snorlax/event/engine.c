@@ -10,6 +10,8 @@
 #include "engine.h"
 #include "queue.h"
 #include "../event.h"
+#include "processor/pool.h"
+#include "../descriptor/event/on.h"
 
 static event_engine_t * engine = nil;
 
@@ -37,4 +39,12 @@ extern int event_engine_run(void) {
 
 extern int event_engine_on(void) {
     return success;
+}
+
+extern void event_engine_dispatch_event_descriptor(event_engine_t * engine, descriptor_t * descriptor, descriptor_event_handler_t on, bucket_t param) {
+    if(engine->processors && engine->processors->size > 0) {
+        descriptor_event_gen(descriptor, descriptor_event_on_exception, param, engine);
+    } else {
+        descriptor_event_on_exception(descriptor, (bucket_t) { .p = nil} , engine);
+    }
 }

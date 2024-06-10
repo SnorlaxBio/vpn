@@ -13,15 +13,19 @@
 
 #include <stdint.h>
 
+#include <snorlax.h>
+
 struct event_object;
 struct event_queue;
 struct event_engine_epoll;
 struct event_engine_epoll_func;
+struct event_processor_pool;
 
 typedef struct event_queue event_queue_t;
 typedef struct event_object event_object_t;
 typedef struct event_engine_epoll event_engine_epoll_t;
 typedef struct event_engine_epoll_func event_engine_epoll_func_t;
+typedef struct event_processor_pool event_processor_pool_t;
 
 struct event_engine_epoll {
     event_engine_epoll_func_t * func;
@@ -30,10 +34,14 @@ struct event_engine_epoll {
     event_object_t *            tail;
 
     event_queue_t *             queue;
+    event_processor_pool_t *    processors;
 
     void (*cancel)(event_engine_epoll_t *);
 
     int                         descriptor;
+    void *                      events;
+    int                         maxevents;
+    int                         timeout;
 };
 
 struct event_engine_epoll_func {
