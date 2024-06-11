@@ -14,6 +14,8 @@
 
 #include "descriptor.h"
 #include "descriptor/event.h"
+#include "descriptor/event/type.h"
+
 
 #include "event/queue.h"
 
@@ -29,7 +31,10 @@ extern descriptor_t * descriptor_gen(int descriptor) {
     o->descriptor = descriptor;
     o->buffer.in = buffer_gen(16);
     o->buffer.out = buffer_gen(16);
+    o->handler = event_handler_array_gen();
 
+    event_handler_array_set(o->handler, nil, descriptor_event_type_max);
+    
     return o;
 }
 
@@ -49,6 +54,7 @@ extern descriptor_t * descriptor_rem(descriptor_t * o) {
         close(o->descriptor);
         o->descriptor = invalid;
     }
+    o->handler = event_handler_array_rem(o->handler);
 
     free(o);
 
@@ -65,6 +71,14 @@ extern int descriptor_close(descriptor_t * o) {
         o->descriptor = invalid;
     }
     return success;
+}
+
+extern int64_t descriptor_write(descriptor_t * o) {
+    
+}
+
+extern int64_t descriptor_read(descriptor_t * o) {
+
 }
 
 // static descriptor_t * descriptor_rem(descriptor_t * o);

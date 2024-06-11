@@ -45,6 +45,6 @@ extern void event_engine_dispatch_event_descriptor(event_engine_t * engine, desc
     if(engine->processors && engine->processors->size > 0) {
         descriptor_event_gen(descriptor, descriptor_event_on_exception, param, engine);
     } else {
-        descriptor_event_on_exception(descriptor, (bucket_t) { .p = nil} , engine);
+        descriptor_event_on_exception(descriptor, param, engine);
     }
 }

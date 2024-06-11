@@ -12,8 +12,9 @@
 
 #include <snorlax.h>
 #include <snorlax/buffer.h>
-#include <event/object.h>
-#include <descriptor/event.h>
+#include <snorlax/event/object.h>
+#include <snorlax/event/handler/array.h>
+#include <snorlax/descriptor/event.h>
 
 struct descriptor;
 struct descriptor_func;
@@ -34,20 +35,13 @@ struct descriptor {
 
     event_queue_t *     queue;
     uint32_t            status;
+    event_handler_array_t * handler;
 
     int                 descriptor;
     struct {
         buffer_t *      in;
         buffer_t *      out;
     } buffer;
-
-    struct {
-        descriptor_event_handler_t open;
-        descriptor_event_handler_t close;
-        descriptor_event_handler_t read;
-        descriptor_event_handler_t write;
-        descriptor_event_handler_t exception;
-    } handler;
 };
 /**
  * 이벤트 핸들러를 어떻게 정의를 해야 하는가?
@@ -67,6 +61,8 @@ extern descriptor_t * descriptor_gen(int descriptor);
 extern descriptor_t * descriptor_rem(descriptor_t * o);
 extern int descriptor_open(descriptor_t * o);
 extern int descriptor_close(descriptor_t * o);
+extern int64_t descriptor_write(descriptor_t * o);
+extern int64_t descriptor_read(descriptor_t * o);
 
 // #define descriptor_rem(o)       (o->func->rem(o))
 // #define descriptor_open(o)      (o->func->open(o))
@@ -75,5 +71,7 @@ extern int descriptor_close(descriptor_t * o);
 // #define descriptor_close(o)     (o->func->close(o))
 
 #define descriptor_state_set(o, state)      (o->status |= state)
+
+#define descriptor_event_handler_get(o, index)      (index < o->handler->size ? o->handler->func[index] : nil)
 
 #endif // __SNORLAX__DESCRIPTOR__H__
