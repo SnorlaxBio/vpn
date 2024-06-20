@@ -16,6 +16,8 @@
 static event_engine_t * engine = nil;
 
 extern int event_engine_run(void) {
+    if(engine == nil) event_engine_on(nil);
+
     while(engine->cancel == nil) {
         event_engine_wait(engine);
         uint64_t n = engine->queue->size;
@@ -38,6 +40,7 @@ extern int event_engine_run(void) {
 }
 
 extern int event_engine_on(void) {
+
     return success;
 }
 
