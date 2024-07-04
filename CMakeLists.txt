@@ -63,7 +63,7 @@ ExternalProject_Add(snorlax-eva
     BUILD_COMMAND     ${CMAKE_COMMAND} --build "${PROJECT_SOURCE_DIR}/lib/snorlax/eva/build"
                                         --target all)
 
-include_directories(src)
+include_directories(src include)
 
 set(SNORLAX_VPN_SOURCE      src/snorlax/vpn.c)
 set(SNORLAX_VPN_HEADER      src/snorlax/vpn.h)
