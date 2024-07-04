@@ -7,14 +7,7 @@
  * @since       June 2, 2024
  */
 
-#include <unistd.h>
-
 #include "vpn.h"
-
-#include "vpn/tuntap.h"
-#include "vpn/config.h"
-
-#include "eva.h"
 
 extern int snorlax_vpn_run(void) {
     // int ret = success;

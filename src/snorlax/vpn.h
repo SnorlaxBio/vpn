@@ -12,8 +12,4 @@
 
 #include <snorlax.h>
 
-#include <snorlax/vpn/config.h>
-
-extern int snorlax_vpn_run(void);
-
 #endif // __SNORLAX__VPN__H__
