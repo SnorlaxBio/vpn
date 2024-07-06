@@ -12,4 +12,6 @@
 
 #include <snorlax.h>
 
+extern int32_t virtual_private_network_run(void);
+
 #endif // __SNORLAX__VPN__H__

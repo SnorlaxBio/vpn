@@ -64,11 +64,15 @@ ExternalProject_Add(snorlax-eva
                                         --target all)
 
 include_directories(src include)
+link_directories(${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/build)
 
-set(SNORLAX_VPN_SOURCE      src/snorlax/vpn.c)
-set(SNORLAX_VPN_HEADER      src/snorlax/vpn.h)
+set(SNORLAX_VPN_SOURCE      src/snorlax/vpn.c
+                            src/snorlax/vpn/tun.c)
+set(SNORLAX_VPN_HEADER      src/snorlax/vpn.h
+                            src/snorlax/vpn/tun.h)
 
 add_executable(snorlax-vpn  ${SNORLAX_VPN_SOURCE}
                             ${SNORLAX_VPN_HEADER}
                             src/snorlax/vpn/main.c)
 target_compile_options(snorlax-vpn PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
+target_link_libraries(snorlax-vpn libsnorlax-eva.a libsnorlax-std.a)

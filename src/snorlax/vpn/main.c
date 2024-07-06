@@ -1,3 +1,5 @@
+#include <snorlax/vpn.h>
+
 int main(int argc, char ** argv) {
-    return 0;
+    return virtual_private_network_run();
 }
