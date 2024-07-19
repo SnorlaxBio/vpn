@@ -63,16 +63,38 @@ ExternalProject_Add(snorlax-eva
     BUILD_COMMAND     ${CMAKE_COMMAND} --build "${PROJECT_SOURCE_DIR}/lib/snorlax/eva/build"
                                         --target all)
 
+ExternalProject_Add(snorlax-net
+    PREFIX          "${PROJECT_SOURCE_DIR}/lib/snorlax/net"
+    TMP_DIR         "${PROJECT_SOURCE_DIR}/lib/snorlax/net/tmp"
+    STAMP_DIR       "${PROJECT_SOURCE_DIR}/lib/snorlax/net/stamp"
+    DOWNLOAD_DIR    "${PROJECT_SOURCE_DIR}/lib/snorlax/net/src"
+    SOURCE_DIR      "${PROJECT_SOURCE_DIR}/lib/snorlax/net/src"
+    BINARY_DIR      "${PROJECT_SOURCE_DIR}/lib/snorlax/net/build"
+    INSTALL_DIR     "${PROJECT_SOURCE_DIR}/lib/snorlax/net/install"
+    LOG_DIR         "${PROJECT_SOURCE_DIR}/lib/snorlax/net/log"
+    GIT_REPOSITORY  git@github.com:SnorlaxBio/net.git
+    GIT_TAG         main
+    GIT_REMOTE_NAME origin
+    CONFIGURE_COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug
+                                        -S "${PROJECT_SOURCE_DIR}/lib/snorlax/net/src"
+                                        -B "${PROJECT_SOURCE_DIR}/lib/snorlax/net/build"
+                                        --install-prefix ${PROJECT_SOURCE_DIR}
+    BUILD_COMMAND     ${CMAKE_COMMAND} --build "${PROJECT_SOURCE_DIR}/lib/snorlax/net/build"
+                                        --target all)
+
 include_directories(src include)
 link_directories(${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/build)
 
 set(SNORLAX_VPN_SOURCE      src/snorlax/vpn.c
-                            src/snorlax/vpn/tun.c)
+                            src/snorlax/vpn/client/app.c
+                            src/snorlax/vpn/client/app/tun.c
+                            src/snorlax/vpn/client/app/netlink.c)
 set(SNORLAX_VPN_HEADER      src/snorlax/vpn.h
-                            src/snorlax/vpn/tun.h)
+                            src/snorlax/vpn/client/app.h
+                            src/snorlax/vpn/client/app/tun.h
+                            src/snorlax/vpn/client/app/netlink.h)
 
 add_executable(snorlax-vpn  ${SNORLAX_VPN_SOURCE}
-                            ${SNORLAX_VPN_HEADER}
-                            src/snorlax/vpn/main.c)
+                            ${SNORLAX_VPN_HEADER})
 target_compile_options(snorlax-vpn PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
-target_link_libraries(snorlax-vpn libsnorlax-eva.a libsnorlax-std.a)
+target_link_libraries(snorlax-vpn libsnorlax-net.a libsnorlax-protocol.a libsnorlax-eva.a libsnorlax-std.a)
