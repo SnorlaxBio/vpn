@@ -11,9 +11,14 @@
 static vpn_client_app_t * app = nil;
 
 int main(int argc, char ** argv) {
-    vpn_client_app_on(app = vpn_client_app_gen());
+    app = vpn_client_app_gen();
+    vpn_client_app_on(app);
 
-    return vpn_client_app_run(app);
+    int32_t ret = vpn_client_app_run(app);
+
+    app = vpn_client_app_rem(app);
+
+    return ret;
 }
 
 static vpn_client_app_t * vpn_client_app_func_rem(vpn_client_app_t * application);
@@ -84,13 +89,7 @@ static int32_t vpn_client_app_func_run(vpn_client_app_t * application) {
     snorlaxdbg(application == nil, false, "critical", "");
 #endif // RELEASE
 
-    int32_t ret = event_engine_run(application->engine);
-
-    application = vpn_client_app_rem(application);
-
-    app = application;
-
-    return ret;
+    return event_engine_run(application->engine);
 }
 
 extern void vpn_client_app_engine_cancel(___notnull const event_engine_t * engine) {
