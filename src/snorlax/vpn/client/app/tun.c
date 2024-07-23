@@ -37,11 +37,11 @@ static void onOpen(___notnull descriptor_event_subscription_t * subscription, ui
     uint8_t addr[4] = { 10, 0, 0, 1 };
 
     // TODO: IMPLEMENT CALLBACK
-    network_netlink_req(vpn_client_app_netlink_descriptor_get(), network_netlink_message_ipaddr_add_gen(AF_INET, addr, 24, "tun0"));
-    network_netlink_req(vpn_client_app_netlink_descriptor_get(), network_netlink_message_iplink_setup_gen("tun0"));
-    network_netlink_req(vpn_client_app_netlink_descriptor_get(), network_netlink_message_iprule_add_gen(network_netlink_table_main_mark, network_netlink_table_main_priority, network_netlink_table_main_id));
-    network_netlink_req(vpn_client_app_netlink_descriptor_get(), network_netlink_message_iprule_add_gen(network_netlink_table_tun_mark, network_netlink_table_tun_priority, network_netlink_table_tun_id));
-    network_netlink_req(vpn_client_app_netlink_descriptor_get(), network_netlink_message_iproute_prepend_gen(all, 0, addr, network_netlink_table_tun_id));
+    network_netlink_req(vpn_client_app_netlink_descriptor_get(), vpn_client_app_netlink_subscription_get(), network_netlink_message_ipaddr_add_gen(AF_INET, addr, 24, "tun0"));
+    network_netlink_req(vpn_client_app_netlink_descriptor_get(), vpn_client_app_netlink_subscription_get(), network_netlink_message_iplink_setup_gen("tun0"));
+    network_netlink_req(vpn_client_app_netlink_descriptor_get(), vpn_client_app_netlink_subscription_get(), network_netlink_message_iprule_add_gen(network_netlink_table_main_mark, network_netlink_table_main_priority, network_netlink_table_main_id));
+    network_netlink_req(vpn_client_app_netlink_descriptor_get(), vpn_client_app_netlink_subscription_get(), network_netlink_message_iprule_add_gen(network_netlink_table_tun_mark, network_netlink_table_tun_priority, network_netlink_table_tun_id));
+    network_netlink_req(vpn_client_app_netlink_descriptor_get(), vpn_client_app_netlink_subscription_get(), network_netlink_message_iproute_prepend_gen(all, 0, addr, network_netlink_table_tun_id));
     // DEFAULT ROUTE GET
 }
 

@@ -101,3 +101,7 @@ extern void vpn_client_app_engine_cancel(___notnull const event_engine_t * engin
 extern network_netlink_t * vpn_client_app_netlink_descriptor_get(void) {
     return (network_netlink_t *) app->netlink->descriptor;
 }
+
+extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(void) {
+    return app->netlink;
+}

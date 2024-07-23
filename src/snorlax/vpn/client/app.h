@@ -47,5 +47,6 @@ extern vpn_client_app_t * vpn_client_app_gen(void);
 extern void vpn_client_app_engine_cancel(___notnull const event_engine_t * engine);
 
 extern network_netlink_t * vpn_client_app_netlink_descriptor_get(void);
+extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(void);
 
 #endif // __SNORLAX__VPN_CLIENT_APP__H__
