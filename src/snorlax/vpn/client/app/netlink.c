@@ -39,6 +39,12 @@ static void onRead(___notnull socket_event_subscription_t * subscription, uint32
     snorlaxdbg(false, true, "debug", "");
 #endif // RELEASE
 
+    /**
+     * TODO: UPGRADE BUSINESS LOGIC
+     * 
+     * 실패하면 어떻게 처리해야 하는지 정하고 그것을 
+     */
+
     socket_buffer_t * buffer = socket_event_subscription_buffer_get(subscription);
 
     network_netlink_message_t * in = nil;
@@ -59,12 +65,13 @@ static void onRead(___notnull socket_event_subscription_t * subscription, uint32
 
                 continue;
             } else if(response->nlmsg_seq == request->nlmsg_seq) {
-                // TODO: 
                 if(response->nlmsg_type == NLMSG_DONE) {
                     netlink_protocol_debug(stdout, response);
 
                     network_netlink_message_position_set(in, network_netlink_message_position_get(in) + response->nlmsg_len);
                     network_netlink_request_done_set(out, network_netlink_request_done_get(out) + request->nlmsg_len);
+
+                    if(out->callback) out->callback(request, network_netlink_request_state_done, response);
 
                     buffer_shrink(buffer->in);
                     buffer_shrink(buffer->out);
@@ -76,6 +83,8 @@ static void onRead(___notnull socket_event_subscription_t * subscription, uint32
                     network_netlink_message_position_set(in, network_netlink_message_position_get(in) + response->nlmsg_len);
                     network_netlink_request_done_set(out, network_netlink_request_done_get(out) + request->nlmsg_len);
 
+                    if(out->callback) out->callback(request, network_netlink_request_state_done, response);
+
                     buffer_shrink(buffer->in);
                     buffer_shrink(buffer->out);
 
@@ -84,6 +93,8 @@ static void onRead(___notnull socket_event_subscription_t * subscription, uint32
                     netlink_protocol_debug(stdout, response);
 
                     network_netlink_message_position_set(in, network_netlink_message_position_get(in) + response->nlmsg_len);
+
+                    if(out->callback) out->callback(request, network_netlink_request_state_response, response);
                     
                     buffer_shrink(buffer->in);
 
@@ -104,17 +115,6 @@ static void onWrite(___notnull socket_event_subscription_t * subscription, uint3
 #ifndef   RELEASE
     snorlaxdbg(false, true, "debug", "");
 #endif // RELEASE
-
-    socket_buffer_t * buffer = socket_event_subscription_buffer_get(subscription);
-
-    network_netlink_request_t * out = nil;
-
-    printf("%p\n", out = (network_netlink_request_t *) buffer_head(buffer->out));
-    printf("%lu\n", out->done);
-    printf("%lu\n", out->position);
-    printf("%lu\n", out->size);
-    printf("%lu\n", out->capacity);
-    printf("%p\n", network_netlink_request_nlmsghdr_get(out = (network_netlink_request_t *) buffer_head(buffer->out)));
 }
 
 static void onClose(___notnull socket_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
