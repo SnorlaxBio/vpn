@@ -3,8 +3,11 @@
 #include <snorlax/network/tun.h>
 #include <snorlax/network/netlink.h>
 #include <snorlax/socket/event/subscription.h>
+#include <snorlax/descriptor/event/subscription.h>
 
 #include "app.h"
+#include "app/config.h"
+#include "event/subscription.h"
 #include "app/tun.h"
 #include "app/netlink.h"
 
@@ -46,6 +49,16 @@ static vpn_client_app_t * vpn_client_app_func_rem(vpn_client_app_t * application
     snorlaxdbg(application == nil, false, "critical", "");
 #endif // RELEASE
 
+    // descriptor_event_subscription_t * tun;
+    // socket_event_subscription_t * netlink;
+
+    application->netlink = socket_event_subscription_rem(application->netlink);
+    application->tun = descriptor_event_subscription_rem(application->tun);
+    application->pool = socket_client_event_subscription_pool_rem(application->pool);
+
+
+    application->engine = event_engine_rem(application->engine);
+
     free(application);
 
     return nil;
@@ -65,8 +78,16 @@ static int32_t vpn_client_app_func_on(vpn_client_app_t * application) {
 #endif // RELEASE
         }
 
+        const vpn_client_app_config_t * config = vpn_client_app_client_get();
+
         application->netlink = event_engine_socket_sub(application->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), vpn_client_app_netlink_event_subscription_handler_get());
         application->tun = event_engine_descriptor_sub(application->engine, (descriptor_t *) network_tun_gen(), vpn_client_app_tun_event_subscription_handler_get());
+        application->pool = socket_client_event_subscription_pool_gen(vpn_client_subscription_handler_get());
+        for(int32_t i = 0; i < config->client_pool_size; i++) {
+            // socket_client_event_subscription_t * subscription = event_engine_socket_client_sub()
+            // socket_client_event_subscription_pool_node_gen(subscription);
+            // socket_client_event_subscription_pool_push(application->pool, )
+        }
 
         printf("implement socket\n");
     }

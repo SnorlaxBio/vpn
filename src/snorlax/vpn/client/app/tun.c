@@ -71,6 +71,8 @@ static void onNetlinkIPRoutePrepend(struct nlmsghdr * request, uint32_t state, s
 #endif // RELEASE
 
     if(state == network_netlink_request_state_done) {
+        // 모든 클라이언트를 만든다 ...
+        // 모든 클라리언트를 접속하도록 한다 ...
         printf("done\n");
     }
 }

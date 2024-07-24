@@ -12,6 +12,7 @@
 
 #include <snorlax.h>
 #include <snorlax/event/engine.h>
+#include <snorlax/socket/client/event/subscription/pool.h>
 
 struct vpn_client_app;
 struct vpn_client_app_func;
@@ -28,6 +29,7 @@ struct vpn_client_app {
 
     descriptor_event_subscription_t * tun;
     socket_event_subscription_t * netlink;
+    socket_client_event_subscription_pool_t * pool;
 };
 
 struct vpn_client_app_func {
