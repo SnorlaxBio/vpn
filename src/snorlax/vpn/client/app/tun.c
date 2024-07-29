@@ -1,6 +1,8 @@
 #include <sys/socket.h>
 
 #include <snorlax/network/netlink.h>
+#include <snorlax/descriptor/event/subscription.h>
+#include <snorlax/protocol/internet.h>
 
 #include "tun.h"
 #include "../app.h"
@@ -49,7 +51,49 @@ static void onOpen(___notnull descriptor_event_subscription_t * subscription, ui
 }
 
 static void onRead(___notnull descriptor_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-    printf("onRead\n");
+#ifndef   RELEASE
+    snorlaxdbg(false, true, "debug", "");
+#endif // RELEASE
+
+    descriptor_buffer_t * buffer = descriptor_event_subscription_buffer_get(subscription);
+    buffer_node_t * in = nil;
+
+    while(buffer_node_length(in = buffer_front(buffer->in)) > 0) {
+        uint8_t * datagram = (uint8_t *) buffer_node_front(in);
+        uint64_t datagramlen = buffer_node_length(in);
+
+        uint8_t version = internet_protocol_version_get(datagram);
+
+        if(version == 4) {
+            internet_protocol_version4_module_t * module = vpn_client_app_internet_protocol_version4_module_get();
+
+            internet_protocol_version4_context_t * context = nil;
+
+            internet_protocol_version4_module_deserialize(module, datagram, datagramlen, nil, &context);
+
+            context = internet_protocol_version4_context_rem(context);
+        } else if(version == 6) {
+            internet_protocol_version6_module_t * module = vpn_client_app_internet_protocol_version6_module_get();
+
+            snorlaxdbg(false, true, "implement", "");
+        } else {
+#ifndef   RELEASE
+            snorlaxdbg(true, false, "critical", "");
+#endif // RELEASE
+        }
+
+//         uint32_t length = internet_protocol_length_get(datagram);
+// #ifndef   RELEASE
+//         snorlaxdbg(false, true, "debug", "%p => %u", datagram, length);
+// #endif // RELEASE
+//         internet_protocol_debug(stdout, datagram);
+        // buffer_node_position_set(in, buffer_node_position_get(in) + length);
+        buffer_shrink(buffer->in);
+    }
+
+#ifndef   RELEASE
+    snorlaxdbg(false, true, "debug", "");
+#endif // RELEASE
 }
 
 static void onWrite(___notnull descriptor_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {

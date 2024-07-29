@@ -41,6 +41,9 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     application->func = address_of(func);
 
+    application->protocol.internet.version4 = internet_protocol_version4_module_gen(nil, nil, 0, nil);
+    // application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);
+
     return application;
 }
 
@@ -56,8 +59,10 @@ static vpn_client_app_t * vpn_client_app_func_rem(vpn_client_app_t * application
     application->tun = descriptor_event_subscription_rem(application->tun);
     application->pool = socket_client_event_subscription_pool_rem(application->pool);
 
-
     application->engine = event_engine_rem(application->engine);
+
+    application->protocol.internet.version4 = internet_protocol_version4_module_rem(application->protocol.internet.version4);
+    // application->protocol.internet.version6 = internet_protocol_version6_module_rem(application->protocol.internet.version6);
 
     free(application);
 
@@ -78,16 +83,16 @@ static int32_t vpn_client_app_func_on(vpn_client_app_t * application) {
 #endif // RELEASE
         }
 
-        const vpn_client_app_config_t * config = vpn_client_app_client_get();
+        const vpn_client_app_config_t * config = vpn_client_app_config_get();
 
         application->netlink = event_engine_socket_sub(application->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), vpn_client_app_netlink_event_subscription_handler_get());
         application->tun = event_engine_descriptor_sub(application->engine, (descriptor_t *) network_tun_gen(), vpn_client_app_tun_event_subscription_handler_get());
-        application->pool = socket_client_event_subscription_pool_gen(vpn_client_subscription_handler_get());
-        for(int32_t i = 0; i < config->client_pool_size; i++) {
-            // socket_client_event_subscription_t * subscription = event_engine_socket_client_sub()
-            // socket_client_event_subscription_pool_node_gen(subscription);
-            // socket_client_event_subscription_pool_push(application->pool, )
-        }
+        // application->pool = socket_client_event_subscription_pool_gen(vpn_client_subscription_handler_get());
+        // for(int32_t i = 0; i < config->client_pool_size; i++) {
+        //     // socket_client_event_subscription_t * subscription = event_engine_socket_client_sub()
+        //     // socket_client_event_subscription_pool_node_gen(subscription);
+        //     // socket_client_event_subscription_pool_push(application->pool, )
+        // }
 
         printf("implement socket\n");
     }
@@ -125,4 +130,12 @@ extern network_netlink_t * vpn_client_app_netlink_descriptor_get(void) {
 
 extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(void) {
     return app->netlink;
+}
+
+extern internet_protocol_version4_module_t * vpn_client_app_internet_protocol_version4_module_get(void) {
+    return app->protocol.internet.version4;
+}
+
+extern internet_protocol_version6_module_t * vpn_client_app_internet_protocol_version6_module_get(void) {
+    return app->protocol.internet.version6;
 }
