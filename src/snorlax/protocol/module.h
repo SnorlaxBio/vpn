@@ -34,5 +34,7 @@ struct protocol_module_func {
 
 #define protocol_module_rem(module)     ((module)->func->rem(module))
 #define protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
+#define protocol_module_serialize(module, parent, context, packet, len)                 ((module)->func->serialize(module, parent, context, packet, len))
+#define protocol_module_debug(module, stream, context)                                  ((module)->func->debug(module, stream, context))
 
 #endif // __SNORLAX__PROTOCOL_MODULE__H__

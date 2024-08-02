@@ -97,7 +97,7 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
         return fail;
     }
 
-    internet_protocol_version4_context_checksum_set(*context, datagram->checksum);
+    internet_protocol_version4_context_checksum_set(*context, ntohs(datagram->checksum));
 
     uint16_t checksum = internet_protocol_version4_module_checksum_cal(datagram);
 
@@ -106,10 +106,10 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
         return fail;
     }
 
-    internet_protocol_version4_context_identification_set(*context, datagram->identification);
-    internet_protocol_version4_context_fragment_set(*context, datagram->fragment);
-    internet_protocol_version4_context_source_set(*context, datagram->source);
-    internet_protocol_version4_context_destination_set(*context, datagram->destination);
+    internet_protocol_version4_context_identification_set(*context, ntohs(datagram->identification));
+    internet_protocol_version4_context_fragment_set(*context, ntohs(datagram->fragment));
+    internet_protocol_version4_context_source_set(*context, ntohl(datagram->source));
+    internet_protocol_version4_context_destination_set(*context, ntohl(datagram->destination));
     internet_protocol_version4_context_option_offset_set(*context, internet_protocol_version4_module_option_offset_cal(datagram));
     internet_protocol_version4_context_segment_offset_set(*context, internet_protocol_version4_module_segment_offset_cal(datagram));
     internet_protocol_version4_context_segment_length_set(*context, internet_protocol_version4_context_segment_length_cal(*context));

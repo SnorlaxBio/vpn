@@ -130,6 +130,7 @@ struct internet_protocol_version4_context {
     protocol_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;
+
     internet_protocol_version4_packet_t * datagram;
     uint64_t datagramlen;
 
@@ -163,13 +164,13 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 
 #define internet_protocol_version4_context_error_set(context, v)            ((context)->error = v)
 #define internet_protocol_version4_context_error_get(context)               ((context)->error)
-#define internet_protocol_version4_context_total_set(context, v)            ((context)->total = ntohs(v))
+#define internet_protocol_version4_context_total_set(context, v)            ((context)->total = v)
 #define internet_protocol_version4_context_total_get(context)               ((context)->total)
-#define internet_protocol_version4_context_checksum_set(context, v)         ((context)->checksum = ntohs(v))
+#define internet_protocol_version4_context_checksum_set(context, v)         ((context)->checksum = v)
 #define internet_protocol_version4_context_checksum_get(context)            ((context)->checksum)
-#define internet_protocol_version4_context_identification_set(context, v)   ((context)->identification = ntohs(v))
+#define internet_protocol_version4_context_identification_set(context, v)   ((context)->identification = v)
 #define internet_protocol_version4_context_identification_get(context)      ((context)->identification)
-#define internet_protocol_version4_context_fragment_set(context, v)         ((context)->fragment.value = ntohs(v))
+#define internet_protocol_version4_context_fragment_set(context, v)         ((context)->fragment.value = v)
 #define internet_protocol_version4_context_fragment_get(context)            ((context)->fragment.value)
 #define internet_protocol_version4_context_fragment_offset_set(context, v)  ((context)->fragment.detail.offset = v)
 #define internet_protocol_version4_context_fragment_offset_get(context)     ((context)->fragment.detail.offset)
@@ -177,9 +178,9 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 #define internet_protocol_version4_context_fragment_df_get(context)         ((context)->fragment.detail.df)
 #define internet_protocol_version4_context_fragment_mf_set(context, v)      ((context)->fragment.detail.mf = v)
 #define internet_protocol_version4_context_fragment_mf_get(context)         ((context)->fragment.detail.mf)
-#define internet_protocol_version4_context_source_set(context, v)           ((context)->source = ntohl(v))
+#define internet_protocol_version4_context_source_set(context, v)           ((context)->source = v)
 #define internet_protocol_version4_context_source_get(context)              ((context)->source)
-#define internet_protocol_version4_context_destination_set(context, v)      ((context)->destination = ntohl(v))
+#define internet_protocol_version4_context_destination_set(context, v)      ((context)->destination = v)
 #define internet_protocol_version4_context_destination_get(context)         ((context)->destination)
 #define internet_protocol_version4_context_option_offset_set(context, v)    ((context)->option = ((internet_protocol_version4_option_t *) v))
 #define internet_protocol_version4_context_option_offset_get(context)       ((context)->option)
