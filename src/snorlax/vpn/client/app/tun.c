@@ -62,8 +62,6 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
         uint8_t * datagram = (uint8_t *) buffer_node_front(in);
         uint64_t datagramlen = buffer_node_length(in);
 
-        printf("datagramlen => %lu\n", datagramlen);
-
         uint8_t version = internet_protocol_version_get(datagram);
 
         if(version == 4) {
@@ -74,7 +72,7 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
             internet_protocol_version4_module_deserialize(module, datagram, datagramlen, nil, &context);
             
             if(internet_protocol_version4_context_error_get(context)) {
-                printf("error => %d\n", internet_protocol_version4_context_error_get(context));
+                snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
                 context = internet_protocol_version4_context_rem(context);
                 return;
             }
@@ -92,7 +90,7 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
             internet_protocol_version6_module_deserialize(module, datagram, datagramlen, nil, &context);
             
             if(internet_protocol_version6_context_error_get(context)) {
-                printf("error => %d\n", internet_protocol_version4_context_error_get(context));
+                snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
                 context = internet_protocol_version6_context_rem(context);
                 return;
             }

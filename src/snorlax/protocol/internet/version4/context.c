@@ -12,6 +12,9 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
     internet_protocol_version4_context_t * context = (internet_protocol_version4_context_t *) calloc(1, sizeof(internet_protocol_version4_context_t));
 
     context->func = address_of(func);
+    context->parent = parent;
+    context->datagram = datagram;
+    context->datagramlen = datagramlen;
 
     return context;
 }

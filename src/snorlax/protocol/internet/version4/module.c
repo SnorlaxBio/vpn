@@ -44,26 +44,23 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
 extern uint16_t internet_protocol_version4_module_checksum_cal(internet_protocol_version4_packet_t * datagram) {
     uint16_t checksum = datagram->checksum;
 
-    // TODO: CHECKSUM UPDATE
-
-    printf("old checksum => %d\n", datagram->checksum);
-
     datagram->checksum = 0;
 
     uint16_t * packet = (uint16_t *) datagram;
     uint32_t n = (datagram->length * 2);
-    uint16_t v = 0;
+    uint32_t v = 0;
 
     for(uint32_t i = 0; i < n; i++) {
         v = v + ntohs(packet[i]);
     }
 
+    while(v >> 16) {
+        v = (v >> 16) + (v & 0x0000FFFFu);
+    }
+
     datagram->checksum = checksum;
 
-    printf("new checksum => %u\n", ~v);
-    printf("new checksum => %u\n", v);
-
-    return ~v;
+    return (int16_t) (~v);
 }
 
 static internet_protocol_version4_module_t * internet_protocol_version4_module_func_rem(internet_protocol_version4_module_t * module) {
@@ -115,8 +112,8 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
 
     internet_protocol_version4_context_identification_set(*context, ntohs(datagram->identification));
     internet_protocol_version4_context_fragment_set(*context, ntohs(datagram->fragment));
-    internet_protocol_version4_context_source_set(*context, ntohl(datagram->source));
-    internet_protocol_version4_context_destination_set(*context, ntohl(datagram->destination));
+    // internet_protocol_version4_context_source_set(*context, datagram->source);
+    // internet_protocol_version4_context_destination_set(*context, ntohl(datagram->destination));
     internet_protocol_version4_context_option_offset_set(*context, internet_protocol_version4_module_option_offset_cal(datagram));
     internet_protocol_version4_context_segment_offset_set(*context, internet_protocol_version4_module_segment_offset_cal(datagram));
     internet_protocol_version4_context_segment_length_set(*context, internet_protocol_version4_context_segment_length_cal(*context));
