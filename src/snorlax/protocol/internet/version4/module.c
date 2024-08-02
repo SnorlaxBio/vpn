@@ -44,6 +44,10 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
 extern uint16_t internet_protocol_version4_module_checksum_cal(internet_protocol_version4_packet_t * datagram) {
     uint16_t checksum = datagram->checksum;
 
+    // TODO: CHECKSUM UPDATE
+
+    printf("old checksum => %d\n", datagram->checksum);
+
     datagram->checksum = 0;
 
     uint16_t * packet = (uint16_t *) datagram;
@@ -55,6 +59,9 @@ extern uint16_t internet_protocol_version4_module_checksum_cal(internet_protocol
     }
 
     datagram->checksum = checksum;
+
+    printf("new checksum => %u\n", ~v);
+    printf("new checksum => %u\n", v);
 
     return ~v;
 }
@@ -90,7 +97,7 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
 
     internet_protocol_version4_packet_t * datagram = (internet_protocol_version4_packet_t *) packet;
 
-    internet_protocol_version4_context_total_set(*context, datagram->length);
+    internet_protocol_version4_context_total_set(*context, ntohs(datagram->total));
 
     if(packetlen < internet_protocol_version4_context_total_get(*context)) {
         internet_protocol_version4_context_error_set(*context, EAGAIN);

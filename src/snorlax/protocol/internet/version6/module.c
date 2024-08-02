@@ -62,6 +62,8 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
 
     if(*context == nil) *context = internet_protocol_version6_context_gen(parent, (internet_protocol_version6_packet_t *) packet, packetlen);
 
+    printf("packetlen => %u\n", packetlen);
+
     if(packetlen < internet_protocol_version6_packet_header_length_min) {
         internet_protocol_version6_context_error_set(*context, EAGAIN);
         return fail;
@@ -70,6 +72,8 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     internet_protocol_version6_packet_t * datagram = (internet_protocol_version6_packet_t *) packet;
 
     internet_protocol_version6_context_payload_length_set(*context, ntohs(datagram->payload));
+
+    printf("length => %d\n", internet_protocol_version6_context_payload_length_get(*context));
 
     if(packetlen < internet_protocol_version6_packet_header_length_min + internet_protocol_version6_context_payload_length_get(*context)) {
         internet_protocol_version6_context_error_set(*context, EAGAIN);

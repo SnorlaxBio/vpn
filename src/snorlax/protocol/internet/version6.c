@@ -13,7 +13,7 @@ extern const char * internet_protocol_version6_addr_to_str(char * destination, u
     int n = 0;
 
     for(int i = 0; i < 8; i++) {
-        n = n + sprintf(&destination[n], "%04x%c", ntohs(array[i]), i + 1 == 8 ? ':' : '\0');
+        n = n + sprintf(&destination[n], "%04x%c", ntohs(array[i]), i + 1 == 8 ? '\0' : ':');
     }
 
     return destination;

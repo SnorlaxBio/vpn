@@ -62,6 +62,8 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
         uint8_t * datagram = (uint8_t *) buffer_node_front(in);
         uint64_t datagramlen = buffer_node_length(in);
 
+        printf("datagramlen => %lu\n", datagramlen);
+
         uint8_t version = internet_protocol_version_get(datagram);
 
         if(version == 4) {
@@ -70,15 +72,39 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
             internet_protocol_version4_context_t * context = nil;
 
             internet_protocol_version4_module_deserialize(module, datagram, datagramlen, nil, &context);
+            
+            if(internet_protocol_version4_context_error_get(context)) {
+                printf("error => %d\n", internet_protocol_version4_context_error_get(context));
+                context = internet_protocol_version4_context_rem(context);
+                return;
+            }
+
+            uint64_t length = internet_protocol_version4_context_total_get(context);
 
             context = internet_protocol_version4_context_rem(context);
+
+            buffer_node_position_set(in, buffer_node_position_get(in) + length);
         } else if(version == 6) {
             internet_protocol_version6_module_t * module = vpn_client_app_internet_protocol_version6_module_get();
 
-            snorlaxdbg(false, true, "implement", "");
+            internet_protocol_version6_context_t * context = nil;
+
+            internet_protocol_version6_module_deserialize(module, datagram, datagramlen, nil, &context);
+            
+            if(internet_protocol_version6_context_error_get(context)) {
+                printf("error => %d\n", internet_protocol_version4_context_error_get(context));
+                context = internet_protocol_version6_context_rem(context);
+                return;
+            }
+
+            uint64_t length = internet_protocol_version6_context_payload_length_get(context) + internet_protocol_version6_packet_header_length_min;
+
+            context = internet_protocol_version6_context_rem(context);
+
+            buffer_node_position_set(in, buffer_node_position_get(in) + length);
         } else {
 #ifndef   RELEASE
-            snorlaxdbg(true, false, "critical", "");
+            snorlaxdbg(true, false, "critical", "version => %d %02x", version, datagram[0]);
 #endif // RELEASE
         }
 
