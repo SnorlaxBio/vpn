@@ -64,7 +64,7 @@ static int32_t internet_control_message_protocol_version4_module_func_deserializ
         return fail;
     }
 
-    if(internet_control_message_protocol_version4_message_length_validate(internet_control_message_protocol_version4_context_type_get(*context), packetlen)) {
+    if(internet_control_message_protocol_version4_message_length_validate(internet_control_message_protocol_version4_context_type_get(*context), packetlen) == false) {
         internet_control_message_protocol_version4_context_error_set(*context, EAGAIN);
         return fail;
     }
