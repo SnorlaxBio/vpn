@@ -1,21 +1,8 @@
 #include <stdlib.h>
 #include <errno.h>
+#include <arpa/inet.h>
 
 #include "../datagram.h"
-
-// struct user_datagram_protocol_module {
-//     user_datagram_protocol_module_func_t * func;
-//     sync_t * sync;
-//     protocol_module_t * parent;
-//     protocol_module_map_t * map;
-// };
-
-// struct user_datagram_protocol_module_func {
-//     user_datagram_protocol_module_t * (*rem)(user_datagram_protocol_module_t *);
-//     int32_t (*deserialize)(user_datagram_protocol_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, user_datagram_protocol_context_t **);
-//     int32_t (*serialize)(user_datagram_protocol_module_t *, protocol_context_t *, user_datagram_protocol_context_t *, protocol_packet_t **, uint32_t *);
-//     void (*debug)(user_datagram_protocol_module_t *, FILE *, user_datagram_protocol_context_t *);
-// };
 
 static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(user_datagram_protocol_module_t * module);
 static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context);

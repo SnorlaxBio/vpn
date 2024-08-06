@@ -119,7 +119,10 @@ set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/map.c
                                 src/snorlax/protocol/internet/version6/extension/fragment/module.c
                                 src/snorlax/protocol/internet/user/datagram.c
                                 src/snorlax/protocol/internet/user/datagram/module.c
-                                src/snorlax/protocol/internet/user/datagram/context.c)
+                                src/snorlax/protocol/internet/user/datagram/context.c
+                                src/snorlax/protocol/internet/transmission/control.c
+                                src/snorlax/protocol/internet/transmission/control/module.c
+                                src/snorlax/protocol/internet/transmission/control/context.c)
 
 set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol.h
                                 src/snorlax/protocol/internet.h
@@ -127,7 +130,8 @@ set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol.h
                                 src/snorlax/protocol/internet/version4/control/message.h
                                 src/snorlax/protocol/internet/version6.h
                                 src/snorlax/protocol/internet/version6/control/message.h
-                                src/snorlax/protocol/internet/user/datagram.h)
+                                src/snorlax/protocol/internet/user/datagram.h
+                                src/snorlax/protocol/internet/transmission/control.h)
 
 add_executable(snorlax-vpn-client   ${SNORLAX_VPN_CLIENT_SOURCE}
                                     ${SNORLAX_VPN_ClIENT_HEADER}

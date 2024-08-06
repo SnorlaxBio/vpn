@@ -42,7 +42,7 @@ extern uint16_t user_datagram_protocol_checksum_cal(user_datagram_protocol_packe
 struct user_datagram_protocol_module {
     user_datagram_protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_t * parent;
+    internet_protocol_module_t * parent;
     protocol_module_map_t * map;
 };
 
