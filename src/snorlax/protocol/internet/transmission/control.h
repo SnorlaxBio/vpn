@@ -13,12 +13,18 @@
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
+struct transmission_control_block;
+struct transmission_control_block_func;
+
 struct transmission_control_protocol_packet;
 
 struct transmission_control_protocol_module;
 struct transmission_control_protocol_module_func;
 struct transmission_control_protocol_context;
 struct transmission_control_protocol_context_func;
+
+typedef struct transmission_control_block transmission_control_block_t;
+typedef struct transmission_control_block_func transmission_control_block_func_t;
 
 typedef struct transmission_control_protocol_packet transmission_control_protocol_packet_t;
 typedef uint8_t transmission_control_protocol_option_t;
@@ -70,6 +76,17 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
 #define transmission_control_protocol_option_type_maximum_segment_size      2
 
 #define transmission_control_protocol_option_length_get(option)             ((*(option) == 0 || *(option) == 1) ? 1 : *(option)[1])
+
+struct transmission_control_block {
+    transmission_control_block_func_t * func;
+    sync_t * sync;
+};
+
+struct transmission_control_block_func {
+    transmission_control_block_t * (*rem)(transmission_control_block_t *);
+};
+
+#define transmission_control_block_rem(block)           ((block)->func->rem(block))
 
 struct transmission_control_protocol_module {
     transmission_control_protocol_module_func_t * func;
@@ -180,6 +197,6 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 #define transmission_control_protocol_context_data_set(context, v)              ((context)->data = v)
 
 #define transmission_control_protocol_context_data_cal(context)                 (transmission_control_protocol_context_headerlen_get(context) == transmission_control_protocol_context_packetlen_get(context) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
-#define transmission_control_protocol_context_option_cal(context)               (transmission_control_protocol_context_headerlen_get(context) == (transmission_control_protocol_context_offset_get(context) * 4) ? nil : &((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)])
+#define transmission_control_protocol_context_option_cal(context)               (transmission_control_protocol_context_headerlen_get(context) == (transmission_control_protocol_context_offset_get(context) * 4) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
 
 #endif // __SNORLAX__PROTOCOL_INTERNET_TRANSMISSION_CONTROL__H__

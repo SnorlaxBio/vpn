@@ -122,7 +122,8 @@ set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/map.c
                                 src/snorlax/protocol/internet/user/datagram/context.c
                                 src/snorlax/protocol/internet/transmission/control.c
                                 src/snorlax/protocol/internet/transmission/control/module.c
-                                src/snorlax/protocol/internet/transmission/control/context.c)
+                                src/snorlax/protocol/internet/transmission/control/context.c
+                                src/snorlax/protocol/internet/transmission/control/block.c)
 
 set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol.h
                                 src/snorlax/protocol/internet.h
