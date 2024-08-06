@@ -19,12 +19,15 @@
 #define internet_protocol_version_get(datagram)     (datagram[0] & 0x0Fu)
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
 
+// struct internet_protocol_pseudo_header;
+
 struct internet_protocol_module;
 struct internet_protocol_module_func;
 struct internet_protocol_context;
 struct internet_protocol_context_func;
 
 typedef uint8_t internet_protocol_packet_t;
+typedef uint8_t internet_protocol_pseudo_t;
 
 typedef struct internet_protocol_module internet_protocol_module_t;
 typedef struct internet_protocol_module_func internet_protocol_module_func_t;
@@ -45,12 +48,30 @@ struct internet_protocol_module_func {
     void (*debug)(internet_protocol_module_t *, FILE *, internet_protocol_context_t *);
 };
 
-struct internet_protocol_context {
+#define internet_protocol_module_rem(module)                                                    ((module)->func->rem(module))
+#define internet_protocol_module_deserialize(module, packet, packetlen, parent, context)        ((module)->func->deserialize(module, packet, packetlen, parent, context))
+#define internet_protocol_module_serialize(module, parent, context, packet, len)                ((module)->func->serialize(module, parent, context, packet, len))
+#define internet_protocol_module_debug(module, stream, context)                                 ((module)->func->debug(module, stream, context))
 
+struct internet_protocol_context {
+    protocol_context_func_t * func;
+    sync_t * sync;
+    protocol_context_t * parent;
+    protocol_context_t * subcontext;
+    int32_t error;
+    internet_protocol_packet_t * packet;
+    uint64_t packetlen;
+    internet_protocol_pseudo_t * pseudo;
+    uint64_t pseudolen;
 };
 
 struct internet_protocol_context_func {
-
+    protocol_context_t * (*rem)(protocol_context_t *);
 };
+
+#define internet_protocol_context_rem(context)               ((context)->func->rem(context))
+
+#define internet_protocol_context_error_get(context)         ((context)->error)
+#define internet_protocol_context_error_set(context, v)      ((context)->error = v)
 
 #endif // __SNORLAX__PROTOCOL_INTERNET__H__

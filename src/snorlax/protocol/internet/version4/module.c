@@ -110,6 +110,8 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
         return fail;
     }
 
+    internet_protocol_version4_context_pseudo_set(*context, internet_protocol_version4_pseudo_gen(datagram), sizeof(internet_protocol_version4_pseudo_t));
+
     internet_protocol_version4_context_identification_set(*context, ntohs(datagram->identification));
     internet_protocol_version4_context_fragment_set(*context, ntohs(datagram->fragment));
     // internet_protocol_version4_context_source_set(*context, datagram->source);

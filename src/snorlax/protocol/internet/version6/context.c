@@ -23,6 +23,7 @@ static internet_protocol_version6_context_t * internet_protocol_version6_context
 #endif // RELEASE
 
     if(context->subcontext) context->subcontext = protocol_context_rem(context->subcontext);
+    context->pseudo = memory_rem(context->pseudo);
 
     context->sync = sync_rem(context->sync);
 

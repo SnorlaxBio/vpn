@@ -14,6 +14,8 @@
 #include <snorlax/protocol.h>
 
 struct internet_protocol_version6_packet;
+struct internet_protocol_version6_pseudo;
+
 struct internet_protocol_version6_extension;
 struct internet_protocol_version6_extension_hopbyhop;
 struct internet_protocol_version6_extension_routing;
@@ -44,6 +46,7 @@ struct internet_protocol_version6_extension_destination_context;
 struct internet_protocol_version6_extension_destination_context_func;
 
 typedef struct internet_protocol_version6_packet internet_protocol_version6_packet_t;
+typedef struct internet_protocol_version6_pseudo internet_protocol_version6_pseudo_t;
 
 typedef uint8_t internet_protocol_version6_address_t;
 typedef uint8_t internet_protocol_version6_option_t;
@@ -99,6 +102,16 @@ struct internet_protocol_version6_packet {
     uint8_t source[16];
     uint8_t destination[16];
 };
+
+struct internet_protocol_version6_pseudo {
+    uint8_t source[16];
+    uint8_t destination[16];
+    uint32_t length;
+    uint32_t zero:24;
+    uint8_t next;
+};
+
+extern internet_protocol_version6_pseudo_t * internet_protocol_version6_pseudo_gen(internet_protocol_version6_packet_t * datagram, uint8_t next, uint64_t len);
 
 #define internet_protocol_version6_packet_header_length_min                                 (40)
 
@@ -207,14 +220,16 @@ struct internet_protocol_version6_context {
     protocol_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;
-
     internet_protocol_version6_packet_t * datagram;
     uint64_t datagramlen;
+    internet_protocol_version6_pseudo_t * pseudo;
+    uint64_t pseudolen;
 
     uint8_t version;
     uint8_t traffic;
     uint32_t label;
     uint16_t payloadlen;
+
 
     internet_protocol_version6_extension_context_t ** extensionctx;
     uint64_t extensionctxlen;
@@ -251,6 +266,9 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 #define internet_protocol_version6_context_source_set(context, v)           (memcpy((context)->datagram->source, v, 16))
 #define internet_protocol_version6_context_destination_get(context)         ((context)->datagram->destination)
 #define internet_protocol_version6_context_destination_set(context, v)      (memcpy((context)->datagram->destination, v, 16))
+#define internet_protocol_version6_context_pseudo_set(context, v, len)      (((context)->pseudolen = len), ((context)->pseudo = v))
+#define internet_protocol_version6_context_pseudo_get(context)              ((context)->pseudo)
+#define internet_protocol_version6_context_pseudolen_get(context)           ((context)->pseudolen)
 
 struct internet_protocol_version6_extension_context {
     internet_protocol_version6_extension_context_func_t * func;

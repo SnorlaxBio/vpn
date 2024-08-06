@@ -30,12 +30,16 @@
 #define internet_protocol_version4_option_type_internet_timestamp       68
 
 struct internet_protocol_version4_packet;
+struct internet_protocol_version4_pseudo;
+
 struct internet_protocol_version4_module;
 struct internet_protocol_version4_module_func;
 struct internet_protocol_version4_context;
 struct internet_protocol_version4_context_func;
 
 typedef struct internet_protocol_version4_packet internet_protocol_version4_packet_t;
+typedef struct internet_protocol_version4_pseudo internet_protocol_version4_pseudo_t;
+
 typedef struct internet_protocol_version4_module internet_protocol_version4_module_t;
 typedef struct internet_protocol_version4_module_func internet_protocol_version4_module_func_t;
 typedef struct internet_protocol_version4_context internet_protocol_version4_context_t;
@@ -94,6 +98,16 @@ struct internet_protocol_version4_packet {
 
 #define internet_protocol_version4_address_uint32_to_str(addr)          (inet_ntoa((struct in_addr) { .s_addr = addr }))
 
+struct internet_protocol_version4_pseudo {
+    uint32_t source;
+    uint32_t destination;
+    uint8_t zero;
+    uint8_t protocol;
+    uint8_t length;
+};
+
+extern internet_protocol_version4_pseudo_t * internet_protocol_version4_pseudo_gen(internet_protocol_version4_packet_t * datagram);
+
 struct internet_protocol_version4_module {
     internet_protocol_version4_module_func_t * func;
     sync_t * sync;
@@ -127,9 +141,10 @@ struct internet_protocol_version4_context {
     protocol_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;
-
     internet_protocol_version4_packet_t * datagram;
     uint64_t datagramlen;
+    internet_protocol_version4_pseudo_t * pseudo;
+    uint64_t pseudolen;
 
     uint16_t total;
     uint16_t checksum;
@@ -196,6 +211,10 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 #define internet_protocol_version4_context_ttl_get(context)                 ((context)->datagram->ttl)
 #define internet_protocol_version4_context_protocol_set(context)            ((context)->datagram->protocol = v)
 #define internet_protocol_version4_context_protocol_get(context)            ((context)->datagram->protocol)
+
+#define internet_protocol_version4_context_pseudo_set(context, v, len)      (((context)->pseudolen = len), ((context)->pseudo = v))
+#define internet_protocol_version4_context_pseudo_get(context)              ((context)->pseudo)
+#define internet_protocol_version4_context_pseudolen_get(context)           ((context)->pseudolen)
 
 #define internet_protocol_version4_context_segment_length_cal(context)      (internet_protocol_version4_context_total_get(context) - internet_protocol_version4_module_header_length_cal((context)->datagram))
 
