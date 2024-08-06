@@ -69,9 +69,12 @@ struct internet_protocol_context_func {
     protocol_context_t * (*rem)(protocol_context_t *);
 };
 
-#define internet_protocol_context_rem(context)               ((context)->func->rem(context))
+#define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
 
-#define internet_protocol_context_error_get(context)         ((context)->error)
-#define internet_protocol_context_error_set(context, v)      ((context)->error = v)
+#define internet_protocol_context_error_get(context)            ((context)->error)
+#define internet_protocol_context_error_set(context, v)         ((context)->error = v)
+#define internet_protocol_context_pseudo_get(context)           ((context)->pseudo)
+#define internet_protocol_context_pseudolen_get(context)        ((context)->pseudolen)
+#define internet_protocol_context_pseudo_set(context, v, len)   (((context)->pseudolen = len), ((context)->pseudo = v))
 
 #endif // __SNORLAX__PROTOCOL_INTERNET__H__

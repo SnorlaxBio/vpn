@@ -114,8 +114,6 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
 
     internet_protocol_version4_context_identification_set(*context, ntohs(datagram->identification));
     internet_protocol_version4_context_fragment_set(*context, ntohs(datagram->fragment));
-    // internet_protocol_version4_context_source_set(*context, datagram->source);
-    // internet_protocol_version4_context_destination_set(*context, ntohl(datagram->destination));
     internet_protocol_version4_context_option_offset_set(*context, internet_protocol_version4_module_option_offset_cal(datagram));
     internet_protocol_version4_context_segment_offset_set(*context, internet_protocol_version4_module_segment_offset_cal(datagram));
     internet_protocol_version4_context_segment_length_set(*context, internet_protocol_version4_context_segment_length_cal(*context));
