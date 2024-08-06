@@ -96,7 +96,7 @@ set(SNORLAX_VPN_ClIENT_HEADER   src/snorlax/vpn/client/app.h
                                 src/snorlax/vpn/client/app/netlink.h
                                 src/snorlax/vpn/client/event/subscription.h)
 
-set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
+set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/map.c
                                 src/snorlax/protocol/internet/version6.c
                                 src/snorlax/protocol/internet/version4/context.c
                                 src/snorlax/protocol/internet/version4/module.c
@@ -117,10 +117,7 @@ set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/internet/version6/extension/fragment/context.c
                                 src/snorlax/protocol/internet/version6/extension/fragment/module.c)
 
-set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol/packet.h
-                                src/snorlax/protocol/module.h
-                                src/snorlax/protocol/context.h
-                                src/snorlax/protocol/module/map.h
+set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol.h
                                 src/snorlax/protocol/internet.h
                                 src/snorlax/protocol/internet/version4.h
                                 src/snorlax/protocol/internet/version4/control/message.h

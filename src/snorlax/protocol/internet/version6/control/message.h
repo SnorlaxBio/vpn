@@ -11,8 +11,7 @@
 #define   __SNORLAX__PROTOCOL_INTERNET_VERSION6_CONTROL_MESSAGE__H__
 
 #include <snorlax.h>
-#include <snorlax/protocol/module.h>
-#include <snorlax/protocol/module/map.h>
+#include <snorlax/protocol.h>
 
 struct internet_protocol_version6_module;
 struct internet_protocol_version6_context;

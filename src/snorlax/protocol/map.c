@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "map.h"
+#include "../protocol.h"
 
 static protocol_module_map_t * protocol_module_map_func_rem(protocol_module_map_t * map);
 static protocol_module_t * protocol_module_map_func_get(protocol_module_map_t * map, uint32_t no);

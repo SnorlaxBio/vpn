@@ -11,10 +11,7 @@
 #define   __SNORLAX__PROTOCOL_INTERNET_VERSION4__H__
 
 #include <snorlax.h>
-#include <snorlax/protocol/packet.h>
-#include <snorlax/protocol/module.h>
-#include <snorlax/protocol/context.h>
-#include <snorlax/protocol/module/map.h>
+#include <snorlax/protocol.h>
 
 #define internet_protocol_version4_packet_header_length_min             20
 
