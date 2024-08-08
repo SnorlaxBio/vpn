@@ -10,11 +10,16 @@
 #ifndef   __SNORLAX__PROTOCOL_INTERNET_TRANSMISSION_CONTROL__H__
 #define   __SNORLAX__PROTOCOL_INTERNET_TRANSMISSION_CONTROL__H__
 
+#include <snorlax/hashtable.h>
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
 struct transmission_control_block;
 struct transmission_control_block_func;
+
+typedef hashtable_t transmission_control_block_map_t;
+
+struct transmission_control_address;
 
 struct transmission_control_protocol_packet;
 
@@ -25,6 +30,8 @@ struct transmission_control_protocol_context_func;
 
 typedef struct transmission_control_block transmission_control_block_t;
 typedef struct transmission_control_block_func transmission_control_block_func_t;
+
+typedef struct transmission_control_address transmission_control_address_t;
 
 typedef struct transmission_control_protocol_packet transmission_control_protocol_packet_t;
 typedef uint8_t transmission_control_protocol_option_t;
@@ -67,6 +74,15 @@ struct transmission_control_protocol_packet {
     uint16_t pointer;
 };
 
+struct transmission_control_address {
+    protocol_address_t type;
+    union {
+        uint8_t version4[4];
+        uint8_t version6[16];
+    } value;
+    uint16_t port;
+};
+
 #define transmission_control_protocol_packet_length_min                     20
 
 extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
@@ -77,16 +93,52 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
 
 #define transmission_control_protocol_option_length_get(option)             ((*(option) == 0 || *(option) == 1) ? 1 : *(option)[1])
 
+
 struct transmission_control_block {
     transmission_control_block_func_t * func;
     sync_t * sync;
+    hashtable_list_t * collection;
+    hashtable_node_t * prev;
+    hashtable_node_t * next;
+    hashtable_node_key_t key;
+
+    transmission_control_address_t source;
+    transmission_control_address_t destination;
+    uint32_t state;
 };
 
 struct transmission_control_block_func {
     transmission_control_block_t * (*rem)(transmission_control_block_t *);
+
+    int32_t (*open)(transmission_control_block_t *);
+    int32_t (*send)(transmission_control_block_t *);
+    int32_t (*recv)(transmission_control_block_t *);
+    int32_t (*close)(transmission_control_block_t *);
+    int32_t (*listen)(transmission_control_block_t *);
 };
 
-#define transmission_control_block_rem(block)           ((block)->func->rem(block))
+#define transmission_control_state_none                             0
+#define transmission_control_state_listen                           1
+#define transmission_control_state_synchronize_sent                 2
+#define transmission_control_state_synchronize_received             3
+#define transmission_control_state_established                      4
+#define transmission_control_state_finish_wait_1                    5
+#define transmission_control_state_finish_wait_2                    6
+#define transmission_control_state_close_wait                       7
+#define transmission_control_state_closing                          8
+#define transmission_control_state_last_acknowledgment              9
+#define transmission_control_state_time_wait                        10
+#define transmission_control_state_closed                           0
+
+extern transmission_control_block_t * transmission_control_block_gen(transmission_control_address_t * source, transmission_control_address_t * destination);
+
+#define transmission_control_block_rem(block)                       ((block)->func->rem(block))
+#define transmission_control_block_open(block)                      ((block)->func->open(block))
+#define transmission_control_block_send(block)                      ((block)->func->send(block))
+#define transmission_control_block_recv(block)                      ((block)->func->recv(block))
+#define transmission_control_block_close(block)                     ((block)->func->close(block))
+
+typedef uint64_t (*transmission_control_protocol_context_handler_t)(void);
 
 struct transmission_control_protocol_module {
     transmission_control_protocol_module_func_t * func;
@@ -100,14 +152,19 @@ struct transmission_control_protocol_module_func {
     int32_t (*deserialize)(transmission_control_protocol_module_t *, protocol_packet_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
     int32_t (*serialize)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
+
+    void (*on)(transmission_control_protocol_module_t *, uint32_t, transmission_control_protocol_context_handler_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
+    void (*notify)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *, uint64_t);
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
 
-#define transmission_control_protocol_module_rem(module)                                                     ((module)->func->rem(module))
-#define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
-#define transmission_control_protocol_module_serialize(module, parent, context, packet, len)                 ((module)->func->serialize(module, parent, context, packet, len))
-#define transmission_control_protocol_module_debug(module, stream, context)                                  ((module)->func->debug(module, stream, context))
+#define transmission_control_protocol_module_rem(module)                                                        ((module)->func->rem(module))
+#define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))
+#define transmission_control_protocol_module_serialize(module, parent, context, packet, len)                    ((module)->func->serialize(module, parent, context, packet, len))
+#define transmission_control_protocol_module_debug(module, stream, context)                                     ((module)->func->debug(module, stream, context))
+#define transmission_control_protocol_module_on(module, type, handler, parent, context)                         ((module)->func->on(module, type, handler, parent, context))
+#define transmission_control_protocol_module_notify(module, type, parent, context, ret)                         ((module)->func->notify(module, type, parent, context, ret))
 
 struct transmission_control_protocol_context {
     transmission_control_protocol_context_func_t * func;

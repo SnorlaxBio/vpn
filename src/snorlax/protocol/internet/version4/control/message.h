@@ -135,6 +135,8 @@ struct internet_control_message_protocol_version4_information_message {
 
 extern int32_t internet_control_message_protocol_version4_message_length_validate(uint8_t type, uint64_t packetlen);
 
+typedef uint64_t (*internet_control_message_protocol_version4_context_handler_t)(void);
+
 struct internet_control_message_protocol_version4_module {
     internet_control_message_protocol_version4_module_func_t * func;
     sync_t * sync;
@@ -147,6 +149,9 @@ struct internet_control_message_protocol_version4_module_func {
     int32_t (*deserialize)(internet_control_message_protocol_version4_module_t *, protocol_packet_t *, uint32_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t **);
     int32_t (*serialize)(internet_control_message_protocol_version4_module_t *, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(internet_control_message_protocol_version4_module_t *, FILE *, internet_control_message_protocol_version4_context_t *);
+
+    void (*on)(internet_control_message_protocol_version4_module_t *, uint32_t, internet_control_message_protocol_version4_context_handler_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *);
+    void (*notify)(internet_control_message_protocol_version4_module_t *, uint32_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, uint64_t);
 };
 
 extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(internet_protocol_version4_module_t * parent);

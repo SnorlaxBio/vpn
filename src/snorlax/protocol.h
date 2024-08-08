@@ -20,6 +20,7 @@ struct protocol_module_map;
 struct protocol_module_map_func;
 
 typedef uint8_t protocol_packet_t;
+typedef uint16_t protocol_address_t;
 
 typedef struct protocol_module protocol_module_t;
 typedef struct protocol_module_func protocol_module_func_t;
@@ -29,6 +30,8 @@ typedef struct protocol_module_map protocol_module_map_t;
 typedef struct protocol_module_map_func protocol_module_map_func_t;
 
 typedef uint32_t (*protocol_module_map_index_t)(uint32_t);
+
+typedef uint64_t (*protocol_context_handler_t)(void);
 
 struct protocol_module {
     protocol_module_func_t * func;
@@ -42,12 +45,17 @@ struct protocol_module_func {
     int32_t (*deserialize)(protocol_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, protocol_context_t **);
     int32_t (*serialize)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(protocol_module_t *, FILE *, protocol_context_t *);
+
+    void (*on)(protocol_module_t *, uint32_t, protocol_context_handler_t, protocol_context_t *, protocol_context_t *);
+    void (*notify)(protocol_module_t *, uint32_t, protocol_context_t *, protocol_context_t *, uint64_t);
 };
 
 #define protocol_module_rem(module)                                                     ((module)->func->rem(module))
 #define protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define protocol_module_serialize(module, parent, context, packet, len)                 ((module)->func->serialize(module, parent, context, packet, len))
 #define protocol_module_debug(module, stream, context)                                  ((module)->func->debug(module, stream, context))
+#define protocol_module_on(module, type, handler, parent, context)                      ((module)->func->on(module, type, handler, parent, context))
+#define protocol_module_notify(module, type, parent, context, ret)                      ((module)->func->notify(module, type, parent, context, ret))
 
 struct protocol_context {
     protocol_context_func_t * func;

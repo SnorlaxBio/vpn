@@ -108,6 +108,8 @@ struct internet_protocol_version4_pseudo {
 
 extern internet_protocol_version4_pseudo_t * internet_protocol_version4_pseudo_gen(internet_protocol_version4_packet_t * datagram);
 
+typedef uint64_t (*internet_protocol_version4_context_handler_t)(void);
+
 struct internet_protocol_version4_module {
     internet_protocol_version4_module_func_t * func;
     sync_t * sync;
@@ -120,6 +122,9 @@ struct internet_protocol_version4_module_func {
     int32_t (*deserialize)(internet_protocol_version4_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t **);
     int32_t (*serialize)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(internet_protocol_version4_module_t *, FILE *, internet_protocol_version4_context_t *);
+
+    void (*on)(internet_protocol_version4_module_t *, uint32_t, internet_protocol_version4_context_handler_t, protocol_context_t *, internet_protocol_version4_context_t *);
+    void (*notify)(internet_protocol_version4_module_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t *, uint64_t);
 };
 
 extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
@@ -128,6 +133,8 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
 #define internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)   ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version4_module_serialize(module, context, packet, packetlen)             ((module)->func->serialize(module, context, packet, packetlen))
 #define internet_protocol_version4_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
+#define internet_protocol_version4_module_on(module, type, handler, parent, context)                ((module)->func->on(module, type, handler, parent, context))
+#define internet_protocol_version4_module_notify(module, type, parent, context, ret)                ((module)->func->notify(module, type, parent, context, ret))
 
 #define internet_protocol_version4_module_header_length_cal(datagram)       ((datagram)->length * 4)
 #define internet_protocol_version4_module_option_offset_cal(datagram)       (&(((uint8_t *)(datagram))[internet_protocol_version4_packet_header_length_min]))
