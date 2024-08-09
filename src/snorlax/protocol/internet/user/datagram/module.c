@@ -8,12 +8,16 @@ static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(
 static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context);
 static int32_t user_datagram_protocol_module_func_serialize(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
 static void user_datagram_protocol_module_func_debug(user_datagram_protocol_module_t * module, FILE * stream, user_datagram_protocol_context_t * context);
+static void user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, user_datagram_protocol_context_handler_t handler, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context);
+static void user_datagram_protocol_module_func_notify(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, uint64_t ret);
 
 static user_datagram_protocol_module_func_t func = {
     user_datagram_protocol_module_func_rem,
     user_datagram_protocol_module_func_deserialize,
     user_datagram_protocol_module_func_serialize,
-    user_datagram_protocol_module_func_debug
+    user_datagram_protocol_module_func_debug,
+    user_datagram_protocol_module_func_on,
+    user_datagram_protocol_module_func_notify
 };
 
 extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
@@ -111,4 +115,12 @@ static void user_datagram_protocol_module_func_debug(user_datagram_protocol_modu
     fprintf(stream, "| %d ", user_datagram_protocol_context_length_get(context));
     fprintf(stream, "| %d ", user_datagram_protocol_context_checksum_get(context));
     fprintf(stream, "|\n");
+}
+
+static void user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, user_datagram_protocol_context_handler_t handler, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context) {
+    snorlaxdbg(false, true, "implement", "");
+}
+
+static void user_datagram_protocol_module_func_notify(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, uint64_t ret) {
+    snorlaxdbg(false, true, "implement", "");
 }

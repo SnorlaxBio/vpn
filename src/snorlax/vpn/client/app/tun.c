@@ -77,6 +77,8 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
                 return;
             }
 
+            internet_protocol_version4_module_on(module, ingress, nil, nil, context);
+
             uint64_t length = internet_protocol_version4_context_total_get(context);
 
             context = internet_protocol_version4_context_rem(context);
@@ -95,6 +97,8 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
                 return;
             }
 
+            internet_protocol_version6_module_on(module, ingress, nil, nil, context);
+
             uint64_t length = internet_protocol_version6_context_payload_length_get(context) + internet_protocol_version6_packet_header_length_min;
 
             context = internet_protocol_version6_context_rem(context);
@@ -106,12 +110,6 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
 #endif // RELEASE
         }
 
-//         uint32_t length = internet_protocol_length_get(datagram);
-// #ifndef   RELEASE
-//         snorlaxdbg(false, true, "debug", "%p => %u", datagram, length);
-// #endif // RELEASE
-//         internet_protocol_debug(stdout, datagram);
-        // buffer_node_position_set(in, buffer_node_position_get(in) + length);
         buffer_shrink(buffer->in);
     }
 

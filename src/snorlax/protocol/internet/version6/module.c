@@ -6,23 +6,20 @@
 
 #include "../version6.h"
 
-// struct internet_protocol_version6_module {
-//     internet_protocol_version6_module_func_t * func;
-//     sync_t * sync;
-//     protocol_module_t * parent;
-//     protocol_module_map_t * children;
-// };
-
 static internet_protocol_version6_module_t * internet_protocol_version6_module_func_rem(internet_protocol_version6_module_t * module);
 static int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context);
 static int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
 static void internet_protocol_version6_module_func_debug(internet_protocol_version6_module_t * module, FILE * stream, internet_protocol_version6_context_t * context);
+static void internet_protocol_version6_module_func_on(internet_protocol_version6_module_t *, uint32_t, internet_protocol_version6_context_handler_t, protocol_context_t *, internet_protocol_version6_context_t *);
+static void internet_protocol_version6_module_func_notify(internet_protocol_version6_module_t *, uint32_t, protocol_context_t *, internet_protocol_version6_context_t *, uint64_t);
 
 static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_rem,
     internet_protocol_version6_module_func_deserialize,
     internet_protocol_version6_module_func_serialize,
-    internet_protocol_version6_module_func_debug
+    internet_protocol_version6_module_func_debug,
+    internet_protocol_version6_module_func_on,
+    internet_protocol_version6_module_func_notify
 };
 
 extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
@@ -116,4 +113,25 @@ static void internet_protocol_version6_module_func_debug(internet_protocol_versi
     fprintf(stream, "| %s ", internet_protocol_version6_addr_to_str(address, internet_protocol_version6_context_source_get(context)));
     fprintf(stream, "| %s ", internet_protocol_version6_addr_to_str(address, internet_protocol_version6_context_destination_get(context)));
     fprintf(stream, "|\n");
+}
+
+static void internet_protocol_version6_module_func_on(internet_protocol_version6_module_t * module, uint32_t type, internet_protocol_version6_context_handler_t handler, protocol_context_t * parent, internet_protocol_version6_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(handler == nil, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "implement", "");
+}
+
+static void internet_protocol_version6_module_func_notify(internet_protocol_version6_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context, uint64_t ret) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "implement", "");
 }

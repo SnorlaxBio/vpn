@@ -12,6 +12,9 @@
 
 #include <snorlax.h>
 
+#define ingress                                     1
+#define egress                                      2
+
 struct protocol_module;
 struct protocol_module_func;
 struct protocol_context;

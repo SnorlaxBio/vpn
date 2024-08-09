@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "../control.h"
 
 static transmission_control_block_t * transmission_control_block_func_rem(transmission_control_block_t * block);
@@ -19,8 +22,8 @@ extern transmission_control_block_t * transmission_control_block_gen(transmissio
 
     block->func = address_of(func);
     
-    memcpy(block->source, source, sizeof(transmission_control_address_t));
-    memcpy(block->destination, destination, sizeof(transmission_control_address_t));
+    memcpy(address_of(block->source), source, sizeof(transmission_control_address_t));
+    memcpy(address_of(block->destination), destination, sizeof(transmission_control_address_t));
 
     return block;
 }
@@ -34,7 +37,7 @@ static transmission_control_block_t * transmission_control_block_func_rem(transm
 
     free(block);
 
-    return fail;
+    return nil;
 }
 
 static int32_t transmission_control_block_func_open(transmission_control_block_t * block) {

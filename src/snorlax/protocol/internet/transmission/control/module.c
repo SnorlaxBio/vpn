@@ -8,12 +8,16 @@ static transmission_control_protocol_module_t * transmission_control_protocol_mo
 static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
 static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
 static void transmission_control_protocol_module_func_debug(transmission_control_protocol_module_t * module, FILE * stream, transmission_control_protocol_context_t * context);
+static void transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, transmission_control_protocol_context_handler_t handler, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static void transmission_control_protocol_module_func_notify(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, uint64_t ret);
 
 static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_rem,
     transmission_control_protocol_module_func_deserialize,
     transmission_control_protocol_module_func_serialize,
-    transmission_control_protocol_module_func_debug
+    transmission_control_protocol_module_func_debug,
+    transmission_control_protocol_module_func_on,
+    transmission_control_protocol_module_func_notify
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
@@ -121,4 +125,12 @@ static void transmission_control_protocol_module_func_debug(transmission_control
     fprintf(stream, "| %d ", transmission_control_protocol_context_checksum_get(context));
     fprintf(stream, "| %d ", transmission_control_protocol_context_urgent_get(context));
     fprintf(stream, "|\n");
+}
+
+static void transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, transmission_control_protocol_context_handler_t handler, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+    snorlaxdbg(false, true, "implement", "");
+}
+
+static void transmission_control_protocol_module_func_notify(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, uint64_t ret) {
+    snorlaxdbg(false, true, "implement", "");
 }
