@@ -41,7 +41,7 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     application->func = address_of(func);
 
-    application->protocol.internet = internet_protocol_module_gen(nil, nil, 0, nil);
+    application->protocol.internet = internet_protocol_module_gen(nil, 0, nil);
     
     // .version4 = internet_protocol_version4_module_gen(nil, nil, 0, nil);
     // application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);

@@ -44,7 +44,6 @@ typedef uint64_t (*user_datagram_protocol_context_handler_t)(void);
 struct user_datagram_protocol_module {
     user_datagram_protocol_module_func_t * func;
     sync_t * sync;
-    internet_protocol_module_t * parent;
     protocol_module_map_t * map;
 };
 
@@ -55,7 +54,7 @@ struct user_datagram_protocol_module_func {
     void (*debug)(user_datagram_protocol_module_t *, FILE *, user_datagram_protocol_context_t *);
 };
 
-extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
+extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
 
 #define user_datagram_protocol_module_rem(module)                                                       ((module)->func->rem(module))
 #define user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context)           ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -65,6 +64,7 @@ extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(inter
 struct user_datagram_protocol_context {
     user_datagram_protocol_context_func_t * func;
     sync_t * sync;
+    user_datagram_protocol_module_t * module;
     internet_protocol_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;

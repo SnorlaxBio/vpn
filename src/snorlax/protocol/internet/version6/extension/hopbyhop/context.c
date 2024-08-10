@@ -6,20 +6,6 @@ static internet_protocol_version6_extension_hopbyhop_context_func_t func = {
     internet_protocol_version6_extension_hopbyhop_context_func_rem
 };
 
-// struct internet_protocol_version6_extension_hopbyhop_context {
-//     internet_protocol_version6_extension_hopbyhop_context_func_t * func;
-//     sync_t * sync;
-//     internet_protocol_version6_context_t * parent;
-//     protocol_context_t * subcontext;
-//     int32_t error;
-//     uint8_t * packet;
-//     uint64_t packetlen;
-// };
-
-// struct internet_protocol_version6_extension_hopbyhop_context_func {
-//     internet_protocol_version6_extension_hopbyhop_context_t * (*rem)(internet_protocol_version6_extension_hopbyhop_context_t *);
-// };
-
 extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen) {
 #ifndef   RELEASE
     snorlaxdbg(parent == nil, false, "critical", "");

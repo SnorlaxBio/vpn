@@ -15,11 +15,10 @@ static internet_protocol_version6_extension_destination_module_func_t func = {
     internet_protocol_version6_extension_destination_module_func_debug
 };
 
-extern internet_protocol_version6_extension_destination_module_t * internet_protocol_version6_extension_destination_module_gen(internet_protocol_version6_module_t * parent) {
+extern internet_protocol_version6_extension_destination_module_t * internet_protocol_version6_extension_destination_module_gen(void) {
     internet_protocol_version6_extension_destination_module_t * module = (internet_protocol_version6_extension_destination_module_t *) calloc(1, sizeof(internet_protocol_version6_extension_destination_module_t));
 
     module->func = address_of(func);
-    module->parent = parent;
 
     return module;
 }

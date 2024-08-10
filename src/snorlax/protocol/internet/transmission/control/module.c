@@ -16,11 +16,10 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_debug
 };
 
-extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
+extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
     transmission_control_protocol_module_t * module = (transmission_control_protocol_module_t *) calloc(1, sizeof(transmission_control_protocol_module_t));
 
     module->func = address_of(func);
-    module->parent = parent;
 
     if(children && children && index) {
         module->map = protocol_module_map_gen(children, childrenlen, index);

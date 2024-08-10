@@ -24,11 +24,10 @@ static internet_control_message_protocol_version6_module_func_t func = {
     internet_control_message_protocol_version6_module_func_debug
 };
 
-extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(internet_protocol_version6_module_t * parent) {
+extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(void) {
     internet_control_message_protocol_version6_module_t * module = (internet_control_message_protocol_version6_module_t *) calloc(1, sizeof(internet_control_message_protocol_version6_module_t));
 
     module->func = address_of(func);
-    module->parent = parent;
 
     return module;
 }

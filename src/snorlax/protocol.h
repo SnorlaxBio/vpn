@@ -39,7 +39,6 @@ typedef uint64_t (*protocol_context_handler_t)(void);
 struct protocol_module {
     protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_t * parent;
     protocol_module_map_t * map;
 };
 
@@ -58,6 +57,7 @@ struct protocol_module_func {
 struct protocol_context {
     protocol_context_func_t * func;
     sync_t * sync;
+    protocol_module_t * module;
     protocol_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;

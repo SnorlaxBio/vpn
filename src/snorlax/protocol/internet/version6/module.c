@@ -18,11 +18,10 @@ static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_debug
 };
 
-extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
+extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
     internet_protocol_version6_module_t * module = (internet_protocol_version6_module_t *) calloc(1, sizeof(internet_protocol_version6_module_t));
 
     module->func = address_of(func);
-    module->parent = parent;
 
     if(children && childrenlen && index) {
         module->children = protocol_module_map_gen(children, childrenlen, index);

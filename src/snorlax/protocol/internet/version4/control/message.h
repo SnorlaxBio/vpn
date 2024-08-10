@@ -140,7 +140,6 @@ typedef uint64_t (*internet_control_message_protocol_version4_context_handler_t)
 struct internet_control_message_protocol_version4_module {
     internet_control_message_protocol_version4_module_func_t * func;
     sync_t * sync;
-    internet_protocol_version4_module_t * parent;
     protocol_module_map_t * map;
 };
 
@@ -151,7 +150,7 @@ struct internet_control_message_protocol_version4_module_func {
     void (*debug)(internet_control_message_protocol_version4_module_t *, FILE *, internet_control_message_protocol_version4_context_t *);
 };
 
-extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(internet_protocol_version4_module_t * parent);
+extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(void);
 
 #define internet_control_message_protocol_version4_module_rem(module)                                                  ((module)->func->rem(module))
 #define internet_control_message_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)      ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -161,6 +160,7 @@ extern internet_control_message_protocol_version4_module_t * internet_control_me
 struct internet_control_message_protocol_version4_context {
     internet_control_message_protocol_version4_context_func_t * func;
     sync_t * sync;
+    internet_control_message_protocol_version4_module_t * module;
     internet_protocol_version4_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;

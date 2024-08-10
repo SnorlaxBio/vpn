@@ -38,7 +38,6 @@ typedef struct internet_protocol_context_func internet_protocol_context_func_t;
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_t * parent;
     protocol_module_map_t * map;
     protocol_module_t * version4;
     protocol_module_t * version6;
@@ -51,7 +50,7 @@ struct internet_protocol_module_func {
     void (*debug)(internet_protocol_module_t *, FILE *, internet_protocol_context_t *);
 };
 
-extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t * parent, protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index);
+extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index);
 
 #define internet_protocol_module_rem(module)                                                    ((module)->func->rem(module))
 #define internet_protocol_module_deserialize(module, packet, packetlen, parent, context)        ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -61,6 +60,7 @@ extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module
 struct internet_protocol_context {
     internet_protocol_context_func_t * func;
     sync_t * sync;
+    internet_protocol_module_t * module;
     protocol_context_t * parent;
     protocol_context_t * subcontext;
     int32_t error;

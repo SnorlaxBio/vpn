@@ -16,11 +16,10 @@ static user_datagram_protocol_module_func_t func = {
     user_datagram_protocol_module_func_debug
 };
 
-extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
+extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
     user_datagram_protocol_module_t * module = (user_datagram_protocol_module_t *) calloc(1, sizeof(user_datagram_protocol_module_t));
 
     module->func = address_of(func);
-    module->parent = parent;
 
     if(children && childrenlen && index) {
         module->map = protocol_module_map_gen(children, childrenlen, index);

@@ -17,18 +17,17 @@ static internet_protocol_module_func_t func = {
     internet_protocol_module_func_debug
 };
 
-extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t * parent, protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index) {
+extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index) {
     internet_protocol_module_t * module = (internet_protocol_module_t *) calloc(1, sizeof(internet_protocol_module_t));
 
     module->func = address_of(func);
-    module->parent = parent;
 
     if(submodule && submodulelen && index) {
         module->map = protocol_module_map_gen(submodule, submodulelen, index);
     }
 
-    module->version4 = (protocol_module_t *) internet_protocol_version4_module_gen(parent, submodule, submodulelen, index);
-    module->version6 = (protocol_module_t *) internet_protocol_version6_module_gen(parent, submodule, submodulelen, index);
+    module->version4 = (protocol_module_t *) internet_protocol_version4_module_gen(submodule, submodulelen, index);
+    module->version6 = (protocol_module_t *) internet_protocol_version6_module_gen(submodule, submodulelen, index);
 
     return module;
 }
@@ -52,7 +51,6 @@ static int32_t internet_protocol_module_func_deserialize(internet_protocol_modul
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
     snorlaxdbg(packetlen == 0, false, "critical", "");
-    snorlaxdbg(parent == nil, false, "critical", "");
 #endif // RELEASE   
 
     uint8_t version = internet_protocol_version_get(packet);
@@ -73,7 +71,6 @@ static int32_t internet_protocol_module_func_deserialize(internet_protocol_modul
 static int32_t internet_protocol_module_func_serialize(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
-    snorlaxdbg(parent == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
     snorlaxdbg(packetlen == 0, false, "critical", "");
