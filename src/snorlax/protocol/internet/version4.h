@@ -179,6 +179,8 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 
 #define internet_protocol_version4_context_error_set(context, v)            ((context)->error = v)
 #define internet_protocol_version4_context_error_get(context)               ((context)->error)
+#define internet_protocol_version4_context_packetlen_set(context, v)        ((context)->datagramlen = v)
+#define internet_protocol_version4_context_packetlen_get(context)           ((context)->datagramlen)
 #define internet_protocol_version4_context_total_set(context, v)            ((context)->total = v)
 #define internet_protocol_version4_context_total_get(context)               ((context)->total)
 #define internet_protocol_version4_context_checksum_set(context, v)         ((context)->checksum = v)

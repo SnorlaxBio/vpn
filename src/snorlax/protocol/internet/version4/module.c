@@ -101,6 +101,8 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
         return fail;
     }
 
+    internet_protocol_version4_context_packetlen_set(*context, ntohs(datagram->total));
+
     internet_protocol_version4_context_checksum_set(*context, ntohs(datagram->checksum));
 
     uint16_t checksum = internet_protocol_version4_module_checksum_cal(datagram);

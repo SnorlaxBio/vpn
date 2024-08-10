@@ -23,7 +23,7 @@ static internet_protocol_context_t * internet_protocol_context_func_rem(internet
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    context->pseudo = (internet_protocol_context_t *) memory_rem(context->pseudo);
+    context->pseudo = (internet_protocol_pseudo_t *) memory_rem(context->pseudo);
 
     context->sync = sync_rem(context->sync);
 

@@ -57,57 +57,86 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
 
     descriptor_buffer_t * buffer = descriptor_event_subscription_buffer_get(subscription);
     buffer_node_t * in = nil;
+    internet_protocol_module_t * module = vpn_client_app_internet_protocol_module_get();
     // protocol_module_t * module = vpn_client_app_internet_protocol_module_get();
 
     while(buffer_node_length(in = buffer_front(buffer->in)) > 0) {
         uint8_t * datagram = (uint8_t *) buffer_node_front(in);
         uint64_t datagramlen = buffer_node_length(in);
 
-        uint8_t version = internet_protocol_version_get(datagram);
+        internet_protocol_context_t * context = nil;
 
-        if(version == 4) {
-            internet_protocol_version4_module_t * module = vpn_client_app_internet_protocol_version4_module_get();
+        internet_protocol_module_deserialize(module, datagram, datagramlen, nil, &context);
 
-            internet_protocol_version4_context_t * context = nil;
-
-            internet_protocol_version4_module_deserialize(module, datagram, datagramlen, nil, &context);
-            
-            if(internet_protocol_version4_context_error_get(context)) {
-                snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
-                context = internet_protocol_version4_context_rem(context);
-                return;
-            }
-
-            uint64_t length = internet_protocol_version4_context_total_get(context);
-
-            context = internet_protocol_version4_context_rem(context);
-
-            buffer_node_position_set(in, buffer_node_position_get(in) + length);
-        } else if(version == 6) {
-            internet_protocol_version6_module_t * module = vpn_client_app_internet_protocol_version6_module_get();
-
-            internet_protocol_version6_context_t * context = nil;
-
-            internet_protocol_version6_module_deserialize(module, datagram, datagramlen, nil, &context);
-            
-            if(internet_protocol_version6_context_error_get(context)) {
-                snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
-                context = internet_protocol_version6_context_rem(context);
-                return;
-            }
-
-            uint64_t length = internet_protocol_version6_context_payload_length_get(context) + internet_protocol_version6_packet_header_length_min;
-
-            context = internet_protocol_version6_context_rem(context);
-
-            buffer_node_position_set(in, buffer_node_position_get(in) + length);
-        } else {
-#ifndef   RELEASE
-            snorlaxdbg(true, false, "critical", "version => %d %02x", version, datagram[0]);
-#endif // RELEASE
+        if(internet_protocol_context_error_get(context)) {
+            snorlaxdbg(false, true, "debug", "errno => %d", internet_protocol_context_error_get(context));
+            context = internet_protocol_context_rem(context);
+            return;
         }
 
+        uint64_t length = internet_protocol_context_packetlen_get(context);
+
+        context = internet_protocol_version4_context_rem(context);
+
+        buffer_node_position_set(in, buffer_node_position_get(in) + length);
+
         buffer_shrink(buffer->in);
+
+//                     if(internet_protocol_version4_context_error_get(context)) {
+//                 snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
+//                 context = internet_protocol_version4_context_rem(context);
+//                 return;
+//             }
+
+//         module
+
+
+
+//         uint8_t version = internet_protocol_version_get(datagram);
+
+//         if(version == 4) {
+//             internet_protocol_version4_module_t * module = vpn_client_app_internet_protocol_version4_module_get();
+
+//             internet_protocol_version4_context_t * context = nil;
+
+//             internet_protocol_version4_module_deserialize(module, datagram, datagramlen, nil, &context);
+            
+//             if(internet_protocol_version4_context_error_get(context)) {
+//                 snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
+//                 context = internet_protocol_version4_context_rem(context);
+//                 return;
+//             }
+
+//             uint64_t length = internet_protocol_version4_context_total_get(context);
+
+//             context = internet_protocol_version4_context_rem(context);
+
+//             buffer_node_position_set(in, buffer_node_position_get(in) + length);
+//         } else if(version == 6) {
+//             internet_protocol_version6_module_t * module = vpn_client_app_internet_protocol_version6_module_get();
+
+//             internet_protocol_version6_context_t * context = nil;
+
+//             internet_protocol_version6_module_deserialize(module, datagram, datagramlen, nil, &context);
+            
+//             if(internet_protocol_version6_context_error_get(context)) {
+//                 snorlaxdbg(false, true, "debug", "error => %d", internet_protocol_version4_context_error_get(context));
+//                 context = internet_protocol_version6_context_rem(context);
+//                 return;
+//             }
+
+//             uint64_t length = internet_protocol_version6_context_payload_length_get(context) + internet_protocol_version6_packet_header_length_min;
+
+//             context = internet_protocol_version6_context_rem(context);
+
+//             buffer_node_position_set(in, buffer_node_position_get(in) + length);
+//         } else {
+// #ifndef   RELEASE
+//             snorlaxdbg(true, false, "critical", "version => %d %02x", version, datagram[0]);
+// #endif // RELEASE
+//         }
+
+        
     }
 
 #ifndef   RELEASE

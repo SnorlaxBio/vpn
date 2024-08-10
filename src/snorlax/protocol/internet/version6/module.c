@@ -69,6 +69,8 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
         return fail;
     }
 
+    internet_protocol_version6_context_packetlen_set(*context, internet_protocol_version6_packet_header_length_min + internet_protocol_version6_context_payload_length_get(*context));
+
     internet_protocol_version6_context_version_set(*context, internet_protocol_version6_version_get(datagram));
     internet_protocol_version6_context_traffic_class_set(*context, internet_protocol_version6_traffic_class_get(datagram));
     internet_protocol_version6_context_flow_label_set(*context, internet_protocol_version6_flow_label_get(datagram));

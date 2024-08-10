@@ -253,6 +253,8 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 
 #define internet_protocol_version6_context_error_get(context)               ((context)->error)
 #define internet_protocol_version6_context_error_set(context, v)            ((context)->error = v)
+#define internet_protocol_version6_context_packetlen_get(context)           ((context)->datagramlen)
+#define internet_protocol_version6_context_packetlen_set(context, v)        ((context)->datagramlen = v)
 #define internet_protocol_version6_context_version_get(context)             ((context)->version)
 #define internet_protocol_version6_context_version_set(context, v)          ((context)->version = v)
 #define internet_protocol_version6_context_traffic_class_get(contex)        ((context)->traffic)

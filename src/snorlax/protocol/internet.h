@@ -36,7 +36,7 @@ typedef struct internet_protocol_context internet_protocol_context_t;
 typedef struct internet_protocol_context_func internet_protocol_context_func_t;
 
 struct internet_protocol_module {
-    protocol_module_func_t * func;
+    internet_protocol_module_func_t * func;
     sync_t * sync;
     protocol_module_t * parent;
     protocol_module_map_t * map;
@@ -59,7 +59,7 @@ extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module
 #define internet_protocol_module_debug(module, stream, context)                                 ((module)->func->debug(module, stream, context))
 
 struct internet_protocol_context {
-    protocol_context_func_t * func;
+    internet_protocol_context_func_t * func;
     sync_t * sync;
     protocol_context_t * parent;
     protocol_context_t * subcontext;
@@ -83,6 +83,7 @@ extern internet_protocol_context_t * internet_protocol_context_gen(protocol_cont
 #define internet_protocol_context_pseudo_get(context)           ((context)->pseudo)
 #define internet_protocol_context_pseudolen_get(context)        ((context)->pseudolen)
 #define internet_protocol_context_pseudo_set(context, v, len)   (((context)->pseudolen = len), ((context)->pseudo = v))
+#define internet_protocol_context_packetlen_get(context)        ((context)->packetlen)
 
 struct internet_protocol_address {
     protocol_address_t type;

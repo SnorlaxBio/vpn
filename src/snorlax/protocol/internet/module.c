@@ -50,19 +50,17 @@ static internet_protocol_module_t * internet_protocol_module_func_rem(internet_p
 static int32_t internet_protocol_module_func_deserialize(internet_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_context_t ** context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
-    snorlaxdbg(module->map == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
     snorlaxdbg(packetlen == 0, false, "critical", "");
     snorlaxdbg(parent == nil, false, "critical", "");
-    snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE   
 
     uint8_t version = internet_protocol_version_get(packet);
 
     if(version == 4) {
-        return internet_protocol_version4_module_deserialize(module->version4, packet, packetlen, parent, context);
+        return protocol_module_deserialize(module->version4, packet, packetlen, parent, (protocol_context_t **) context);
     } else if(version == 6) {
-        return internet_protocol_version6_module_deserialize(module->version6, packet, packetlen, parent, context);
+        return protocol_module_deserialize(module->version6, packet, packetlen, parent, (protocol_context_t **) context);
     } else {
         if(*context == nil) *context = internet_protocol_context_gen(parent, (internet_protocol_packet_t *) packet, packetlen);
 
@@ -84,9 +82,9 @@ static int32_t internet_protocol_module_func_serialize(internet_protocol_module_
     uint8_t version = internet_protocol_version_get(context->packet);
 
     if(version == 4) {
-        return internet_protocol_version4_module_serialize(module->version4, parent, context, packet, packetlen);
+        return protocol_module_serialize(module->version4, parent, (protocol_context_t *) context, packet, packetlen);
     } else if(version == 6) {
-        return internet_protocol_version6_module_serialize(module->version6, parent, context, packet, packetlen);
+        return protocol_module_serialize(module->version6, parent, (protocol_context_t *) context, packet, packetlen);
     } else {
 #ifndef   RELEASE
         snorlaxdbg(true, false, "critical", "");
@@ -106,9 +104,9 @@ static void internet_protocol_module_func_debug(internet_protocol_module_t * mod
     uint8_t version = internet_protocol_version_get(context->packet);
 
     if(version == 4) {
-        internet_protocol_version4_module_debug(module->version4, stream, context);
+        protocol_module_debug(module->version4, stream, (protocol_context_t *) context);
     } else if(version == 6) {
-        internet_protocol_version6_module_debug(module->version6, stream, context);
+        protocol_module_debug(module->version6, stream, (protocol_context_t *) context);
     } else {
         snorlaxdbg(true, false, "critical", "");
     }

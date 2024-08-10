@@ -41,8 +41,10 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     application->func = address_of(func);
 
-    application->protocol.internet.version4 = internet_protocol_version4_module_gen(nil, nil, 0, nil);
-    application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);
+    application->protocol.internet = internet_protocol_module_gen(nil, nil, 0, nil);
+    
+    // .version4 = internet_protocol_version4_module_gen(nil, nil, 0, nil);
+    // application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);
     // application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);
 
     return application;
@@ -62,7 +64,9 @@ static vpn_client_app_t * vpn_client_app_func_rem(vpn_client_app_t * application
 
     application->engine = event_engine_rem(application->engine);
 
-    application->protocol.internet.version4 = internet_protocol_version4_module_rem(application->protocol.internet.version4);
+    application->protocol.internet = internet_protocol_module_rem(application->protocol.internet);
+    
+    // .version4 = internet_protocol_version4_module_rem(application->protocol.internet.version4);
     // application->protocol.internet.version6 = internet_protocol_version6_module_rem(application->protocol.internet.version6);
 
     free(application);
@@ -133,10 +137,6 @@ extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(voi
     return app->netlink;
 }
 
-extern internet_protocol_version4_module_t * vpn_client_app_internet_protocol_version4_module_get(void) {
-    return app->protocol.internet.version4;
-}
-
-extern internet_protocol_version6_module_t * vpn_client_app_internet_protocol_version6_module_get(void) {
-    return app->protocol.internet.version6;
+extern internet_protocol_module_t * vpn_client_app_internet_protocol_module_get(void) {
+    return app->protocol.internet;
 }
