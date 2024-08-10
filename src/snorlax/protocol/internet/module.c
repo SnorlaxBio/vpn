@@ -17,17 +17,14 @@ static internet_protocol_module_func_t func = {
     internet_protocol_module_func_debug
 };
 
-extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index) {
+extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_map_t * map) {
     internet_protocol_module_t * module = (internet_protocol_module_t *) calloc(1, sizeof(internet_protocol_module_t));
 
     module->func = address_of(func);
+    module->map = map;
 
-    if(submodule && submodulelen && index) {
-        module->map = protocol_module_map_gen(submodule, submodulelen, index);
-    }
-
-    module->version4 = (protocol_module_t *) internet_protocol_version4_module_gen(submodule, submodulelen, index);
-    module->version6 = (protocol_module_t *) internet_protocol_version6_module_gen(submodule, submodulelen, index);
+    module->version4 = (protocol_module_t *) internet_protocol_version4_module_gen(map);
+    module->version6 = (protocol_module_t *) internet_protocol_version6_module_gen(map);
 
     return module;
 }
@@ -36,8 +33,6 @@ static internet_protocol_module_t * internet_protocol_module_func_rem(internet_p
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
-
-    if(module->map) module->map = protocol_module_map_rem(module->map);
 
     module->sync = sync_rem(module->sync);
 

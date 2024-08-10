@@ -114,7 +114,7 @@ typedef uint64_t (*internet_protocol_version4_context_handler_t)(void);
 struct internet_protocol_version4_module {
     internet_protocol_version4_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * children;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_protocol_version4_module_func {
@@ -124,7 +124,7 @@ struct internet_protocol_version4_module_func {
     void (*debug)(internet_protocol_version4_module_t *, FILE *, internet_protocol_version4_context_t *);
 };
 
-extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
+extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map);
 
 #define internet_protocol_version4_module_rem(module)                                               ((module)->func->rem(module))
 #define internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)   ((module)->func->deserialize(module, packet, packetlen, parent, context))

@@ -143,7 +143,7 @@ typedef uint64_t (*transmission_control_protocol_context_handler_t)(void);
 struct transmission_control_protocol_module {
     transmission_control_protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct transmission_control_protocol_module_func {
@@ -153,7 +153,7 @@ struct transmission_control_protocol_module_func {
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
 };
 
-extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
+extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map);
 
 #define transmission_control_protocol_module_rem(module)                                                        ((module)->func->rem(module))
 #define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))

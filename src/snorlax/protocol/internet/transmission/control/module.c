@@ -16,14 +16,12 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_debug
 };
 
-extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
+extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map) {
     transmission_control_protocol_module_t * module = (transmission_control_protocol_module_t *) calloc(1, sizeof(transmission_control_protocol_module_t));
 
     module->func = address_of(func);
 
-    if(children && children && index) {
-        module->map = protocol_module_map_gen(children, childrenlen, index);
-    }
+    module->map = map;
 
     return module;
 }
@@ -34,8 +32,6 @@ static transmission_control_protocol_module_t * transmission_control_protocol_mo
 #endif // RELEASE
 
     module->sync = sync_rem(module->sync);
-
-    if(module->map) module->map = protocol_module_map_rem(module->map);
 
     free(module);
 

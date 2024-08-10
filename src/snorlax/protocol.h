@@ -39,7 +39,7 @@ typedef uint64_t (*protocol_context_handler_t)(void);
 struct protocol_module {
     protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct protocol_module_func {
@@ -91,5 +91,8 @@ extern protocol_module_map_t * protocol_module_map_gen(protocol_module_t ** modu
 
 #define protocol_module_map_rem(map)                    ((map) ? (map)->func->rem(map) : nil)
 #define protocol_module_map_get(map, no)                ((map) ? (map)->func->get(map, no) : nil)
+#define protocol_module_map_modules_get(map)            ((map) ? (map)->modules : nil)
+#define protocol_module_map_size_get(map)               ((map) ? (map)->size : 0)
+#define protocol_module_map_index_get(map)              ((map) ? (map)->index : nil)
 
 #endif // __SNORLAX__PROTOCOL__H__

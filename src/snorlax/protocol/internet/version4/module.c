@@ -27,14 +27,11 @@ static internet_protocol_version4_module_func_t func = {
     internet_protocol_version4_module_func_debug
 };
 
-extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
+extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map) {
     internet_protocol_version4_module_t * module = (internet_protocol_version4_module_t *) calloc(1, sizeof(internet_protocol_version4_module_t));
 
     module->func = address_of(func);
-
-    if(children && childrenlen && index) {
-        module->children = protocol_module_map_gen(children, childrenlen, index);
-    }
+    module->map = map;
 
     return module;
 }
@@ -65,8 +62,6 @@ static internet_protocol_version4_module_t * internet_protocol_version4_module_f
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
-
-    module->children = protocol_module_map_rem(module->children);
 
     module->sync = sync_rem(module->sync);
 
@@ -120,7 +115,7 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
 
     internet_protocol_version4_module_debug(module, stdout, *context);
 
-    protocol_module_t * submodule = protocol_module_map_get(module->children, internet_protocol_version4_context_protocol_get(*context));
+    protocol_module_t * submodule = protocol_module_map_get(module->map, internet_protocol_version4_context_protocol_get(*context));
 
     if(submodule) {
         return protocol_module_deserialize(submodule, internet_protocol_version4_context_segment_offset_get(*context), internet_protocol_version4_context_segment_length_get(*context), (protocol_context_t *) *context, address_of((*context)->subcontext));

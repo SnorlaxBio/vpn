@@ -12,7 +12,4 @@
 
 #include <snorlax/protocol.h>
 
-extern void vpn_client_protocol_module_array_init(void);
-extern protocol_module_t ** vpn_client_protocol_module_array_transport_get(void);
-
 #endif // __SNORLAX__VPN_CLIENT_PROTOCOL__H__

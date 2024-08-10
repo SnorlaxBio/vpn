@@ -10,6 +10,7 @@
 #include "event/subscription.h"
 #include "app/tun.h"
 #include "app/netlink.h"
+#include "protocol.h"
 
 static vpn_client_app_t * app = nil;
 
@@ -36,16 +37,48 @@ static vpn_client_app_func_t func = {
     vpn_client_app_func_run
 };
 
+static uint32_t transport_protocol_index_get(uint32_t no) {
+    switch(no) {
+        case transmission_control_protocol_no:                      return 0;
+        case user_datagram_protocol_no:                             return 1;
+        case internet_protocol_version6_extension_hopbyhop_no:      return 2;
+        case internet_control_message_protocol_version4_no:         return 3;
+        case internet_protocol_version6_extension_routing_no:       return 4;
+        case internet_protocol_version6_extension_fragment_no:      return 5;
+        case internet_protocol_version6_extension_destination_no:   return 6;
+        case internet_control_message_protocol_version6_no:         return 7;
+        default:                                                    return 8;
+    }
+}
+
 extern vpn_client_app_t * vpn_client_app_gen(void) {
     vpn_client_app_t * application = (vpn_client_app_t *) calloc(1, sizeof(vpn_client_app_t));
 
     application->func = address_of(func);
 
-    application->protocol.internet = internet_protocol_module_gen(nil, 0, nil);
-    
-    // .version4 = internet_protocol_version4_module_gen(nil, nil, 0, nil);
-    // application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);
-    // application->protocol.internet.version6 = internet_protocol_version6_module_gen(nil, nil, 0, nil);
+    application->protocol.transmission_control = transmission_control_protocol_module_gen(nil);
+    application->protocol.user_datagram = user_datagram_protocol_module_gen(nil);
+    application->protocol.internet_protocol_version6_extension_hopbyhop = internet_protocol_version6_extension_hopbyhop_module_gen();
+    application->protocol.internet_control_message_protocol_version4 = internet_control_message_protocol_version4_module_gen();
+    application->protocol.internet_protocol_version6_extension_routing = internet_protocol_version6_extension_routing_module_gen();
+    application->protocol.internet_protocol_version6_extension_fragment = internet_protocol_version6_extension_fragment_module_gen();
+    application->protocol.internet_protocol_version6_extension_destination = internet_protocol_version6_extension_destination_module_gen();
+    application->protocol.internet_control_message_protocol_version6 = internet_control_message_protocol_version6_module_gen();
+
+    protocol_module_t * modules[] = {
+        (protocol_module_t *) application->protocol.transmission_control,
+        (protocol_module_t *) application->protocol.user_datagram,
+        (protocol_module_t *) application->protocol.internet_protocol_version6_extension_hopbyhop,
+        (protocol_module_t *) application->protocol.internet_control_message_protocol_version4,
+        (protocol_module_t *) application->protocol.internet_protocol_version6_extension_routing,
+        (protocol_module_t *) application->protocol.internet_protocol_version6_extension_fragment,
+        (protocol_module_t *) application->protocol.internet_protocol_version6_extension_destination,
+        (protocol_module_t *) application->protocol.internet_control_message_protocol_version6,
+    };
+
+    application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_index_get);
+
+    application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport);
 
     return application;
 }

@@ -140,7 +140,7 @@ typedef uint64_t (*internet_control_message_protocol_version4_context_handler_t)
 struct internet_control_message_protocol_version4_module {
     internet_control_message_protocol_version4_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_control_message_protocol_version4_module_func {

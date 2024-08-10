@@ -44,7 +44,7 @@ typedef uint64_t (*user_datagram_protocol_context_handler_t)(void);
 struct user_datagram_protocol_module {
     user_datagram_protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct user_datagram_protocol_module_func {
@@ -54,7 +54,7 @@ struct user_datagram_protocol_module_func {
     void (*debug)(user_datagram_protocol_module_t *, FILE *, user_datagram_protocol_context_t *);
 };
 
-extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
+extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map);
 
 #define user_datagram_protocol_module_rem(module)                                                       ((module)->func->rem(module))
 #define user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context)           ((module)->func->deserialize(module, packet, packetlen, parent, context))

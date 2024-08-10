@@ -13,6 +13,19 @@
 #include <snorlax.h>
 #include <snorlax/protocol.h>
 
+/**
+ * @see     [Protocol Numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
+ */
+#define internet_protocol_version6_extension_hopbyhop_no        0
+#define internet_control_message_protocol_version4_no           1
+#define transmission_control_protocol_no                        6
+#define user_datagram_protocol_no                               17
+#define internet_protocol_version6_extension_routing_no         43
+#define internet_protocol_version6_extension_fragment_no        44
+#define internet_protocol_version6_extension_destination_no     60
+#define internet_control_message_protocol_version6_no           58
+#define internet_protocol_version6_extension_no_next_header     59
+
 #if       __BYTE_ORDER == __LITTLE_ENDIAN
 #define internet_protocol_version_get(datagram)     (datagram[0] >> 4)
 #else  // __BYTE_ORDER == __LITTLE_ENDIAN
@@ -38,7 +51,7 @@ typedef struct internet_protocol_context_func internet_protocol_context_func_t;
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
     protocol_module_t * version4;
     protocol_module_t * version6;
 };
@@ -50,7 +63,7 @@ struct internet_protocol_module_func {
     void (*debug)(internet_protocol_module_t *, FILE *, internet_protocol_context_t *);
 };
 
-extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index);
+extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_map_t * map);
 
 #define internet_protocol_module_rem(module)                                                    ((module)->func->rem(module))
 #define internet_protocol_module_deserialize(module, packet, packetlen, parent, context)        ((module)->func->deserialize(module, packet, packetlen, parent, context))

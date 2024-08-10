@@ -203,7 +203,7 @@ struct internet_protocol_version6_extension_destination {
 struct internet_protocol_version6_module {
     internet_protocol_version6_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * children;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_protocol_version6_module_func {
@@ -213,7 +213,7 @@ struct internet_protocol_version6_module_func {
     void (*debug)(internet_protocol_version6_module_t *, FILE *, internet_protocol_version6_context_t *);
 };
 
-extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
+extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map);
 
 #define internet_protocol_version6_module_rem(module)                                               ((module)->func->rem(module))
 #define internet_protocol_version6_module_deserialize(module, packet, packetlen, parent, context)   ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -282,7 +282,7 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 struct internet_protocol_version6_extension_module {
     internet_protocol_version6_extension_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t ** map;
+    ___reference protocol_module_map_t ** map;
 };
 
 struct internet_protocol_version6_extension_module_func {
@@ -321,7 +321,7 @@ typedef uint64_t (*internet_protocol_version6_extension_hopbyhop_context_handler
 struct internet_protocol_version6_extension_hopbyhop_module {
     internet_protocol_version6_extension_hopbyhop_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_protocol_version6_extension_hopbyhop_module_func {
@@ -372,7 +372,7 @@ typedef uint64_t (*internet_protocol_version6_extension_routing_context_handler_
 struct internet_protocol_version6_extension_routing_module {
     internet_protocol_version6_extension_routing_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_protocol_version6_extension_routing_module_func {
@@ -418,7 +418,7 @@ typedef uint64_t (*internet_protocol_version6_extension_fragment_context_handler
 struct internet_protocol_version6_extension_fragment_module {
     internet_protocol_version6_extension_fragment_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_protocol_version6_extension_fragment_module_func {
@@ -463,7 +463,7 @@ typedef uint64_t (*internet_protocol_version6_extension_destination_context_hand
 struct internet_protocol_version6_extension_destination_module {
     internet_protocol_version6_extension_destination_module_func_t * func;
     sync_t * sync;
-    protocol_module_map_t * map;
+    ___reference protocol_module_map_t * map;
 };
 
 struct internet_protocol_version6_extension_destination_module_func {

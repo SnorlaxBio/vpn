@@ -16,14 +16,11 @@ static user_datagram_protocol_module_func_t func = {
     user_datagram_protocol_module_func_debug
 };
 
-extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
+extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map) {
     user_datagram_protocol_module_t * module = (user_datagram_protocol_module_t *) calloc(1, sizeof(user_datagram_protocol_module_t));
 
     module->func = address_of(func);
-
-    if(children && childrenlen && index) {
-        module->map = protocol_module_map_gen(children, childrenlen, index);
-    }
+    module->map = map;
 
     return module;
 }
@@ -32,8 +29,6 @@ static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
-
-    if(module->map) module->map = protocol_module_map_rem(module->map);
 
     module->sync = sync_rem(module->sync);
 
