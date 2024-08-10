@@ -116,9 +116,11 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
     internet_protocol_version4_module_debug(module, stdout, *context);
 
     protocol_module_t * submodule = protocol_module_map_get(module->map, internet_protocol_version4_context_protocol_get(*context));
+    protocol_packet_t * subpacket = internet_protocol_version4_context_segment_offset_get(*context);
+    uint64_t subpacketlen = internet_protocol_version4_context_segment_length_get(*context);
 
     if(submodule) {
-        return protocol_module_deserialize(submodule, internet_protocol_version4_context_segment_offset_get(*context), internet_protocol_version4_context_segment_length_get(*context), (protocol_context_t *) *context, address_of((*context)->subcontext));
+        return protocol_module_deserialize(submodule, subpacket, subpacketlen, (protocol_context_t *) *context, protocol_context_array_pop((*context)->children));
     } else {
 #ifndef   RELEASE
         snorlaxdbg(false, true, "implement", "");

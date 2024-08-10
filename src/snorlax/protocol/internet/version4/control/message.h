@@ -162,7 +162,7 @@ struct internet_control_message_protocol_version4_context {
     sync_t * sync;
     internet_control_message_protocol_version4_module_t * module;
     internet_protocol_version4_context_t * parent;
-    protocol_context_t * subcontext;
+    protocol_context_array_t * children;
     int32_t error;
     union {
         internet_control_message_protocol_version4_packet_t * packet;

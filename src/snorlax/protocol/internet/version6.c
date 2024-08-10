@@ -4,6 +4,17 @@
 
 #include "version6.h"
 
+extern int32_t internet_protocol_version6_extension_check(uint32_t no) {
+    switch(no) {
+        case internet_protocol_version6_extension_hopbyhop_no:      return true;
+        case internet_protocol_version6_extension_routing_no:       return true;
+        case internet_protocol_version6_extension_fragment_no:      return true;
+        case internet_protocol_version6_extension_destination_no:   return true;
+        case internet_protocol_version6_extension_no_next_header:   return true;
+        default:                                                    return false;
+    }
+}
+
 extern const char * internet_protocol_version6_addr_to_str(char * destination, uint8_t * addr) {
 #ifndef   RELEASE
     snorlaxdbg(destination == nil, false, "critical", "");

@@ -10,6 +10,7 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
     internet_protocol_version6_context_t * context = (internet_protocol_version6_context_t *) calloc(1, sizeof(internet_protocol_version6_context_t));
 
     context->func = address_of(func);
+    context->children = protocol_context_array_gen();
     context->parent = parent;
     context->datagram = (internet_protocol_version6_packet_t *) datagram;
     context->datagramlen = datagramlen;
@@ -22,7 +23,8 @@ static internet_protocol_version6_context_t * internet_protocol_version6_context
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(context->subcontext) context->subcontext = protocol_context_rem(context->subcontext);
+    if(context->children) context->children = protocol_context_array_rem(context->children);
+
     context->pseudo = memory_rem(context->pseudo);
 
     context->sync = sync_rem(context->sync);

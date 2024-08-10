@@ -12,6 +12,7 @@ extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(int
     user_datagram_protocol_context_t * context = (user_datagram_protocol_context_t *) calloc(1, sizeof(user_datagram_protocol_context_t));
 
     context->func = address_of(func);
+    context->children = protocol_context_array_gen();
 
     return context;
 }
@@ -20,6 +21,8 @@ static user_datagram_protocol_context_t * user_datagram_protocol_context_func_re
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
+
+    if(context->children) context->children = protocol_context_array_rem(context->children);
 
     context->sync = sync_rem(context->sync);
 

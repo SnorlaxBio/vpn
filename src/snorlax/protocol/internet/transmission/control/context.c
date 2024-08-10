@@ -12,6 +12,7 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
     transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
 
     context->func = address_of(func);
+    context->children = protocol_context_array_gen();
     context->parent = parent;
     context->packet = packet;
     context->packetlen = packetlen;
@@ -23,6 +24,8 @@ static transmission_control_protocol_context_t * transmission_control_protocol_c
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
+
+    if(context->children) context->children = protocol_context_array_rem(context->children);
 
     context->sync = sync_rem(context->sync);
 

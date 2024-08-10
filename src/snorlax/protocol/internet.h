@@ -75,7 +75,7 @@ struct internet_protocol_context {
     sync_t * sync;
     internet_protocol_module_t * module;
     protocol_context_t * parent;
-    protocol_context_t * subcontext;
+    protocol_context_array_t * children;
     int32_t error;
     internet_protocol_packet_t * packet;
     uint64_t packetlen;

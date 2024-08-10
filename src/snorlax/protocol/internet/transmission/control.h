@@ -165,7 +165,7 @@ struct transmission_control_protocol_context {
     sync_t * sync;
     transmission_control_protocol_module_t * module;
     internet_protocol_context_t * parent;
-    protocol_context_t * subcontext;
+    protocol_context_array_t * children;
     int32_t error;
     transmission_control_protocol_packet_t * packet;
     uint64_t packetlen;

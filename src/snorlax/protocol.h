@@ -12,15 +12,14 @@
 
 #include <snorlax.h>
 
-#define ingress                                     1
-#define egress                                      2
-
 struct protocol_module;
 struct protocol_module_func;
 struct protocol_context;
 struct protocol_context_func;
 struct protocol_module_map;
 struct protocol_module_map_func;
+struct protocol_context_array;
+struct protocol_context_array_func;
 
 typedef uint8_t protocol_packet_t;
 typedef uint16_t protocol_address_t;
@@ -31,6 +30,8 @@ typedef struct protocol_context protocol_context_t;
 typedef struct protocol_context_func protocol_context_func_t;
 typedef struct protocol_module_map protocol_module_map_t;
 typedef struct protocol_module_map_func protocol_module_map_func_t;
+typedef struct protocol_context_array protocol_context_array_t;
+typedef struct protocol_context_array_func protocol_context_array_func_t;
 
 typedef uint32_t (*protocol_module_map_index_t)(uint32_t);
 
@@ -59,7 +60,7 @@ struct protocol_context {
     sync_t * sync;
     protocol_module_t * module;
     protocol_context_t * parent;
-    protocol_context_t * subcontext;
+    protocol_context_array_t * children;
     int32_t error;
     uint8_t * packet;
     uint64_t packetlen;
@@ -94,5 +95,25 @@ extern protocol_module_map_t * protocol_module_map_gen(protocol_module_t ** modu
 #define protocol_module_map_modules_get(map)            ((map) ? (map)->modules : nil)
 #define protocol_module_map_size_get(map)               ((map) ? (map)->size : 0)
 #define protocol_module_map_index_get(map)              ((map) ? (map)->index : nil)
+
+struct protocol_context_array {
+    protocol_context_array_func_t * func;
+    sync_t * sync;
+    uint64_t size;
+    uint8_t capacity;
+    protocol_context_t ** container;
+};
+
+struct protocol_context_array_func {
+    protocol_context_array_t * (*rem)(protocol_context_array_t *);
+    protocol_context_t * (*get)(protocol_context_array_t *, uint64_t);
+    protocol_context_t ** (*pop)(protocol_context_array_t *);
+};
+
+extern protocol_context_array_t * protocol_context_array_gen(void);
+
+#define protocol_context_array_rem(collection)                      ((collection)->func->rem(collection))
+#define protocol_context_array_get(collection, index)               ((collection)->func->get(collection, index))
+#define protocol_context_array_pop(collection)                      ((collection)->func->pop(collection))
 
 #endif // __SNORLAX__PROTOCOL__H__

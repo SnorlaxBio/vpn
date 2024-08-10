@@ -142,7 +142,7 @@ struct internet_protocol_version4_context {
     sync_t * sync;
     internet_protocol_version4_module_t * module;
     protocol_context_t * parent;
-    protocol_context_t * subcontext;
+    protocol_context_array_t * children;
     int32_t error;
     internet_protocol_version4_packet_t * datagram;
     uint64_t datagramlen;

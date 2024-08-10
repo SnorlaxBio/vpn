@@ -66,7 +66,7 @@ struct user_datagram_protocol_context {
     sync_t * sync;
     user_datagram_protocol_module_t * module;
     internet_protocol_context_t * parent;
-    protocol_context_t * subcontext;
+    protocol_context_array_t * children;
     int32_t error;
     user_datagram_protocol_packet_t * packet;
     uint64_t packetlen;
