@@ -70,10 +70,10 @@ struct protocol_context_func {
     protocol_context_t * (*rem)(protocol_context_t *);
 };
 
-#define protocol_context_rem(context)               ((context)->func->rem(context))
+#define protocol_context_rem(context)                                                   ((context)->func->rem(context))
 
-#define protocol_context_error_get(context)         ((context)->error)
-#define protocol_context_error_set(context, v)      ((context)->error = v)
+#define protocol_context_error_get(context)                                             ((context)->error)
+#define protocol_context_error_set(context, v)                                          ((context)->error = v)
 
 struct protocol_module_map {
     protocol_module_map_func_t * func;

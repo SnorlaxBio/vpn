@@ -25,12 +25,15 @@ struct internet_protocol_version6_context;
 #define internet_control_message_protocol_version6_message_type_echo_request                    128
 #define internet_control_message_protocol_version6_message_type_echo_reply                      129
 
+#define internet_control_message_protocol_version6_message_type_router_solicitation             133
+
 struct internet_control_message_protocol_version6_packet;
 struct internet_control_message_protocol_version6_destination_unreachable_message;
 struct internet_control_message_protocol_version6_packet_too_big_message;
 struct internet_control_message_protocol_version6_time_exceeded_message;
 struct internet_control_message_protocol_version6_parameter_problem_message;
 struct internet_control_message_protocol_version6_echo_message;
+struct internet_control_message_protocol_version6_router_solicitation_message;
 
 struct internet_control_message_protocol_version6_module;
 struct internet_control_message_protocol_version6_module_func;
@@ -46,6 +49,7 @@ typedef struct internet_control_message_protocol_version6_packet_too_big_message
 typedef struct internet_control_message_protocol_version6_time_exceeded_message internet_control_message_protocol_version6_time_exceeded_message_t;
 typedef struct internet_control_message_protocol_version6_parameter_problem_message internet_control_message_protocol_version6_parameter_problem_message_t;
 typedef struct internet_control_message_protocol_version6_echo_message internet_control_message_protocol_version6_echo_message_t;
+typedef struct internet_control_message_protocol_version6_router_solicitation_message internet_control_message_protocol_version6_router_solicitation_message_t;
 
 typedef struct internet_control_message_protocol_version6_module internet_control_message_protocol_version6_module_t;
 typedef struct internet_control_message_protocol_version6_module_func internet_control_message_protocol_version6_module_func_t;
@@ -113,6 +117,13 @@ struct internet_control_message_protocol_version6_echo_message {
     uint16_t sequence;
 };
 
+struct internet_control_message_protocol_version6_router_solicitation_message {
+    uint8_t type;
+    uint8_t code;
+    uint16_t checksum;
+    uint32_t reserved;
+};
+
 #define internet_control_message_protocol_version6_code_echo_message                                                                                    0
 
 typedef uint64_t (*internet_control_message_protocol_version6_context_handler_t)(void);
@@ -151,6 +162,7 @@ struct internet_control_message_protocol_version6_context {
         internet_control_message_protocol_version6_time_exceeded_message_t * time_exceeded;
         internet_control_message_protocol_version6_parameter_problem_message_t * parameter_problem;
         internet_control_message_protocol_version6_echo_message_t * echo;
+        internet_control_message_protocol_version6_router_solicitation_message_t * router_solicitation;
     } message;
     uint64_t packetlen;
 };

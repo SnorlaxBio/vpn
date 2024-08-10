@@ -22,8 +22,12 @@ extern protocol_module_map_t * protocol_module_map_gen(protocol_module_t ** modu
     map->func = address_of(func);
 
     map->index = index;
-    map->modules = modules;
     map->size = n;
+    map->modules = calloc(n, sizeof(protocol_module_t *));
+    
+    for(uint64_t i = 0; i < n; i++) {
+        map->modules[i] = modules[i];
+    }
 
     return map;
 }
@@ -34,6 +38,10 @@ static protocol_module_map_t * protocol_module_map_func_rem(protocol_module_map_
 #endif // RELEASE
 
     map->sync = sync_rem(map->sync);
+
+    for(uint64_t i = 0; i < map->size; i++) {
+        map->modules[i] = protocol_module_rem(map->modules[i]);
+    }
 
     free(map->modules);
 

@@ -75,6 +75,16 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
         (protocol_module_t *) application->protocol.internet_protocol_version6_extension_destination,
         (protocol_module_t *) application->protocol.internet_control_message_protocol_version6,
     };
+    printf("%p\n", application->protocol.transmission_control);
+    printf("%p\n", application->protocol.user_datagram);
+    printf("%p\n", application->protocol.internet_protocol_version6_extension_hopbyhop);
+    printf("%p\n", application->protocol.internet_control_message_protocol_version4);
+    printf("%p\n", application->protocol.internet_protocol_version6_extension_routing);
+    printf("%p\n", application->protocol.internet_protocol_version6_extension_fragment);
+    printf("%p\n", application->protocol.internet_protocol_version6_extension_destination);
+    printf("%p\n", application->protocol.internet_control_message_protocol_version6);
+
+    printf("%lu\n", sizeof(modules) / sizeof(protocol_module_t *));
 
     application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_index_get);
 

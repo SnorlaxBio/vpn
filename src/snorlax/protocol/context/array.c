@@ -52,7 +52,7 @@ static protocol_context_t ** protocol_context_array_func_pop(protocol_context_ar
     if(collection->capacity <= collection->size) {
         uint64_t capacity = collection->capacity;
         collection->capacity = collection->capacity ? (collection->capacity << 1) : 1;
-        collection->container = memory_gen(collection->container, collection->capacity);
+        collection->container = memory_gen(collection->container, collection->capacity * sizeof(protocol_context_t *));
         memset(&collection->container[capacity], 0, (collection->capacity - capacity) * sizeof(protocol_context_t *));
     }
 

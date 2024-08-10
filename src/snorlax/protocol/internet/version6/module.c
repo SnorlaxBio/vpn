@@ -71,21 +71,34 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
 
     internet_protocol_version6_module_debug(module, stdout, *context);
 
-    uint8_t protocolno = 0;
-    int32_t index = 0;
-    protocol_module_t * submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_context_next_protocolno_get(*context));
-    protocol_packet_t * subpacket = internet_protocol_version6_context_next_packet_get(*context);
-    uint64_t subpacketlen = internet_protocol_version6_context_next_packetlen_get(*context);
+    // TODO: UPGRADE PACKET PARSING ... 
 
-    while(submodule) {
-        protocol_module_deserialize(submodule, subpacket, subpacketlen, (protocol_context_t *) *context, protocol_context_array_pop((*context)->children));
+    if(packetlen != internet_protocol_version6_packet_header_length_min) {
+        uint8_t protocolno = 0;
+        int32_t index = 0;
+        protocol_module_t * submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_context_next_protocolno_get(*context));
+        protocol_packet_t * subpacket = internet_protocol_version6_context_next_packet_get(*context);
+        uint64_t subpacketlen = internet_protocol_version6_context_next_packetlen_get(*context);
+        printf("subpacketlen => %lu\n", subpacketlen);
+        printf("packetlen => %lu\n", internet_protocol_version6_context_packetlen_get(*context));
+        packetlen = packetlen - internet_protocol_version6_packet_header_length_min;
 
-        if(internet_protocol_version6_extension_check(protocolno)) {
-            submodule = protocol_module_map_get(submodule->map, protocolno = internet_protocol_version6_extension_context_next_protocolno_get(*context));
-            subpacket = internet_protocol_version6_extension_context_next_packet_get(*context);
-            subpacketlen = internet_protocol_version6_extension_context_next_packetlen_get(*context);
+        while(submodule) {
+            protocol_context_t ** subcontext = protocol_context_array_pop((*context)->children);
+            protocol_module_deserialize(submodule, subpacket, subpacketlen, (protocol_context_t *) *context, subcontext);
+
+            if(internet_protocol_version6_extension_check(protocolno)) {
+                submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_extension_context_next_protocolno_get(*subcontext));
+                printf("protocolno = %ld\n", protocolno);
+                subpacket = internet_protocol_version6_extension_context_next_packet_get(*context);
+                subpacketlen = internet_protocol_version6_extension_context_next_packetlen_get(*context);
+            } else {
+                submodule = nil;
+            }
         }
     }
+
+    
 
     // TODO: UPDATE
 

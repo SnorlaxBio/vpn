@@ -274,7 +274,7 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 #define internet_protocol_version6_context_pseudolen_get(context)           ((context)->pseudolen)
 
 #define internet_protocol_version6_context_next_protocolno_get(context)     ((context)->datagram->next)
-#define internet_protocol_version6_context_next_packet_get(context)         ((protocol_packet_t *) &((context)->datagram[1]))
+#define internet_protocol_version6_context_next_packet_get(context)         (&((protocol_packet_t *)((context)->datagram))[internet_protocol_version6_packet_header_length_min])
 #define internet_protocol_version6_context_next_packetlen_get(context)      ((context)->datagramlen - sizeof(internet_protocol_version6_packet_t))
 
 struct internet_protocol_version6_extension_module {
@@ -311,7 +311,7 @@ struct internet_protocol_version6_extension_context_func {
 };
 #define internet_protocol_version6_extension_context_next_protocolno_get(context)   (((internet_protocol_version6_extension_context_t *) (context))->packet->next)
 #define internet_protocol_version6_extension_context_next_packetlen_get(context)    (((((internet_protocol_version6_extension_context_t *) (context))->packet->length) + 1) * 8)
-#define internet_protocol_version6_extension_context_next_packet_get(context)       ((protocol_packet_t *)(&(((internet_protocol_version6_extension_context_t *) (context))->packet)[1]))
+#define internet_protocol_version6_extension_context_next_packet_get(context)       (&((protocol_packet_t *) (context))[internet_protocol_version6_extension_context_next_packetlen_get(context)])
 #define internet_protocol_version6_extension_context_rem(context)                   ((context)->func->rem(context))
 #define internet_protocol_version6_extension_context_length_set(context, v)         ((context)->packetlen = v)
 #define internet_protocol_version6_extension_context_length_get(context)            ((context)->packetlen)
