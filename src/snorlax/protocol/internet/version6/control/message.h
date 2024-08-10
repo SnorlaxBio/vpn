@@ -129,9 +129,6 @@ struct internet_control_message_protocol_version6_module_func {
     int32_t (*deserialize)(internet_control_message_protocol_version6_module_t *, protocol_packet_t *, uint32_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t **);
     int32_t (*serialize)(internet_control_message_protocol_version6_module_t *, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(internet_control_message_protocol_version6_module_t *, FILE *, internet_control_message_protocol_version6_context_t *);
-
-    void (*on)(internet_control_message_protocol_version6_module_t *, uint32_t, internet_control_message_protocol_version6_context_handler_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *);
-    void (*notify)(internet_control_message_protocol_version6_module_t *, uint32_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, uint64_t);
 };
 
 extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(internet_protocol_version6_module_t * parent);
@@ -140,8 +137,6 @@ extern internet_control_message_protocol_version6_module_t * internet_control_me
 #define internet_control_message_protocol_version6_module_deserialize(module, packet, packetlen, parent, context)       ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_control_message_protocol_version6_module_serialize(module, parent, context, packet, packetlen)         ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_control_message_protocol_version6_module_debug(module, stream, context)                                ((module)->func->debug(module, stream, context))
-#define internet_control_message_protocol_version6_module_on(module, type, handler, parent, context)                    ((module)->func->on(module, type, handler, parent, context))
-#define internet_control_message_protocol_version6_module_notify(module, type, parent, context, ret)                    ((module)->func->notify(module, type, parent, context, ret))
 
 struct internet_control_message_protocol_version6_context {
     internet_control_message_protocol_version6_context_func_t * func;

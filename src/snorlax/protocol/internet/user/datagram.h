@@ -53,9 +53,6 @@ struct user_datagram_protocol_module_func {
     int32_t (*deserialize)(user_datagram_protocol_module_t *, protocol_packet_t *, uint32_t, internet_protocol_context_t *, user_datagram_protocol_context_t **);
     int32_t (*serialize)(user_datagram_protocol_module_t *, internet_protocol_context_t *, user_datagram_protocol_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(user_datagram_protocol_module_t *, FILE *, user_datagram_protocol_context_t *);
-
-    void (*on)(user_datagram_protocol_module_t *, uint32_t, user_datagram_protocol_context_handler_t, internet_protocol_context_t *, user_datagram_protocol_context_t *);
-    void (*notify)(user_datagram_protocol_module_t *, uint32_t, internet_protocol_context_t *, user_datagram_protocol_context_t *, uint64_t);
 };
 
 extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
@@ -64,8 +61,6 @@ extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(inter
 #define user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context)           ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define user_datagram_protocol_module_serialize(module, parent, context, packet, len)                   ((module)->func->serialize(module, parent, context, packet, len))
 #define user_datagram_protocol_module_debug(module, stream, context)                                    ((module)->func->debug(module, stream, context))
-#define user_datagram_protocol_module_on(module, type, handler, parent, context)                        ((module)->func->on(module, type, handler, parent, context))
-#define user_datagram_protocol_module_notify(module, type, parent, context, ret)                        ((module)->func->notify(module, type, parent, context, ret))
 
 struct user_datagram_protocol_context {
     user_datagram_protocol_context_func_t * func;

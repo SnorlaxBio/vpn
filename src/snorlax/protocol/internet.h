@@ -35,13 +35,13 @@ typedef struct internet_protocol_module_func internet_protocol_module_func_t;
 typedef struct internet_protocol_context internet_protocol_context_t;
 typedef struct internet_protocol_context_func internet_protocol_context_func_t;
 
-typedef uint64_t (*internet_protocol_context_handler_t)(void);
-
 struct internet_protocol_module {
     protocol_module_func_t * func;
     sync_t * sync;
     protocol_module_t * parent;
     protocol_module_map_t * map;
+    protocol_module_t * version4;
+    protocol_module_t * version6;
 };
 
 struct internet_protocol_module_func {
@@ -49,17 +49,14 @@ struct internet_protocol_module_func {
     int32_t (*deserialize)(internet_protocol_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, internet_protocol_context_t **);
     int32_t (*serialize)(internet_protocol_module_t *, protocol_context_t *, internet_protocol_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(internet_protocol_module_t *, FILE *, internet_protocol_context_t *);
-
-    void (*on)(internet_protocol_module_t *, uint32_t, internet_protocol_context_handler_t, protocol_context_t *, internet_protocol_context_t *);
-    void (*notify)(internet_protocol_module_t *, uint32_t, protocol_context_t *, internet_protocol_context_t *, uint64_t);
 };
+
+extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_t * parent, protocol_module_t ** submodule, uint64_t submodulelen, protocol_module_map_index_t index);
 
 #define internet_protocol_module_rem(module)                                                    ((module)->func->rem(module))
 #define internet_protocol_module_deserialize(module, packet, packetlen, parent, context)        ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_module_serialize(module, parent, context, packet, len)                ((module)->func->serialize(module, parent, context, packet, len))
 #define internet_protocol_module_debug(module, stream, context)                                 ((module)->func->debug(module, stream, context))
-#define internet_protocol_module_on(module, type, handler, parent, context)                     ((module)->func->on(module, type, handler, parent, context))
-#define internet_protocol_module_notify(module, type, parent, context, ret)                     ((module)->func->notify(module, type, parent, context, ret))
 
 struct internet_protocol_context {
     protocol_context_func_t * func;
@@ -74,8 +71,10 @@ struct internet_protocol_context {
 };
 
 struct internet_protocol_context_func {
-    protocol_context_t * (*rem)(protocol_context_t *);
+    internet_protocol_context_t * (*rem)(internet_protocol_context_t *);
 };
+
+extern internet_protocol_context_t * internet_protocol_context_gen(protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
 
 #define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
 

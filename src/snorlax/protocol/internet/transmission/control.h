@@ -152,9 +152,6 @@ struct transmission_control_protocol_module_func {
     int32_t (*deserialize)(transmission_control_protocol_module_t *, protocol_packet_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
     int32_t (*serialize)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint32_t *);
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
-
-    void (*on)(transmission_control_protocol_module_t *, uint32_t, transmission_control_protocol_context_handler_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
-    void (*notify)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *, uint64_t);
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(internet_protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index);
@@ -163,8 +160,6 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
 #define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define transmission_control_protocol_module_serialize(module, parent, context, packet, len)                    ((module)->func->serialize(module, parent, context, packet, len))
 #define transmission_control_protocol_module_debug(module, stream, context)                                     ((module)->func->debug(module, stream, context))
-#define transmission_control_protocol_module_on(module, type, handler, parent, context)                         ((module)->func->on(module, type, handler, parent, context))
-#define transmission_control_protocol_module_notify(module, type, parent, context, ret)                         ((module)->func->notify(module, type, parent, context, ret))
 
 struct transmission_control_protocol_context {
     transmission_control_protocol_context_func_t * func;

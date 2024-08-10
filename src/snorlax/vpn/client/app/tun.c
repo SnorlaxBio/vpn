@@ -57,6 +57,7 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
 
     descriptor_buffer_t * buffer = descriptor_event_subscription_buffer_get(subscription);
     buffer_node_t * in = nil;
+    // protocol_module_t * module = vpn_client_app_internet_protocol_module_get();
 
     while(buffer_node_length(in = buffer_front(buffer->in)) > 0) {
         uint8_t * datagram = (uint8_t *) buffer_node_front(in);
@@ -77,8 +78,6 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
                 return;
             }
 
-            internet_protocol_version4_module_on(module, ingress, nil, nil, context);
-
             uint64_t length = internet_protocol_version4_context_total_get(context);
 
             context = internet_protocol_version4_context_rem(context);
@@ -96,8 +95,6 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
                 context = internet_protocol_version6_context_rem(context);
                 return;
             }
-
-            internet_protocol_version6_module_on(module, ingress, nil, nil, context);
 
             uint64_t length = internet_protocol_version6_context_payload_length_get(context) + internet_protocol_version6_packet_header_length_min;
 

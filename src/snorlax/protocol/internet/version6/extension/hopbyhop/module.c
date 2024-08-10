@@ -7,16 +7,12 @@ static internet_protocol_version6_extension_hopbyhop_module_t * internet_protoco
 static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deserialize(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context);
 static int32_t internet_protocol_version6_extension_hopbyhop_module_func_serialize(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
 static void internet_protocol_version6_extension_hopbyhop_module_func_debug(internet_protocol_version6_extension_hopbyhop_module_t * module, FILE * stream, internet_protocol_version6_extension_hopbyhop_context_t * context);
-static void internet_protocol_version6_extension_hopbyhop_module_func_on(internet_protocol_version6_extension_hopbyhop_module_t * module, uint32_t type, internet_protocol_version6_extension_hopbyhop_context_handler_t handler, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context);
-static void internet_protocol_version6_extension_hopbyhop_module_func_notify(internet_protocol_version6_extension_hopbyhop_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, uint64_t ret);
 
 static internet_protocol_version6_extension_hopbyhop_module_func_t func = {
     internet_protocol_version6_extension_hopbyhop_module_func_rem,
     internet_protocol_version6_extension_hopbyhop_module_func_deserialize,
     internet_protocol_version6_extension_hopbyhop_module_func_serialize,
-    internet_protocol_version6_extension_hopbyhop_module_func_debug,
-    internet_protocol_version6_extension_hopbyhop_module_func_on,
-    internet_protocol_version6_extension_hopbyhop_module_func_notify
+    internet_protocol_version6_extension_hopbyhop_module_func_debug
 };
 
 extern internet_protocol_version6_extension_hopbyhop_module_t * internet_protocol_version6_extension_hopbyhop_module_gen(internet_protocol_version6_module_t * parent) {
@@ -102,12 +98,4 @@ static void internet_protocol_version6_extension_hopbyhop_module_func_debug(inte
         }
         // TODO: OPTION DESERIALIZE
     }
-}
-
-static void internet_protocol_version6_extension_hopbyhop_module_func_on(internet_protocol_version6_extension_hopbyhop_module_t * module, uint32_t type, internet_protocol_version6_extension_hopbyhop_context_handler_t handler, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context) {
-    snorlaxdbg(false, true, "critical", "");
-}
-
-static void internet_protocol_version6_extension_hopbyhop_module_func_notify(internet_protocol_version6_extension_hopbyhop_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, uint64_t ret) {
-    snorlaxdbg(false, true, "critical", "");
 }

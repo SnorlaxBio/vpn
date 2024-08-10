@@ -10,8 +10,6 @@ static internet_protocol_version4_module_t * internet_protocol_version4_module_f
 static int32_t internet_protocol_version4_module_func_deserialize(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
 static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
 static void internet_protocol_version4_module_func_debug(internet_protocol_version4_module_t * module, FILE * stream, internet_protocol_version4_context_t * context);
-static void internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, internet_protocol_version4_context_handler_t handler, protocol_context_t * parent, internet_protocol_version4_context_t * context);
-static void internet_protocol_version4_module_func_notify(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context, uint64_t ret);
 
 static void internet_protocol_version4_option_end_debug(FILE * stream, internet_protocol_version4_option_t * option);
 static void internet_protocol_version4_option_no_operation_debug(FILE * stream, internet_protocol_version4_option_t * option);
@@ -26,9 +24,7 @@ static internet_protocol_version4_module_func_t func = {
     internet_protocol_version4_module_func_rem,
     internet_protocol_version4_module_func_deserialize,
     internet_protocol_version4_module_func_serialize,
-    internet_protocol_version4_module_func_debug,
-    internet_protocol_version4_module_func_on,
-    internet_protocol_version4_module_func_notify
+    internet_protocol_version4_module_func_debug
 };
 
 extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_t * parent, protocol_module_t ** children, uint64_t childrenlen, protocol_module_map_index_t index) {
@@ -175,14 +171,6 @@ static void internet_protocol_version4_module_func_debug(internet_protocol_versi
             default:                                                            snorlaxdbg(true, false, "critical", "");                                        break;
         }
     }
-}
-
-static void internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, internet_protocol_version4_context_handler_t handler, protocol_context_t * parent, internet_protocol_version4_context_t * context) {
-    snorlaxdbg(false, true, "implement", "");
-}
-
-static void internet_protocol_version4_module_func_notify(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context, uint64_t ret) {
-    snorlaxdbg(false, true, "implement", "");
 }
 
 static void internet_protocol_version4_option_end_debug(FILE * stream, internet_protocol_version4_option_t * option) {
