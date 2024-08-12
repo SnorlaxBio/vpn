@@ -10,6 +10,8 @@ extern int32_t internet_control_message_protocol_version6_length_validate(uint8_
         case internet_control_message_protocol_version6_message_type_echo_request:              return packetlen >= sizeof(internet_control_message_protocol_version6_echo_t);
         case internet_control_message_protocol_version6_message_type_echo_reply:                return packetlen >= sizeof(internet_control_message_protocol_version6_echo_t);
         case internet_control_message_protocol_version6_message_type_router_solicitation:       return packetlen >= sizeof(internet_control_message_protocol_version6_router_solicitation_t);
+        case internet_control_message_protocol_version6_message_type_router_advertisement:      return packetlen >= sizeof(internet_control_message_protocol_version6_router_advertisement_t);
+        case internet_control_message_protocol_version6_message_type_neighbor_solicitation:     return packetlen >= sizeof(internet_control_message_protocol_version6_neighbor_solicitation_t);
         default: snorlaxdbg(true, false, "critical", "");                                       return false;
     }
 }

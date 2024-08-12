@@ -117,6 +117,9 @@ set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/internet/version6/control/message/context/packet/toobig.c
                                 src/snorlax/protocol/internet/version6/control/message/context/parameter/problem.c
                                 src/snorlax/protocol/internet/version6/control/message/context/router/solicitation.c
+                                src/snorlax/protocol/internet/version6/control/message/context/router/advertisement.c
+                                src/snorlax/protocol/internet/version6/control/message/context/neighbor/solicitation.c
+                                src/snorlax/protocol/internet/version6/control/message/context/neighbor/advertisement.c
                                 src/snorlax/protocol/internet/version6/control/message/context/time/exceeded.c
                                 src/snorlax/protocol/internet/version6/extension/destination/context.c
                                 src/snorlax/protocol/internet/version6/extension/destination/module.c

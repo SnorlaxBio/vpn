@@ -26,6 +26,9 @@ struct internet_protocol_version6_context;
 #define internet_control_message_protocol_version6_message_type_echo_reply                      129
 
 #define internet_control_message_protocol_version6_message_type_router_solicitation             133
+#define internet_control_message_protocol_version6_message_type_router_advertisement            134
+#define internet_control_message_protocol_version6_message_type_neighbor_solicitation           135
+#define internet_control_message_protocol_version6_message_type_neighbor_advertisement          136
 
 struct internet_control_message_protocol_version6_packet;
 struct internet_control_message_protocol_version6_destination_unreachable;
@@ -34,6 +37,9 @@ struct internet_control_message_protocol_version6_time_exceeded;
 struct internet_control_message_protocol_version6_parameter_problem;
 struct internet_control_message_protocol_version6_echo;
 struct internet_control_message_protocol_version6_router_solicitation;
+struct internet_control_message_protocol_version6_router_advertisement;
+struct internet_control_message_protocol_version6_neighbor_solicitation;
+struct internet_control_message_protocol_version6_neighbor_advertisement;
 
 struct internet_control_message_protocol_version6_module;
 struct internet_control_message_protocol_version6_module_func;
@@ -52,6 +58,12 @@ struct internet_control_message_protocol_version6_context_echo;
 struct internet_control_message_protocol_version6_context_echo_func;
 struct internet_control_message_protocol_version6_context_router_solicitation;
 struct internet_control_message_protocol_version6_context_router_solicitation_func;
+struct internet_control_message_protocol_version6_context_router_advertisement;
+struct internet_control_message_protocol_version6_context_router_advertisement_func;
+struct internet_control_message_protocol_version6_context_neighbor_solicitation;
+struct internet_control_message_protocol_version6_context_neighbor_solicitation_func;
+struct internet_control_message_protocol_version6_context_neighbor_advertisement;
+struct internet_control_message_protocol_version6_context_neighbor_advertisement_func;
 
 typedef struct internet_protocol_version6_module internet_protocol_version6_module_t;
 typedef struct internet_protocol_version6_context internet_protocol_version6_context_t;
@@ -63,9 +75,13 @@ typedef struct internet_control_message_protocol_version6_time_exceeded internet
 typedef struct internet_control_message_protocol_version6_parameter_problem internet_control_message_protocol_version6_parameter_problem_t;
 typedef struct internet_control_message_protocol_version6_echo internet_control_message_protocol_version6_echo_t;
 typedef struct internet_control_message_protocol_version6_router_solicitation internet_control_message_protocol_version6_router_solicitation_t;
+typedef struct internet_control_message_protocol_version6_router_advertisement internet_control_message_protocol_version6_router_advertisement_t;
+typedef struct internet_control_message_protocol_version6_neighbor_solicitation internet_control_message_protocol_version6_neighbor_solicitation_t;
+typedef struct internet_control_message_protocol_version6_neighbor_advertisement internet_control_message_protocol_version6_neighbor_advertisement_t;
 
 typedef struct internet_control_message_protocol_version6_module internet_control_message_protocol_version6_module_t;
 typedef struct internet_control_message_protocol_version6_module_func internet_control_message_protocol_version6_module_func_t;
+
 typedef struct internet_control_message_protocol_version6_context internet_control_message_protocol_version6_context_t;
 typedef struct internet_control_message_protocol_version6_context_func internet_control_message_protocol_version6_context_func_t;
 
@@ -81,7 +97,12 @@ typedef struct internet_control_message_protocol_version6_context_echo internet_
 typedef struct internet_control_message_protocol_version6_context_echo_func internet_control_message_protocol_version6_context_echo_func_t;
 typedef struct internet_control_message_protocol_version6_context_router_solicitation internet_control_message_protocol_version6_context_router_solicitation_t;
 typedef struct internet_control_message_protocol_version6_context_router_solicitation_func internet_control_message_protocol_version6_context_router_solicitation_func_t;
-
+typedef struct internet_control_message_protocol_version6_context_router_advertisement internet_control_message_protocol_version6_context_router_advertisement_t;
+typedef struct internet_control_message_protocol_version6_context_router_advertisement_func internet_control_message_protocol_version6_context_router_advertisement_func_t;
+typedef struct internet_control_message_protocol_version6_context_neighbor_solicitation internet_control_message_protocol_version6_context_neighbor_solicitation_t;
+typedef struct internet_control_message_protocol_version6_context_neighbor_solicitation_func internet_control_message_protocol_version6_context_neighbor_solicitation_func_t;
+typedef struct internet_control_message_protocol_version6_context_neighbor_advertisement internet_control_message_protocol_version6_context_neighbor_advertisement_t;
+typedef struct internet_control_message_protocol_version6_context_neighbor_advertisement_func internet_control_message_protocol_version6_context_neighbor_advertisement_func_t;
 
 struct internet_control_message_protocol_version6_packet {
     uint8_t type;
@@ -144,6 +165,8 @@ struct internet_control_message_protocol_version6_echo {
     uint16_t sequence;
 };
 
+#define internet_control_message_protocol_version6_code_echo_message                                                                                    0
+
 struct internet_control_message_protocol_version6_router_solicitation {
     uint8_t type;
     uint8_t code;
@@ -151,7 +174,50 @@ struct internet_control_message_protocol_version6_router_solicitation {
     uint32_t reserved;
 };
 
-#define internet_control_message_protocol_version6_code_echo_message                                                                                    0
+struct internet_control_message_protocol_version6_router_advertisement {
+    uint8_t type;
+    uint8_t code;
+    uint16_t checksum;
+    uint8_t curhoplimit;
+#if       __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t reserved:6;
+    uint8_t o:1;
+    uint8_t m:1;
+#else  // __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t m:1;
+    uint8_t o:1;
+    uint8_t reserved:6;
+#endif // __BYTE_ORDER == __LITTLE_ENDIAN
+    uint16_t lifetime;
+    uint32_t reachable;
+    uint32_t retrans;
+};
+
+struct internet_control_message_protocol_version6_neighbor_solicitation {
+    uint8_t type;
+    uint8_t code;
+    uint16_t checksum;
+    uint32_t reserved;
+    uint8_t target[16];
+};
+
+struct internet_control_message_protocol_version6_neighbor_advertisement {
+    uint8_t type;
+    uint8_t code;
+    uint16_t checksum;
+#if       __BYTE_ORDER == __LITTLE_ENDIAN
+    uint32_t reserved:29;
+    uint8_t o:1;
+    uint8_t s:1;
+    uint8_t r:1;
+#else  // __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t r:1;
+    uint8_t s:1;
+    uint8_t o:1;
+    uint32_t reserved:29;
+#endif // __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t target[16];
+};
 
 typedef uint64_t (*internet_control_message_protocol_version6_context_handler_t)(void);
 
@@ -184,16 +250,6 @@ struct internet_control_message_protocol_version6_context {
     int32_t error;
     internet_control_message_protocol_version6_packet_t * packet;
     uint64_t packetlen;
-
-// union {
-        
-//          * destination_unreachable;
-//         internet_control_message_protocol_version6_packet_too_big_t * packet_too_big;
-//         internet_control_message_protocol_version6_time_exceeded_t * time_exceeded;
-//         internet_control_message_protocol_version6_parameter_problem_t * parameter_problem;
-//         internet_control_message_protocol_version6_echo_t * echo;
-//         internet_control_message_protocol_version6_router_solicitation_t * router_solicitation;
-//     } message;
 };
 
 struct internet_control_message_protocol_version6_context_func {
@@ -309,7 +365,6 @@ extern internet_control_message_protocol_version6_context_echo_t * internet_cont
 #define internet_control_message_protocol_version6_context_sequence_get(context)                        ((context)->packet->sequence)
 #define internet_control_message_protocol_version6_context_sequence_set(context, v)                     ((context)->packet->sequence = v)
 
-// router_solicitation
 struct internet_control_message_protocol_version6_context_router_solicitation {
     internet_control_message_protocol_version6_context_router_solicitation_func_t * func;
     sync_t * sync;
@@ -326,5 +381,57 @@ struct internet_control_message_protocol_version6_context_router_solicitation_fu
 };
 
 extern internet_control_message_protocol_version6_context_router_solicitation_t * internet_control_message_protocol_version6_context_router_solicitation_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_router_solicitation_t * packet, uint64_t packetlen);
+
+struct internet_control_message_protocol_version6_context_router_advertisement {
+    internet_control_message_protocol_version6_context_router_advertisement_func_t * func;
+    sync_t * sync;
+    internet_control_message_protocol_version6_module_t * module;
+    internet_protocol_version6_context_t * parent;
+    protocol_context_array_t * children;
+    int32_t error;
+    internet_control_message_protocol_version6_router_advertisement_t * packet;
+    uint64_t packetlen;
+};
+
+struct internet_control_message_protocol_version6_context_router_advertisement_func {
+    internet_control_message_protocol_version6_context_router_advertisement_t * (*rem)(internet_control_message_protocol_version6_context_router_advertisement_t *);
+};
+
+extern internet_control_message_protocol_version6_context_router_advertisement_t * internet_control_message_protocol_version6_context_router_advertisemen_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_router_advertisement_t * packet, uint64_t packetlen);
+
+struct internet_control_message_protocol_version6_context_neighbor_solicitation {
+    internet_control_message_protocol_version6_context_neighbor_solicitation_func_t * func;
+    sync_t * sync;
+    internet_control_message_protocol_version6_module_t * module;
+    internet_protocol_version6_context_t * parent;
+    protocol_context_array_t * children;
+    int32_t error;
+    internet_control_message_protocol_version6_neighbor_solicitation_t * packet;
+    uint64_t packetlen;
+};
+
+struct internet_control_message_protocol_version6_context_neighbor_solicitation_func {
+    internet_control_message_protocol_version6_context_neighbor_solicitation_t * (*rem)(internet_control_message_protocol_version6_context_neighbor_solicitation_t *);
+};
+
+extern internet_control_message_protocol_version6_context_neighbor_solicitation_t * internet_control_message_protocol_version6_context_neighbor_solicitation_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_neighbor_solicitation_t * packet, uint64_t packetlen);
+
+struct internet_control_message_protocol_version6_context_neighbor_advertisement {
+    internet_control_message_protocol_version6_context_neighbor_advertisement_func_t * func;
+    sync_t * sync;
+    internet_control_message_protocol_version6_module_t * module;
+    internet_protocol_version6_context_t * parent;
+    protocol_context_array_t * children;
+    int32_t error;
+    internet_control_message_protocol_version6_neighbor_advertisement_t * packet;
+    uint64_t packetlen;
+};
+
+struct internet_control_message_protocol_version6_context_neighbor_advertisement_func {
+    internet_control_message_protocol_version6_context_neighbor_advertisement_t * (*rem)(internet_control_message_protocol_version6_context_neighbor_advertisement_t *);
+};
+
+extern internet_control_message_protocol_version6_context_neighbor_advertisement_t * internet_control_message_protocol_version6_context_neighbor_advertisement_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_neighbor_advertisement_t * packet, uint64_t packetlen);
+
 
 #endif // __SNORLAX__PROTOCOL_INTERNET_VERSION6_CONTROL_MESSAGE__H__

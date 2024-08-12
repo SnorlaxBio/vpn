@@ -17,6 +17,8 @@ static void internet_control_message_protocol_version6_module_func_debug_time_ex
 static void internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_parameter_problem_t * context);
 static void internet_control_message_protocol_version6_module_func_debug_echo_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_echo_t * context);
 static void internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_router_solicitation_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_router_advertisement_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_router_advertisement_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_neighbor_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_neighbor_solicitation_t * context);
 
 static internet_control_message_protocol_version6_module_func_t func = {
     internet_control_message_protocol_version6_module_func_rem,
@@ -87,8 +89,10 @@ static void internet_control_message_protocol_version6_module_func_debug(interne
         case internet_control_message_protocol_version6_message_type_parameter_problem:         internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(module, stream, (internet_control_message_protocol_version6_context_parameter_problem_t *) context);                 break;
         case internet_control_message_protocol_version6_message_type_echo_request:              internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
         case internet_control_message_protocol_version6_message_type_echo_reply:                internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
-        case internet_control_message_protocol_version6_message_type_router_solicitation:       internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_router_solicitation_t *) context);      break;
-        default:                                                                                snorlaxdbg(true, false, "critical", "");                                                                                break;
+        case internet_control_message_protocol_version6_message_type_router_solicitation:       internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_router_solicitation_t *) context);             break;
+        case internet_control_message_protocol_version6_message_type_router_advertisement:      internet_control_message_protocol_version6_module_func_debug_router_advertisement_message(module, stream, (internet_control_message_protocol_version6_context_router_advertisement_t *) context);           break;
+        case internet_control_message_protocol_version6_message_type_neighbor_solicitation:     internet_control_message_protocol_version6_module_func_debug_neighbor_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_neighbor_solicitation_t *) context);         break;
+        default:                                                                                snorlaxdbg(true, false, "critical", "");                                                                                                                                                                    break;
     }
 }
 
@@ -167,6 +171,34 @@ static void internet_control_message_protocol_version6_module_func_debug_echo_me
 }
 
 static void internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_router_solicitation_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "criticial", "");
+    snorlaxdbg(stream == nil, false, "criticial", "");
+    snorlaxdbg(context == nil, false, "criticial", "");
+#endif // RELEASE
+
+    fprintf(stream, "| internet control message protocol version 6 ");
+    fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_type_get(context));
+    fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_code_get(context));
+    fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_checksum_get(context));
+    fprintf(stream, "|\n");
+}
+
+static void internet_control_message_protocol_version6_module_func_debug_router_advertisement_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_router_advertisement_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "criticial", "");
+    snorlaxdbg(stream == nil, false, "criticial", "");
+    snorlaxdbg(context == nil, false, "criticial", "");
+#endif // RELEASE
+
+    fprintf(stream, "| internet control message protocol version 6 ");
+    fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_type_get(context));
+    fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_code_get(context));
+    fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_checksum_get(context));
+    fprintf(stream, "|\n");
+}
+
+static void internet_control_message_protocol_version6_module_func_debug_neighbor_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_neighbor_solicitation_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
