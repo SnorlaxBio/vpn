@@ -112,6 +112,12 @@ set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/internet/version6/control/message.c
                                 src/snorlax/protocol/internet/version6/control/message/module.c
                                 src/snorlax/protocol/internet/version6/control/message/context.c
+                                src/snorlax/protocol/internet/version6/control/message/context/echo.c
+                                src/snorlax/protocol/internet/version6/control/message/context/destination/unreachable.c
+                                src/snorlax/protocol/internet/version6/control/message/context/packet/toobig.c
+                                src/snorlax/protocol/internet/version6/control/message/context/parameter/problem.c
+                                src/snorlax/protocol/internet/version6/control/message/context/router/solicitation.c
+                                src/snorlax/protocol/internet/version6/control/message/context/time/exceeded.c
                                 src/snorlax/protocol/internet/version6/extension/destination/context.c
                                 src/snorlax/protocol/internet/version6/extension/destination/module.c
                                 src/snorlax/protocol/internet/version6/extension/hopbyhop/context.c

@@ -79,8 +79,6 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
         protocol_module_t * submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_context_next_protocolno_get(*context));
         protocol_packet_t * subpacket = internet_protocol_version6_context_next_packet_get(*context);
         uint64_t subpacketlen = internet_protocol_version6_context_next_packetlen_get(*context);
-        printf("subpacketlen => %lu\n", subpacketlen);
-        printf("packetlen => %lu\n", internet_protocol_version6_context_packetlen_get(*context));
         packetlen = packetlen - internet_protocol_version6_packet_header_length_min;
 
         while(submodule) {
@@ -89,7 +87,6 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
 
             if(internet_protocol_version6_extension_check(protocolno)) {
                 submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_extension_context_next_protocolno_get(*subcontext));
-                printf("protocolno = %ld\n", protocolno);
                 subpacket = internet_protocol_version6_extension_context_next_packet_get(*context);
                 subpacketlen = internet_protocol_version6_extension_context_next_packetlen_get(*context);
             } else {

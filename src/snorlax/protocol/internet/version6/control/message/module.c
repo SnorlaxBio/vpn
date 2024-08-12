@@ -11,12 +11,12 @@ static int32_t internet_control_message_protocol_version6_module_func_deserializ
 static int32_t internet_control_message_protocol_version6_module_func_serialize(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
 static void internet_control_message_protocol_version6_module_func_debug(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
 
-static void internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
-static void internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
-static void internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
-static void internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
-static void internet_control_message_protocol_version6_module_func_debug_echo_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
-static void internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_destination_unreachable_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_packet_too_big_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_time_exceeded_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_parameter_problem_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_echo_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_echo_t * context);
+static void internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_router_solicitation_t * context);
 
 static internet_control_message_protocol_version6_module_func_t func = {
     internet_control_message_protocol_version6_module_func_rem,
@@ -61,7 +61,7 @@ static int32_t internet_control_message_protocol_version6_module_func_deserializ
         return fail;
     }
 
-    if(internet_control_message_protocol_version6_message_length_validate(internet_control_message_protocol_version6_context_type_get(*context), packetlen) == false) {
+    if(internet_control_message_protocol_version6_length_validate(internet_control_message_protocol_version6_context_type_get(*context), packetlen) == false) {
         internet_control_message_protocol_version6_context_error_set(*context, EAGAIN);
         return fail;
     }
@@ -81,18 +81,18 @@ static int32_t internet_control_message_protocol_version6_module_func_serialize(
 
 static void internet_control_message_protocol_version6_module_func_debug(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
     switch(internet_control_message_protocol_version6_context_type_get(context)) {
-        case internet_control_message_protocol_version6_message_type_destination_unreachable:   internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(module, stream, context);  break;
-        case internet_control_message_protocol_version6_message_type_packet_too_big:            internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(module, stream, context);           break;
-        case internet_control_message_protocol_version6_message_type_time_exceeded:             internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(module, stream, context);            break;
-        case internet_control_message_protocol_version6_message_type_parameter_problem:         internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(module, stream, context);        break;
-        case internet_control_message_protocol_version6_message_type_echo_request:              internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, context);                     break;
-        case internet_control_message_protocol_version6_message_type_echo_reply:                internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, context);                     break;
-        case internet_control_message_protocol_version6_message_type_router_solicitation:       internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(module, stream, context);      break;
+        case internet_control_message_protocol_version6_message_type_destination_unreachable:   internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(module, stream, (internet_control_message_protocol_version6_context_destination_unreachable_t *) context);     break;
+        case internet_control_message_protocol_version6_message_type_packet_too_big:            internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(module, stream, (internet_control_message_protocol_version6_context_packet_too_big_t *) context);                       break;
+        case internet_control_message_protocol_version6_message_type_time_exceeded:             internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(module, stream, (internet_control_message_protocol_version6_context_time_exceeded_t *) context);                         break;
+        case internet_control_message_protocol_version6_message_type_parameter_problem:         internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(module, stream, (internet_control_message_protocol_version6_context_parameter_problem_t *) context);                 break;
+        case internet_control_message_protocol_version6_message_type_echo_request:              internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
+        case internet_control_message_protocol_version6_message_type_echo_reply:                internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
+        case internet_control_message_protocol_version6_message_type_router_solicitation:       internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_router_solicitation_t *) context);      break;
         default:                                                                                snorlaxdbg(true, false, "critical", "");                                                                                break;
     }
 }
 
-static void internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
+static void internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_destination_unreachable_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
@@ -106,7 +106,7 @@ static void internet_control_message_protocol_version6_module_func_debug_destina
     fprintf(stream, "|\n");
 }
 
-static void internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
+static void internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_packet_too_big_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
@@ -121,7 +121,7 @@ static void internet_control_message_protocol_version6_module_func_debug_packet_
     fprintf(stream, "|\n");
 }
 
-static void internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
+static void internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_time_exceeded_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
@@ -135,7 +135,7 @@ static void internet_control_message_protocol_version6_module_func_debug_time_ex
     fprintf(stream, "|\n");
 }
 
-static void internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
+static void internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_parameter_problem_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
@@ -150,7 +150,7 @@ static void internet_control_message_protocol_version6_module_func_debug_paramet
     fprintf(stream, "|\n");
 }
 
-static void internet_control_message_protocol_version6_module_func_debug_echo_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
+static void internet_control_message_protocol_version6_module_func_debug_echo_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_echo_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
@@ -166,7 +166,7 @@ static void internet_control_message_protocol_version6_module_func_debug_echo_me
     fprintf(stream, "|\n");
 }
 
-static void internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
+static void internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_router_solicitation_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "criticial", "");
     snorlaxdbg(stream == nil, false, "criticial", "");
