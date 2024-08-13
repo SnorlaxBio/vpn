@@ -72,6 +72,11 @@ static int32_t internet_control_message_protocol_version6_module_func_deserializ
 
     internet_control_message_protocol_version6_module_debug(module, stdout, *context);
 
+    switch(internet_control_message_protocol_version6_context_type_get(*context)) {
+        case internet_control_message_protocol_version6_message_type_router_solicitation:   snorlaxdbg(false, true, "debug", "discard");    break;
+        default:                                                                            snorlaxdbg(false, true, "implement", "");       break;
+    }
+
     return success;
 }
 

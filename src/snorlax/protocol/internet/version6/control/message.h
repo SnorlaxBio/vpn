@@ -12,6 +12,7 @@
 
 #include <snorlax.h>
 #include <snorlax/protocol.h>
+#include <snorlax/protocol/internet/version6.h>
 
 struct internet_protocol_version6_module;
 struct internet_protocol_version6_context;
@@ -29,6 +30,7 @@ struct internet_protocol_version6_context;
 #define internet_control_message_protocol_version6_message_type_router_advertisement            134
 #define internet_control_message_protocol_version6_message_type_neighbor_solicitation           135
 #define internet_control_message_protocol_version6_message_type_neighbor_advertisement          136
+#define internet_control_message_protocol_version6_message_type_redirect                        137
 
 struct internet_control_message_protocol_version6_packet;
 struct internet_control_message_protocol_version6_destination_unreachable;
@@ -40,6 +42,15 @@ struct internet_control_message_protocol_version6_router_solicitation;
 struct internet_control_message_protocol_version6_router_advertisement;
 struct internet_control_message_protocol_version6_neighbor_solicitation;
 struct internet_control_message_protocol_version6_neighbor_advertisement;
+struct internet_control_message_protocol_version6_redirect;
+
+struct internet_control_message_protocol_version6_neighbor_discovery_option;
+struct internet_control_message_protocol_version6_neighbor_discovery_option_link_layer_address;
+struct internet_control_message_protocol_version6_neighbor_discovery_option_prefix_information;
+struct internet_control_message_protocol_version6_neighbor_discovery_option_redirect_header;
+struct internet_control_message_protocol_version6_neighbor_discovery_option_maximum_transmission_unit;
+struct internet_control_message_protocol_version6_link_layer_address;
+struct internet_control_message_protocol_version6_link_layer_address_ethernet;
 
 struct internet_control_message_protocol_version6_module;
 struct internet_control_message_protocol_version6_module_func;
@@ -64,6 +75,8 @@ struct internet_control_message_protocol_version6_context_neighbor_solicitation;
 struct internet_control_message_protocol_version6_context_neighbor_solicitation_func;
 struct internet_control_message_protocol_version6_context_neighbor_advertisement;
 struct internet_control_message_protocol_version6_context_neighbor_advertisement_func;
+struct internet_control_message_protocol_version6_context_redirect;
+struct internet_control_message_protocol_version6_context_redirect_func;
 
 typedef struct internet_protocol_version6_module internet_protocol_version6_module_t;
 typedef struct internet_protocol_version6_context internet_protocol_version6_context_t;
@@ -78,6 +91,16 @@ typedef struct internet_control_message_protocol_version6_router_solicitation in
 typedef struct internet_control_message_protocol_version6_router_advertisement internet_control_message_protocol_version6_router_advertisement_t;
 typedef struct internet_control_message_protocol_version6_neighbor_solicitation internet_control_message_protocol_version6_neighbor_solicitation_t;
 typedef struct internet_control_message_protocol_version6_neighbor_advertisement internet_control_message_protocol_version6_neighbor_advertisement_t;
+typedef struct internet_control_message_protocol_version6_redirect internet_control_message_protocol_version6_redirect_t;
+
+typedef struct internet_control_message_protocol_version6_neighbor_discovery_option internet_control_message_protocol_version6_neighbor_discovery_option_t;
+typedef struct internet_control_message_protocol_version6_neighbor_discovery_option_link_layer_address internet_control_message_protocol_version6_neighbor_discovery_option_link_layer_address_t;
+typedef struct internet_control_message_protocol_version6_neighbor_discovery_option_prefix_information internet_control_message_protocol_version6_neighbor_discovery_option_prefix_information_t;
+typedef struct internet_control_message_protocol_version6_neighbor_discovery_option_redirect_header internet_control_message_protocol_version6_neighbor_discovery_option_redirect_header_t;
+typedef struct internet_control_message_protocol_version6_neighbor_discovery_option_maximum_transmission_unit internet_control_message_protocol_version6_neighbor_discovery_option_maximum_transmission_unit_t;
+
+typedef struct internet_control_message_protocol_version6_link_layer_address internet_control_message_protocol_version6_link_layer_address_t;
+typedef struct internet_control_message_protocol_version6_link_layer_address_ethernet internet_control_message_protocol_version6_link_layer_address_ethernet_t;
 
 typedef struct internet_control_message_protocol_version6_module internet_control_message_protocol_version6_module_t;
 typedef struct internet_control_message_protocol_version6_module_func internet_control_message_protocol_version6_module_func_t;
@@ -103,12 +126,74 @@ typedef struct internet_control_message_protocol_version6_context_neighbor_solic
 typedef struct internet_control_message_protocol_version6_context_neighbor_solicitation_func internet_control_message_protocol_version6_context_neighbor_solicitation_func_t;
 typedef struct internet_control_message_protocol_version6_context_neighbor_advertisement internet_control_message_protocol_version6_context_neighbor_advertisement_t;
 typedef struct internet_control_message_protocol_version6_context_neighbor_advertisement_func internet_control_message_protocol_version6_context_neighbor_advertisement_func_t;
+typedef struct internet_control_message_protocol_version6_context_redirect internet_control_message_protocol_version6_context_redirect_t;
+typedef struct internet_control_message_protocol_version6_context_redirect_func internet_control_message_protocol_version6_context_redirect_func_t;
 
 struct internet_control_message_protocol_version6_packet {
     uint8_t type;
     uint8_t code;
     uint16_t checksum;
 };
+
+struct internet_control_message_protocol_version6_neighbor_discovery_option {
+    uint8_t type;
+    uint8_t length;
+};
+
+struct internet_control_message_protocol_version6_neighbor_discovery_option_link_layer_address {
+    uint8_t type;
+    uint8_t length;
+};
+
+struct internet_control_message_protocol_version6_neighbor_discovery_option_prefix_information {
+    uint8_t type;
+    uint8_t length;
+    uint8_t prefixlen;
+#if       __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t reserved1:6;
+    uint8_t a:1;
+    uint8_t l:1;
+#else  // __BYTE_ORDER == __LITTLE_ENDIAN
+    uint8_t l:1;
+    uint8_t a:1;
+    uint8_t reserved1:6;
+#endif // __BYTE_ORDER == __LITTLE_ENDIAN
+    struct {
+        uint32_t valid;
+        uint32_t preferred;
+    } lifetime;
+    uint32_t reserved2;
+    uint8_t prefix[16];
+};
+
+struct internet_control_message_protocol_version6_neighbor_discovery_option_redirect_header {
+    uint8_t type;
+    uint8_t length;
+    uint64_t reserved:48;
+    internet_protocol_version6_packet_t packet;
+};
+
+struct internet_control_message_protocol_version6_neighbor_discovery_option_maximum_transmission_unit {
+    uint8_t type;
+    uint8_t length;
+    uint16_t reserved;
+    uint32_t mtu;
+};
+
+struct internet_control_message_protocol_version6_link_layer_address {
+    uint8_t value[8];
+};
+
+struct internet_control_message_protocol_version6_link_layer_address_ethernet {
+    uint64_t value:48;
+    uint64_t reserved:16;
+};
+
+#define internet_control_message_protocol_version6_neighbor_discovery_option_type_source_link_layer_address                                     1
+#define internet_control_message_protocol_version6_neighbor_discovery_option_type_target_link_layer_address                                     2
+#define internet_control_message_protocol_version6_neighbor_discovery_option_type_prefix_information                                            3
+#define internet_control_message_protocol_version6_neighbor_discovery_option_type_redirect_header                                               4
+#define internet_control_message_protocol_version6_neighbor_discovery_option_type_maximum_transmission_unit                                     5
 
 extern int32_t internet_control_message_protocol_version6_length_validate(uint8_t type, uint64_t packetlen);
 
@@ -217,6 +302,15 @@ struct internet_control_message_protocol_version6_neighbor_advertisement {
     uint32_t reserved:29;
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t target[16];
+};
+
+struct internet_control_message_protocol_version6_redirect {
+    uint8_t type;
+    uint8_t code;
+    uint16_t checksum;
+    uint32_t reserved;
+    uint8_t target[16];
+    uint8_t destination[16];
 };
 
 typedef uint64_t (*internet_control_message_protocol_version6_context_handler_t)(void);
@@ -432,6 +526,23 @@ struct internet_control_message_protocol_version6_context_neighbor_advertisement
 };
 
 extern internet_control_message_protocol_version6_context_neighbor_advertisement_t * internet_control_message_protocol_version6_context_neighbor_advertisement_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_neighbor_advertisement_t * packet, uint64_t packetlen);
+
+struct internet_control_message_protocol_version6_context_redirect {
+    internet_control_message_protocol_version6_context_redirect_func_t * func;
+    sync_t * sync;
+    internet_control_message_protocol_version6_module_t * module;
+    internet_protocol_version6_context_t * parent;
+    protocol_context_array_t * children;
+    int32_t error;
+    internet_control_message_protocol_version6_redirect_t * packet;
+    uint64_t packetlen;
+};
+
+struct internet_control_message_protocol_version6_context_redirect_func {
+    internet_control_message_protocol_version6_context_redirect_t * (*rem)(internet_control_message_protocol_version6_context_redirect_t *);
+};
+
+extern internet_control_message_protocol_version6_context_redirect_t * internet_control_message_protocol_version6_context_redirect_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_redirect_t * packet, uint64_t packetlen);
 
 
 #endif // __SNORLAX__PROTOCOL_INTERNET_VERSION6_CONTROL_MESSAGE__H__

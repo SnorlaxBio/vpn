@@ -6,11 +6,6 @@
 
 #include "../version6.h"
 
-static internet_protocol_version6_module_t * internet_protocol_version6_module_func_rem(internet_protocol_version6_module_t * module);
-static int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context);
-static int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
-static void internet_protocol_version6_module_func_debug(internet_protocol_version6_module_t * module, FILE * stream, internet_protocol_version6_context_t * context);
-
 static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_rem,
     internet_protocol_version6_module_func_deserialize,
@@ -27,7 +22,7 @@ extern internet_protocol_version6_module_t * internet_protocol_version6_module_g
     return module;
 }
 
-static internet_protocol_version6_module_t * internet_protocol_version6_module_func_rem(internet_protocol_version6_module_t * module) {
+extern internet_protocol_version6_module_t * internet_protocol_version6_module_func_rem(internet_protocol_version6_module_t * module) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
@@ -39,7 +34,7 @@ static internet_protocol_version6_module_t * internet_protocol_version6_module_f
     return nil;
 }
 
-static int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context) {
+extern int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
@@ -102,12 +97,12 @@ static int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     return success;
 }
 
-static int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
+extern int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
     // TODO: UPGRADE
     return fail;
 }
 
-static void internet_protocol_version6_module_func_debug(internet_protocol_version6_module_t * module, FILE * stream, internet_protocol_version6_context_t * context) {
+extern void internet_protocol_version6_module_func_debug(internet_protocol_version6_module_t * module, FILE * stream, internet_protocol_version6_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(stream == nil, false, "critical", "");
