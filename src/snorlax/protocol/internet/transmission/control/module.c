@@ -5,8 +5,8 @@
 #include "../control.h"
 
 static transmission_control_protocol_module_t * transmission_control_protocol_module_func_rem(transmission_control_protocol_module_t * module);
-static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
-static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
+static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
+static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void transmission_control_protocol_module_func_debug(transmission_control_protocol_module_t * module, FILE * stream, transmission_control_protocol_context_t * context);
 
 static transmission_control_protocol_module_func_t func = {
@@ -38,7 +38,7 @@ static transmission_control_protocol_module_t * transmission_control_protocol_mo
     return nil;
 }
 
-static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context) {
+static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
@@ -87,7 +87,7 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
     return success;
 }
 
-static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
+static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
     snorlaxdbg(true, false, "critical", "");
     return fail;
 }

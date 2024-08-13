@@ -7,8 +7,8 @@
 #include "../version4.h"
 
 static internet_protocol_version4_module_t * internet_protocol_version4_module_func_rem(internet_protocol_version4_module_t * module);
-static int32_t internet_protocol_version4_module_func_deserialize(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
-static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
+static int32_t internet_protocol_version4_module_func_deserialize(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
+static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_protocol_version4_module_func_debug(internet_protocol_version4_module_t * module, FILE * stream, internet_protocol_version4_context_t * context);
 
 static void internet_protocol_version4_option_end_debug(FILE * stream, internet_protocol_version4_option_t * option);
@@ -70,7 +70,7 @@ static internet_protocol_version4_module_t * internet_protocol_version4_module_f
     return nil;
 }
 
-static int32_t internet_protocol_version4_module_func_deserialize(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context) {
+static int32_t internet_protocol_version4_module_func_deserialize(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
@@ -130,7 +130,7 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
     return success;
 }
 
-static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
+static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
     return fail;
 }
 

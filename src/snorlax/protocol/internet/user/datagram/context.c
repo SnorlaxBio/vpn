@@ -3,9 +3,11 @@
 #include "../datagram.h"
 
 static user_datagram_protocol_context_t * user_datagram_protocol_context_func_rem(user_datagram_protocol_context_t * context);
+static int32_t user_datagram_protocol_context_func_valid(user_datagram_protocol_context_t * context);
 
 static user_datagram_protocol_context_func_t func = {
-    user_datagram_protocol_context_func_rem
+    user_datagram_protocol_context_func_rem,
+    user_datagram_protocol_context_func_valid
 };
 
 extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen) {
@@ -29,4 +31,14 @@ static user_datagram_protocol_context_t * user_datagram_protocol_context_func_re
     free(context);
 
     return nil;
+}
+
+static int32_t user_datagram_protocol_context_func_valid(user_datagram_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "implement", "");
+
+    return true;
 }

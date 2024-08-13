@@ -3,9 +3,11 @@
 #include "../version4.h"
 
 static internet_protocol_version4_context_t * internet_protocol_version4_context_func_rem(internet_protocol_version4_context_t * context);
+static int32_t internet_protocol_version4_context_func_valid(internet_protocol_version4_context_t * context);
 
 static internet_protocol_version4_context_func_t func = {
-    internet_protocol_version4_context_func_rem
+    internet_protocol_version4_context_func_rem,
+    internet_protocol_version4_context_func_valid
 };
 
 extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen) {
@@ -34,4 +36,14 @@ static internet_protocol_version4_context_t * internet_protocol_version4_context
     free(context);
 
     return nil;
+}
+
+static int32_t internet_protocol_version4_context_func_valid(internet_protocol_version4_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "implement", "");
+
+    return true;
 }

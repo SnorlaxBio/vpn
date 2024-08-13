@@ -45,15 +45,18 @@ struct protocol_module {
 
 struct protocol_module_func {
     protocol_module_t * (*rem)(protocol_module_t *);
-    int32_t (*deserialize)(protocol_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, protocol_context_t **);
-    int32_t (*serialize)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint32_t *);
+    int32_t (*deserialize)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
+    int32_t (*serialize)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(protocol_module_t *, FILE *, protocol_context_t *);
+    int32_t (*in)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
+//    int32_t (*out)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
 };
 
 #define protocol_module_rem(module)                                                     ((module)->func->rem(module))
 #define protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define protocol_module_serialize(module, parent, context, packet, len)                 ((module)->func->serialize(module, parent, context, packet, len))
 #define protocol_module_debug(module, stream, context)                                  ((module)->func->debug(module, stream, context))
+#define protocol_module_in(module, packet, packetlen, parent, context)                  ((module)->func->in(module, packet, packetlen, parent, context))
 
 struct protocol_context {
     protocol_context_func_t * func;
@@ -68,9 +71,11 @@ struct protocol_context {
 
 struct protocol_context_func {
     protocol_context_t * (*rem)(protocol_context_t *);
+    int32_t (*valid)(protocol_context_t *);
 };
 
 #define protocol_context_rem(context)                                                   ((context)->func->rem(context))
+#define protocol_context_valid(context)                                                 ((context)->func->valid(context))
 
 #define protocol_context_error_get(context)                                             ((context)->error)
 #define protocol_context_error_set(context, v)                                          ((context)->error = v)

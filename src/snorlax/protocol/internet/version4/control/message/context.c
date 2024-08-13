@@ -1,9 +1,11 @@
 #include "../message.h"
 
 static internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_func_rem(internet_control_message_protocol_version4_context_t * context);
+static int32_t internet_control_message_protocol_version4_context_func_valid(internet_control_message_protocol_version4_context_t * context);
 
 static internet_control_message_protocol_version4_context_func_t func = {
-    internet_control_message_protocol_version4_context_func_rem
+    internet_control_message_protocol_version4_context_func_rem,
+    internet_control_message_protocol_version4_context_func_valid
 };
 
 extern internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_packet_t * packet, uint64_t packetlen) {
@@ -30,4 +32,14 @@ static internet_control_message_protocol_version4_context_t * internet_control_m
     free(context);
 
     return nil;
+}
+
+static int32_t internet_control_message_protocol_version4_context_func_valid(internet_control_message_protocol_version4_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "implement", "");
+
+    return true;
 }

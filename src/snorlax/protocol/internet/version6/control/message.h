@@ -323,9 +323,11 @@ struct internet_control_message_protocol_version6_module {
 
 struct internet_control_message_protocol_version6_module_func {
     internet_control_message_protocol_version6_module_t * (*rem)(internet_control_message_protocol_version6_module_t *);
-    int32_t (*deserialize)(internet_control_message_protocol_version6_module_t *, protocol_packet_t *, uint32_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t **);
-    int32_t (*serialize)(internet_control_message_protocol_version6_module_t *, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, protocol_packet_t **, uint32_t *);
+    int32_t (*deserialize)(internet_control_message_protocol_version6_module_t *, protocol_packet_t *, uint64_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t **);
+    int32_t (*serialize)(internet_control_message_protocol_version6_module_t *, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_control_message_protocol_version6_module_t *, FILE *, internet_control_message_protocol_version6_context_t *);
+    int32_t (*in)(internet_control_message_protocol_version6_module_t *, protocol_packet_t *, uint64_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t **);
+//    int32_t (*out)(internet_control_message_protocol_version6_module_t *, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
 };
 
 extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(void);
@@ -334,6 +336,7 @@ extern internet_control_message_protocol_version6_module_t * internet_control_me
 #define internet_control_message_protocol_version6_module_deserialize(module, packet, packetlen, parent, context)       ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_control_message_protocol_version6_module_serialize(module, parent, context, packet, packetlen)         ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_control_message_protocol_version6_module_debug(module, stream, context)                                ((module)->func->debug(module, stream, context))
+#define internet_control_message_protocol_version6_module_in(module, packet, packetlen, parent, context)                ((module)->func->in(module, packet, packetlen, parent, context))
 
 struct internet_control_message_protocol_version6_context {
     internet_control_message_protocol_version6_context_func_t * func;
@@ -348,11 +351,13 @@ struct internet_control_message_protocol_version6_context {
 
 struct internet_control_message_protocol_version6_context_func {
     internet_control_message_protocol_version6_context_t * (*rem)(internet_control_message_protocol_version6_context_t *);
+    int32_t (*valid)(internet_control_message_protocol_version6_context_t *);
 };
 
 extern internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version6_context_rem(context)                                 ((context)->func->rem(context))
+#define internet_control_message_protocol_version6_context_valid(context)                               ((context)->func->valid(context))
 
 #define internet_control_message_protocol_version6_context_type_get(context)                            ((context)->packet->type)
 #define internet_control_message_protocol_version6_context_type_set(context, v)                         ((context)->packet->type = v)
@@ -543,6 +548,5 @@ struct internet_control_message_protocol_version6_context_redirect_func {
 };
 
 extern internet_control_message_protocol_version6_context_redirect_t * internet_control_message_protocol_version6_context_redirect_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_redirect_t * packet, uint64_t packetlen);
-
 
 #endif // __SNORLAX__PROTOCOL_INTERNET_VERSION6_CONTROL_MESSAGE__H__

@@ -5,8 +5,8 @@
 #include "../datagram.h"
 
 static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(user_datagram_protocol_module_t * module);
-static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context);
-static int32_t user_datagram_protocol_module_func_serialize(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
+static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context);
+static int32_t user_datagram_protocol_module_func_serialize(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void user_datagram_protocol_module_func_debug(user_datagram_protocol_module_t * module, FILE * stream, user_datagram_protocol_context_t * context);
 
 static user_datagram_protocol_module_func_t func = {
@@ -37,7 +37,7 @@ static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(
     return nil;
 }
 
-static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context) {
+static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context) {
 // user_datagram_protocol_module_t * module,
 // protocol_packet_t * packet,
 // uint32_t packetlen,
@@ -87,7 +87,7 @@ static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_prot
     return success;
 }
 
-static int32_t user_datagram_protocol_module_func_serialize(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
+static int32_t user_datagram_protocol_module_func_serialize(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
     snorlaxdbg(true, false, "implement", "");
     return fail;
 }

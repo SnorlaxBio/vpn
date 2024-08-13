@@ -145,17 +145,20 @@ struct internet_control_message_protocol_version4_module {
 
 struct internet_control_message_protocol_version4_module_func {
     internet_control_message_protocol_version4_module_t * (*rem)(internet_control_message_protocol_version4_module_t *);
-    int32_t (*deserialize)(internet_control_message_protocol_version4_module_t *, protocol_packet_t *, uint32_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t **);
-    int32_t (*serialize)(internet_control_message_protocol_version4_module_t *, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, protocol_packet_t **, uint32_t *);
+    int32_t (*deserialize)(internet_control_message_protocol_version4_module_t *, protocol_packet_t *, uint64_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t **);
+    int32_t (*serialize)(internet_control_message_protocol_version4_module_t *, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_control_message_protocol_version4_module_t *, FILE *, internet_control_message_protocol_version4_context_t *);
+    int32_t (*in)(internet_control_message_protocol_version4_module_t *, protocol_packet_t *, uint64_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t **);
+//    int32_t (*out)(internet_control_message_protocol_version4_module_t *, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
 };
 
 extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(void);
 
-#define internet_control_message_protocol_version4_module_rem(module)                                                  ((module)->func->rem(module))
-#define internet_control_message_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)      ((module)->func->deserialize(module, packet, packetlen, parent, context))
-#define internet_control_message_protocol_version4_module_serialize(module, parent, context, packet, packetlen)        ((module)->func->serialize(module, parent, context, packet, packetlen))
-#define internet_control_message_protocol_version4_module_debug(module, stream, context)                               ((module)->func->debug(module, stream, context))
+#define internet_control_message_protocol_version4_module_rem(module)                                                   ((module)->func->rem(module))
+#define internet_control_message_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)       ((module)->func->deserialize(module, packet, packetlen, parent, context))
+#define internet_control_message_protocol_version4_module_serialize(module, parent, context, packet, packetlen)         ((module)->func->serialize(module, parent, context, packet, packetlen))
+#define internet_control_message_protocol_version4_module_debug(module, stream, context)                                ((module)->func->debug(module, stream, context))
+#define internet_control_message_protocol_version4_module_in(module, packet, packetlen, parent, context)                ((module)->func->in(module, packet, packetlen, parent, context))
 
 struct internet_control_message_protocol_version4_context {
     internet_control_message_protocol_version4_context_func_t * func;
@@ -181,11 +184,13 @@ struct internet_control_message_protocol_version4_context {
 
 struct internet_control_message_protocol_version4_context_func {
     internet_control_message_protocol_version4_context_t * (*rem)(internet_control_message_protocol_version4_context_t *);
+    int32_t (*valid)(internet_control_message_protocol_version4_context_t *);
 };
 
 extern internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_packet_t * packet, uint64_t packetlen);
 
-#define internet_control_message_protocol_version4_context_rem(context)     ((context)->func->rem(context))
+#define internet_control_message_protocol_version4_context_rem(context)                 ((context)->func->rem(context))
+#define internet_control_message_protocol_version4_context_valid(context)               ((context)->func->valid(context))
 
 #define internet_control_message_protocol_version4_context_error_set(context, v)        ((context)->error = v)
 #define internet_control_message_protocol_version4_context_error_get(context)           ((context)->error)

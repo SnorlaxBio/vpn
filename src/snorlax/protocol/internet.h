@@ -58,9 +58,11 @@ struct internet_protocol_module {
 
 struct internet_protocol_module_func {
     internet_protocol_module_t * (*rem)(internet_protocol_module_t *);
-    int32_t (*deserialize)(internet_protocol_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, internet_protocol_context_t **);
-    int32_t (*serialize)(internet_protocol_module_t *, protocol_context_t *, internet_protocol_context_t *, protocol_packet_t **, uint32_t *);
+    int32_t (*deserialize)(internet_protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_context_t **);
+    int32_t (*serialize)(internet_protocol_module_t *, protocol_context_t *, internet_protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_module_t *, FILE *, internet_protocol_context_t *);
+    int32_t (*in)(internet_protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_context_t **);
+//    int32_t (*out)(internet_protocol_module_t *, protocol_context_t *, internet_protocol_context_t *, protocol_packet_t **, uint64_t *);
 };
 
 extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_map_t * map);
@@ -69,6 +71,7 @@ extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module
 #define internet_protocol_module_deserialize(module, packet, packetlen, parent, context)        ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_module_serialize(module, parent, context, packet, len)                ((module)->func->serialize(module, parent, context, packet, len))
 #define internet_protocol_module_debug(module, stream, context)                                 ((module)->func->debug(module, stream, context))
+#define internet_protocol_module_in(module, packet, packetlen, parent, context)                 ((module)->func->in(module, packet, packetlen, parent, context))
 
 struct internet_protocol_context {
     internet_protocol_context_func_t * func;
@@ -85,11 +88,13 @@ struct internet_protocol_context {
 
 struct internet_protocol_context_func {
     internet_protocol_context_t * (*rem)(internet_protocol_context_t *);
+    int32_t (*valid)(internet_protocol_context_t *);
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
 
 #define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
+#define internet_protocol_context_valid(context)                ((context)->func->valid(context))
 
 #define internet_protocol_context_error_get(context)            ((context)->error)
 #define internet_protocol_context_error_set(context, v)         ((context)->error = v)

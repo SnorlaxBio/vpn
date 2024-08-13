@@ -1,9 +1,11 @@
 #include "../internet.h"
 
 static internet_protocol_context_t * internet_protocol_context_func_rem(internet_protocol_context_t * context);
+static int32_t internet_protocol_context_func_valid(internet_protocol_context_t * context);
 
 static internet_protocol_context_func_t func = {
-    internet_protocol_context_func_rem
+    internet_protocol_context_func_rem,
+    internet_protocol_context_func_valid
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen) {
@@ -33,4 +35,12 @@ static internet_protocol_context_t * internet_protocol_context_func_rem(internet
     free(context);
 
     return nil;
+}
+
+static int32_t internet_protocol_context_func_valid(internet_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    return false;
 }

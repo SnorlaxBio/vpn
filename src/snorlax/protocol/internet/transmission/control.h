@@ -148,9 +148,11 @@ struct transmission_control_protocol_module {
 
 struct transmission_control_protocol_module_func {
     transmission_control_protocol_module_t * (*rem)(transmission_control_protocol_module_t *);
-    int32_t (*deserialize)(transmission_control_protocol_module_t *, protocol_packet_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
-    int32_t (*serialize)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint32_t *);
+    int32_t (*deserialize)(transmission_control_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
+    int32_t (*serialize)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
+    int32_t (*in)(transmission_control_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
+//    int32_t (*out)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint64_t *);
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map);
@@ -159,6 +161,7 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
 #define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define transmission_control_protocol_module_serialize(module, parent, context, packet, len)                    ((module)->func->serialize(module, parent, context, packet, len))
 #define transmission_control_protocol_module_debug(module, stream, context)                                     ((module)->func->debug(module, stream, context))
+#define transmission_control_protocol_module_in(module, packet, packetlen, parent, context)                     ((module)->func->in(module, packet, packetlen, parent, context))
 
 struct transmission_control_protocol_context {
     transmission_control_protocol_context_func_t * func;
@@ -189,12 +192,14 @@ struct transmission_control_protocol_context {
 };
 
 struct transmission_control_protocol_context_func {
-    transmission_control_protocol_context_t * (*rem)(transmission_control_protocol_context_t *); 
+    transmission_control_protocol_context_t * (*rem)(transmission_control_protocol_context_t *);
+    int32_t (*valid)(transmission_control_protocol_context_t *);
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
 
 #define transmission_control_protocol_context_rem(context)                      ((context)->func->rem(context))
+#define transmission_control_protocol_context_valid(context)                    ((context)->func->valid(context))
 
 #define transmission_control_protocol_context_error_get(context)                ((context)->error)
 #define transmission_control_protocol_context_error_set(context, v)             ((context)->error = v)

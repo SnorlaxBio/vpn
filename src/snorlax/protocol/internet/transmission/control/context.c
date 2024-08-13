@@ -3,9 +3,11 @@
 #include "../control.h"
 
 static transmission_control_protocol_context_t * transmission_control_protocol_context_func_rem(transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_context_func_valid(transmission_control_protocol_context_t * context);
 
 static transmission_control_protocol_context_func_t func = {
-    transmission_control_protocol_context_func_rem
+    transmission_control_protocol_context_func_rem,
+    transmission_control_protocol_context_func_valid
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen) {
@@ -32,4 +34,14 @@ static transmission_control_protocol_context_t * transmission_control_protocol_c
     free(context);
 
     return nil;
+}
+
+static int32_t transmission_control_protocol_context_func_valid(transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "implement", "");
+
+    return true;
 }

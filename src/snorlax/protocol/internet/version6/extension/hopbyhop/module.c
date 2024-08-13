@@ -4,8 +4,8 @@
 #include "../../../version6.h"
 
 static internet_protocol_version6_extension_hopbyhop_module_t * internet_protocol_version6_extension_hopbyhop_module_func_rem(internet_protocol_version6_extension_hopbyhop_module_t * module);
-static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deserialize(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context);
-static int32_t internet_protocol_version6_extension_hopbyhop_module_func_serialize(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen);
+static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deserialize(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context);
+static int32_t internet_protocol_version6_extension_hopbyhop_module_func_serialize(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_protocol_version6_extension_hopbyhop_module_func_debug(internet_protocol_version6_extension_hopbyhop_module_t * module, FILE * stream, internet_protocol_version6_extension_hopbyhop_context_t * context);
 
 static internet_protocol_version6_extension_hopbyhop_module_func_t func = {
@@ -35,7 +35,7 @@ static internet_protocol_version6_extension_hopbyhop_module_t * internet_protoco
     return nil;
 }
 
-static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deserialize(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint32_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context) {
+static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deserialize(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
@@ -65,7 +65,7 @@ static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deseria
     return success;
 }
 
-static int32_t internet_protocol_version6_extension_hopbyhop_module_func_serialize(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
+static int32_t internet_protocol_version6_extension_hopbyhop_module_func_serialize(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
     // TODO: SERIALIZE
     return fail;
 }

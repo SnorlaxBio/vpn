@@ -119,9 +119,11 @@ struct internet_protocol_version4_module {
 
 struct internet_protocol_version4_module_func {
     internet_protocol_version4_module_t * (*rem)(internet_protocol_version4_module_t *);
-    int32_t (*deserialize)(internet_protocol_version4_module_t *, protocol_packet_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t **);
-    int32_t (*serialize)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint32_t *);
+    int32_t (*deserialize)(internet_protocol_version4_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version4_context_t **);
+    int32_t (*serialize)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_version4_module_t *, FILE *, internet_protocol_version4_context_t *);
+    int32_t (*in)(internet_protocol_version4_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version4_context_t **);
+//    int32_t (*out)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
 };
 
 extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map);
@@ -130,6 +132,7 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
 #define internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)   ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version4_module_serialize(module, parent, context, packet, packetlen)     ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version4_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
+#define internet_protocol_version4_module_in(module, packet, packetlen, parent, context)            ((module)->func->in(module, packet, packetlen, parent, context))
 
 #define internet_protocol_version4_module_header_length_cal(datagram)       ((datagram)->length * 4)
 #define internet_protocol_version4_module_option_offset_cal(datagram)       (&(((uint8_t *)(datagram))[internet_protocol_version4_packet_header_length_min]))
@@ -171,11 +174,13 @@ struct internet_protocol_version4_context {
 
 struct internet_protocol_version4_context_func {
     internet_protocol_version4_context_t * (*rem)(internet_protocol_version4_context_t *);
+    int32_t (*valid)(internet_protocol_version4_context_t *);
 };
 
 extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version4_context_rem(context)                     ((context)->func->rem(context))
+#define internet_protocol_version4_context_valid(context)                   ((context)->func->valid(context))
 
 #define internet_protocol_version4_context_error_set(context, v)            ((context)->error = v)
 #define internet_protocol_version4_context_error_get(context)               ((context)->error)

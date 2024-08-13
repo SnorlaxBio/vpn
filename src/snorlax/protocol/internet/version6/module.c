@@ -34,7 +34,7 @@ extern internet_protocol_version6_module_t * internet_protocol_version6_module_f
     return nil;
 }
 
-extern int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint32_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context) {
+extern int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
@@ -97,7 +97,7 @@ extern int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     return success;
 }
 
-extern int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint32_t * packetlen) {
+extern int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
     // TODO: UPGRADE
     return fail;
 }
