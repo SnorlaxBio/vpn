@@ -1,9 +1,11 @@
 #include "../../../message.h"
 
 static internet_control_message_protocol_version6_context_destination_unreachable_t * internet_control_message_protocol_version6_context_destination_unreachable_func_rem(internet_control_message_protocol_version6_context_destination_unreachable_t * context);
+static int32_t internet_control_message_protocol_version6_context_destination_unreachable_func_valid(internet_control_message_protocol_version6_context_destination_unreachable_t * context);
 
 static internet_control_message_protocol_version6_context_destination_unreachable_func_t func = {
-    internet_control_message_protocol_version6_context_destination_unreachable_func_rem
+    internet_control_message_protocol_version6_context_destination_unreachable_func_rem,
+    internet_control_message_protocol_version6_context_destination_unreachable_func_valid
 };
 
 extern internet_control_message_protocol_version6_context_destination_unreachable_t * internet_control_message_protocol_version6_context_destination_unreachable_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_destination_unreachable_t * packet, uint64_t packetlen) {
@@ -27,4 +29,14 @@ static internet_control_message_protocol_version6_context_destination_unreachabl
     free(context);
 
     return nil;
+}
+
+static int32_t internet_control_message_protocol_version6_context_destination_unreachable_func_valid(internet_control_message_protocol_version6_context_destination_unreachable_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "critical", "");
+
+    return true;
 }
