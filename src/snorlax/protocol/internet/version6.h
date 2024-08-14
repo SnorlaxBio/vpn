@@ -14,6 +14,13 @@
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
+#define internet_protocol_version6_maximum_transmission_unit_size_default                   1500
+#define internet_protocol_version6_current_hop_limit_default                                64
+#define internet_protocol_version6_reachable_time_default                                   30000
+#define internet_protocol_version6_random_factor_min                                        (0.5f)
+#define internet_protocol_version6_random_factor_max                                        (1.5f)
+#define internet_protocol_version6_retransmission_timer                                     1000
+
 struct internet_protocol_version6_packet;
 struct internet_protocol_version6_pseudo;
 
@@ -262,6 +269,12 @@ struct internet_protocol_version6_module_host {
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version6_host_context_handler_t on;
+
+    uint32_t link_maximum_transmission_unit;
+    uint8_t current_hop_limit;
+    uint32_t base_reachable_time;
+    uint32_t reachable_time;
+    uint32_t retransmission_timer;
 };
 
 struct internet_protocol_version6_module_host_func {
