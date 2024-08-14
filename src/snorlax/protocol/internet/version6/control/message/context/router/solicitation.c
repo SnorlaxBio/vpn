@@ -58,7 +58,7 @@ static int32_t internet_control_message_protocol_version6_context_router_solicit
         return false;
     }
 
-    if(internet_control_message_protocol_version6_context_router_solicitation_length(context) < 8) {
+    if(internet_control_message_protocol_version6_context_router_solicitation_length(context) <= 8) {
         /**
          * Internet Control Message Protocol <sup>ICMP</sup> length is 8 or more octets.
          */
