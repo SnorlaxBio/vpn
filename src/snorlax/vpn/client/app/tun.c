@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <errno.h>
 
 #include <snorlax/network/netlink.h>
 #include <snorlax/descriptor/event/subscription.h>
@@ -62,27 +63,25 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
     while(buffer_node_length(in = buffer_front(buffer->in)) > 0) {
         uint8_t * datagram = (uint8_t *) buffer_node_front(in);
         uint64_t datagramlen = buffer_node_length(in);
-
         internet_protocol_context_t * context = nil;
 
-        internet_protocol_module_deserialize(module, datagram, datagramlen, nil, &context);
-
-        if(internet_protocol_context_error_get(context)) {
-            /**
-             * TODO: 이 부분에서 버퍼를 지워야 하는지 혹은 더 읽어야 하는지 판단해야 한다.
-             */
-            snorlaxdbg(false, true, "debug", "errno => %d", internet_protocol_context_error_get(context));
-            context = internet_protocol_context_rem(context);
-            return;
+        if(internet_protocol_module_in(module, datagram, datagramlen, nil, &context) == success) {
+            uint64_t length = internet_protocol_context_packetlen_get(context);
+            context = internet_protocol_version4_context_rem(context);
+            buffer_node_position_set(in, buffer_node_position_get(in) + length);
+            buffer_shrink(buffer->in);
+        } else {
+            int32_t err = internet_protocol_context_error_get(context);
+            if(err == EAGAIN) {
+                context = internet_protocol_version4_context_rem(context);
+                return;
+            } else {
+                uint64_t length = internet_protocol_context_packetlen_get(context);
+                context = internet_protocol_version4_context_rem(context);
+                buffer_node_position_set(in, buffer_node_position_get(in) + length);
+                buffer_shrink(buffer->in);
+            } 
         }
-
-        uint64_t length = internet_protocol_context_packetlen_get(context);
-
-        context = internet_protocol_version4_context_rem(context);
-
-        buffer_node_position_set(in, buffer_node_position_get(in) + length);
-
-        buffer_shrink(buffer->in);
     }
 
 #ifndef   RELEASE

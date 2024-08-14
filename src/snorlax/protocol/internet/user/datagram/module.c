@@ -8,19 +8,22 @@ static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(
 static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context);
 static int32_t user_datagram_protocol_module_func_serialize(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void user_datagram_protocol_module_func_debug(user_datagram_protocol_module_t * module, FILE * stream, user_datagram_protocol_context_t * context);
+static int32_t user_datagram_protocol_module_func_in(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context);
 
 static user_datagram_protocol_module_func_t func = {
     user_datagram_protocol_module_func_rem,
     user_datagram_protocol_module_func_deserialize,
     user_datagram_protocol_module_func_serialize,
-    user_datagram_protocol_module_func_debug
+    user_datagram_protocol_module_func_debug,
+    user_datagram_protocol_module_func_in
 };
 
-extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map) {
+extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map, user_datagram_protocol_context_handler_t on) {
     user_datagram_protocol_module_t * module = (user_datagram_protocol_module_t *) calloc(1, sizeof(user_datagram_protocol_module_t));
 
     module->func = address_of(func);
     module->map = map;
+    module->on = on;
 
     return module;
 }
@@ -38,11 +41,6 @@ static user_datagram_protocol_module_t * user_datagram_protocol_module_func_rem(
 }
 
 static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context) {
-// user_datagram_protocol_module_t * module,
-// protocol_packet_t * packet,
-// uint32_t packetlen,
-// protocol_context_t * parent,
-// user_datagram_protocol_context_t ** context
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
@@ -105,4 +103,29 @@ static void user_datagram_protocol_module_func_debug(user_datagram_protocol_modu
     fprintf(stream, "| %d ", user_datagram_protocol_context_length_get(context));
     fprintf(stream, "| %d ", user_datagram_protocol_context_checksum_get(context));
     fprintf(stream, "|\n");
+}
+
+static int32_t user_datagram_protocol_module_func_in(user_datagram_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, user_datagram_protocol_context_t ** context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(packet == nil, false, "critical", "");
+    snorlaxdbg(packetlen == 0, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    user_datagram_protocol_packet_t * datagram = (user_datagram_protocol_packet_t *) packet;
+
+    if(*context == nil) *context = user_datagram_protocol_context_gen(parent, datagram, packetlen);
+
+    if(user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        user_datagram_protocol_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    return user_datagram_protocol_module_on(module, protocol_event_in, parent, *context);
+}
+
+extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context) {
+    return success;
 }

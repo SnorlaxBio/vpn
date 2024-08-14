@@ -39,12 +39,14 @@ struct user_datagram_protocol_packet {
 
 extern uint16_t user_datagram_protocol_checksum_cal(user_datagram_protocol_packet_t * datagram, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
-typedef uint64_t (*user_datagram_protocol_context_handler_t)(void);
+typedef int32_t (*user_datagram_protocol_context_handler_t)(user_datagram_protocol_module_t *, uint32_t, internet_protocol_context_t *, user_datagram_protocol_context_t *);
 
 struct user_datagram_protocol_module {
     user_datagram_protocol_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    user_datagram_protocol_context_handler_t on;
 };
 
 struct user_datagram_protocol_module_func {
@@ -56,13 +58,16 @@ struct user_datagram_protocol_module_func {
 //    int32_t (*out)(user_datagram_protocol_module_t *, internet_protocol_context_t *, user_datagram_protocol_context_t *, protocol_packet_t **, uint64_t *);
 };
 
-extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map);
+extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map, user_datagram_protocol_context_handler_t on);
+extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context);
 
 #define user_datagram_protocol_module_rem(module)                                                       ((module)->func->rem(module))
 #define user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context)           ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define user_datagram_protocol_module_serialize(module, parent, context, packet, len)                   ((module)->func->serialize(module, parent, context, packet, len))
 #define user_datagram_protocol_module_debug(module, stream, context)                                    ((module)->func->debug(module, stream, context))
 #define user_datagram_protocol_module_in(module, packet, packetlen, parent, context)                    ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define user_datagram_protocol_module_on(module, type, parent, context)                                 ((module)->on(module, type, parent, context))
 
 struct user_datagram_protocol_context {
     user_datagram_protocol_context_func_t * func;

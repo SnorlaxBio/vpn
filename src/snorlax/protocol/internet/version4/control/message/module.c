@@ -19,18 +19,21 @@ static internet_control_message_protocol_version4_module_t * internet_control_me
 static int32_t internet_control_message_protocol_version4_module_func_deserialize(internet_control_message_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t ** context);
 static int32_t internet_control_message_protocol_version4_module_func_serialize(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_control_message_protocol_version4_module_func_debug(internet_control_message_protocol_version4_module_t * module, FILE * stream, internet_control_message_protocol_version4_context_t * context);
+static int32_t internet_control_message_protocol_version4_module_func_in(internet_control_message_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t ** context);
 
 static internet_control_message_protocol_version4_module_func_t func = {
     internet_control_message_protocol_version4_module_func_rem,
     internet_control_message_protocol_version4_module_func_deserialize,
     internet_control_message_protocol_version4_module_func_serialize,
-    internet_control_message_protocol_version4_module_func_debug
+    internet_control_message_protocol_version4_module_func_debug,
+    internet_control_message_protocol_version4_module_func_in
 };
 
-extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(void) {
+extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(internet_control_message_protocol_version4_context_handler_t on) {
     internet_control_message_protocol_version4_module_t * module = (internet_control_message_protocol_version4_module_t *) calloc(1, sizeof(internet_control_message_protocol_version4_module_t));
 
     module->func = address_of(func);
+    module->on = on;
 
     return module;
 }
@@ -247,4 +250,27 @@ static void internet_control_message_protocol_version4_module_func_information_m
     fprintf(stream, "|\n");
 
     // TODO: HEXADUMP + IP PACKET DEBUG
+}
+
+static int32_t internet_control_message_protocol_version4_module_func_in(internet_control_message_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t ** context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "criticial", "");
+    snorlaxdbg(packet == nil, false, "criticial", "");
+    snorlaxdbg(packetlen == 0, false, "criticial", "");
+    snorlaxdbg(parent == nil, false, "criticial", "");
+    snorlaxdbg(context == nil, false, "criticial", "");
+#endif // RELEASE
+
+    if(*context == nil) *context = internet_control_message_protocol_version4_context_gen(parent, (internet_control_message_protocol_version4_packet_t *) packet, packetlen);
+
+    if(internet_control_message_protocol_version4_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        internet_control_message_protocol_version4_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    return internet_control_message_protocol_version4_module_on(module, protocol_event_in, parent, *context);
+}
+
+extern int32_t internet_control_message_protocol_version4_module_func_on(internet_control_message_protocol_version4_module_t * module, uint32_t type, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t * context) {
+    return success;
 }

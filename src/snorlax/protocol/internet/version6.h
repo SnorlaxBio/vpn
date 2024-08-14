@@ -204,17 +204,19 @@ struct internet_protocol_version6_extension_fragment {
 #define internet_protocol_version6_extension_fragment_identification_get(extension)         ((extension)->identification)
 #define internet_protocol_version6_extension_fragment_identification_set(extension, v)      ((extension)->identification = v)
 
-typedef uint64_t (*internet_protocol_version6_context_handler_t)(void);
-
 struct internet_protocol_version6_extension_destination {
     uint8_t next;
     uint8_t length;
 };
 
+typedef int32_t (*internet_protocol_version6_context_handler_t)(internet_protocol_version6_module_t *, uint32_t, protocol_context_t *, internet_protocol_version6_context_t *);
+
 struct internet_protocol_version6_module {
     internet_protocol_version6_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_context_handler_t on;
 };
 
 struct internet_protocol_version6_module_func {
@@ -226,12 +228,14 @@ struct internet_protocol_version6_module_func {
 //    int32_t (*out)(internet_protocol_version6_module_t *, protocol_context_t *, internet_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
 };
 
-extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map);
+extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map, internet_protocol_version6_context_handler_t on);
+extern int32_t internet_protocol_version6_module_func_on(internet_protocol_version6_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context);
 
 extern internet_protocol_version6_module_t * internet_protocol_version6_module_func_rem(internet_protocol_version6_module_t * module);
 extern int32_t internet_protocol_version6_module_func_deserialize(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context);
 extern int32_t internet_protocol_version6_module_func_serialize(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 extern void internet_protocol_version6_module_func_debug(internet_protocol_version6_module_t * module, FILE * stream, internet_protocol_version6_context_t * context);
+extern int32_t internet_protocol_version6_module_func_in(internet_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version6_context_t ** context);
 
 #define internet_protocol_version6_module_rem(module)                                               ((module)->func->rem(module))
 #define internet_protocol_version6_module_deserialize(module, packet, packetlen, parent, context)   ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -239,10 +243,16 @@ extern void internet_protocol_version6_module_func_debug(internet_protocol_versi
 #define internet_protocol_version6_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
 #define internet_protocol_version6_module_in(module, packet, packetlen, parent, context)            ((module)->func->in(module, packet, packetlen, parent, context))
 
+#define internet_protocol_version6_module_on(module, type, parent, context)                         ((module)->on(module, type, parent, context))
+
+typedef int32_t (*internet_protocol_version6_host_context_handler_t)(internet_protocol_version6_module_host_t *, uint32_t, protocol_context_t *, internet_protocol_version6_context_t *);
+
 struct internet_protocol_version6_module_host {
     internet_protocol_version6_module_host_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_host_context_handler_t on;
 };
 
 struct internet_protocol_version6_module_host_func {
@@ -250,14 +260,20 @@ struct internet_protocol_version6_module_host_func {
     int32_t (*deserialize)(internet_protocol_version6_module_host_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version6_context_t **);
     int32_t (*serialize)(internet_protocol_version6_module_host_t *, protocol_context_t *, internet_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_version6_module_host_t *, FILE *, internet_protocol_version6_context_t *);
+    int32_t (*in)(internet_protocol_version6_module_host_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version6_context_t **);
 };
 
-extern internet_protocol_version6_module_host_t * internet_protocol_version6_module_host_gen(protocol_module_map_t * map);
+extern internet_protocol_version6_module_host_t * internet_protocol_version6_module_host_gen(protocol_module_map_t * map, internet_protocol_version6_host_context_handler_t on);
+extern int32_t internet_protocol_version6_module_host_func_on(internet_protocol_version6_module_host_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context);
+
+typedef int32_t (*internet_protocol_version6_router_context_handler_t)(internet_protocol_version6_module_host_t *, uint32_t, protocol_context_t *, internet_protocol_version6_context_t *);
 
 struct internet_protocol_version6_module_router {
     internet_protocol_version6_module_router_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_router_context_handler_t on;
 };
 
 struct internet_protocol_version6_module_router_func {
@@ -265,9 +281,11 @@ struct internet_protocol_version6_module_router_func {
     int32_t (*deserialize)(internet_protocol_version6_module_router_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version6_context_t **);
     int32_t (*serialize)(internet_protocol_version6_module_router_t *, protocol_context_t *, internet_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_version6_module_router_t *, FILE *, internet_protocol_version6_context_t *);
+    int32_t (*in)(internet_protocol_version6_module_router_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version6_context_t **);
 };
 
-extern internet_protocol_version6_module_router_t * internet_protocol_version6_module_router_gen(protocol_module_map_t * map);
+extern internet_protocol_version6_module_router_t * internet_protocol_version6_module_router_gen(protocol_module_map_t * map, internet_protocol_version6_router_context_handler_t on);
+extern int32_t internet_protocol_version6_module_router_func_on(internet_protocol_version6_module_host_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context);
 
 struct internet_protocol_version6_context {
     internet_protocol_version6_context_func_t * func;
@@ -325,10 +343,14 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 #define internet_protocol_version6_context_next_packet_get(context)         (&((protocol_packet_t *)((context)->datagram))[internet_protocol_version6_packet_header_length_min])
 #define internet_protocol_version6_context_next_packetlen_get(context)      ((context)->datagramlen - sizeof(internet_protocol_version6_packet_t))
 
+typedef int32_t (*internet_protocol_version6_extension_context_handler_t)(internet_protocol_version6_extension_module_t *, uint32_t, internet_protocol_version6_context_t *, internet_protocol_version6_extension_context_t *);
+
 struct internet_protocol_version6_extension_module {
     internet_protocol_version6_extension_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t ** map;
+
+    internet_protocol_version6_extension_context_handler_t on;
 };
 
 struct internet_protocol_version6_extension_module_func {
@@ -340,11 +362,15 @@ struct internet_protocol_version6_extension_module_func {
 //    int32_t (*out)(internet_protocol_version6_extension_module_t *, internet_protocol_version6_context_t *, internet_protocol_version6_extension_context_t *, protocol_packet_t **, uint64_t *);
 };
 
+extern int32_t internet_protocol_version6_extension_module_func_on(internet_protocol_version6_extension_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_context_t * context);
+
 #define internet_protocol_version6_extension_module_rem(module)                                                 ((module)->func->rem(module))
 #define internet_protocol_version6_extension_module_deserialize(module, packet, packetlen, parent, context)     ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version6_extension_module_serialize(module, parent, context, packet, packetlen)       ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version6_extension_module_debug(module, stream, context)                              ((module)->func->debug(module, stream, context))
 #define internet_protocol_version6_extension_module_in(module, packet, packetlen, parent, context)              ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version6_extension_module_on(module, type, parent, context)                           ((module)->on(module, type, parent, context))
 
 struct internet_protocol_version6_extension_context {
     internet_protocol_version6_extension_context_func_t * func;
@@ -371,12 +397,14 @@ struct internet_protocol_version6_extension_context_func {
 #define internet_protocol_version6_extension_context_length_set(context, v)         ((context)->packetlen = v)
 #define internet_protocol_version6_extension_context_length_get(context)            ((context)->packetlen)
 
-typedef uint64_t (*internet_protocol_version6_extension_hopbyhop_context_handler_t)(void);
+typedef int32_t (*internet_protocol_version6_extension_hopbyhop_context_handler_t)(internet_protocol_version6_extension_hopbyhop_module_t *, uint32_t, internet_protocol_version6_context_t *, internet_protocol_version6_extension_hopbyhop_context_t *);
 
 struct internet_protocol_version6_extension_hopbyhop_module {
     internet_protocol_version6_extension_hopbyhop_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_extension_hopbyhop_context_handler_t on;
 };
 
 struct internet_protocol_version6_extension_hopbyhop_module_func {
@@ -388,13 +416,16 @@ struct internet_protocol_version6_extension_hopbyhop_module_func {
 //    int32_t (*out)(internet_protocol_version6_extension_hopbyhop_module_t *, internet_protocol_version6_context_t *, internet_protocol_version6_extension_hopbyhop_context_t *, protocol_packet_t **, uint64_t *);
 };
 
-extern internet_protocol_version6_extension_hopbyhop_module_t * internet_protocol_version6_extension_hopbyhop_module_gen(void);
+extern internet_protocol_version6_extension_hopbyhop_module_t * internet_protocol_version6_extension_hopbyhop_module_gen(internet_protocol_version6_extension_hopbyhop_context_handler_t on);
+extern int32_t internet_protocol_version6_extension_hopbyhop_module_func_on(internet_protocol_version6_extension_hopbyhop_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t * context);
 
 #define internet_protocol_version6_extension_hopbyhop_module_rem(module)                                                ((module)->func->rem(module))
 #define internet_protocol_version6_extension_hopbyhop_module_deserialize(module, packet, packetlen, parent, context)    ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version6_extension_hopbyhop_module_serialize(module, parent, context, packet, packetlen)      ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version6_extension_hopbyhop_module_debug(module, stream, context)                             ((module)->func->debug(module, stream, context))
 #define internet_protocol_version6_extension_hopbyhop_module_in(module, packet, packetlen, parent, context)             ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version6_extension_hopbyhop_module_on(module, type, parent, context)                          ((module)->on(module, type, parent, context))
 
 struct internet_protocol_version6_extension_hopbyhop_context {
     internet_protocol_version6_extension_hopbyhop_context_func_t * func;
@@ -428,12 +459,14 @@ extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protoc
 #define internet_protocol_version6_extension_hopbyhop_context_length_set(context, v)    ((context)->extensionlen = v)
 #define internet_protocol_version6_extension_hopbyhop_context_length_get(context)       ((context)->extensionlen)
 
-typedef uint64_t (*internet_protocol_version6_extension_routing_context_handler_t)(void);
+typedef int32_t (*internet_protocol_version6_extension_routing_context_handler_t)(internet_protocol_version6_extension_routing_module_t *, uint32_t, internet_protocol_version6_context_t *, internet_protocol_version6_extension_routing_context_t *);
 
 struct internet_protocol_version6_extension_routing_module {
     internet_protocol_version6_extension_routing_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_extension_routing_context_handler_t on;
 };
 
 struct internet_protocol_version6_extension_routing_module_func {
@@ -445,13 +478,16 @@ struct internet_protocol_version6_extension_routing_module_func {
 //    int32_t (*out)(internet_protocol_version6_extension_routing_module_t *, internet_protocol_version6_context_t *, internet_protocol_version6_extension_routing_context_t *, protocol_packet_t **, uint64_t *);
 };
 
-extern internet_protocol_version6_extension_routing_module_t * internet_protocol_version6_extension_routing_module_gen(void);
+extern internet_protocol_version6_extension_routing_module_t * internet_protocol_version6_extension_routing_module_gen(internet_protocol_version6_extension_routing_context_handler_t on);
+extern int32_t internet_protocol_version6_extension_routing_module_func_on(internet_protocol_version6_extension_routing_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_routing_context_t * context);
 
 #define internet_protocol_version6_extension_routing_module_rem(module)                                                 ((module)->func->rem(module))
 #define internet_protocol_version6_extension_routing_module_deserialize(module, packet, packetlen, parent, context)     ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version6_extension_routing_module_serialize(module, parent, context, packet, packetlen)       ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version6_extension_routing_module_debug(module, stream, context)                              ((module)->func->debug(module, stream, context))
 #define internet_protocol_version6_extension_routing_module_in(module, packet, packetlen, parent, context)              ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version6_extension_routing_module_on(module, type, parent, context)                           ((module)->on(module, type, parent, context))
 
 struct internet_protocol_version6_extension_routing_context {
     internet_protocol_version6_extension_routing_context_func_t * func;
@@ -479,12 +515,14 @@ extern internet_protocol_version6_extension_routing_context_t * internet_protoco
 #define internet_protocol_version6_extension_routing_context_length_set(context, v)     ((context)->extensionlen = v)
 #define internet_protocol_version6_extension_routing_context_length_get(context)        ((context)->extensionlen)
 
-typedef uint64_t (*internet_protocol_version6_extension_fragment_context_handler_t)(void);
+typedef int32_t (*internet_protocol_version6_extension_fragment_context_handler_t)(internet_protocol_version6_extension_fragment_module_t *, uint32_t, internet_protocol_version6_context_t *, internet_protocol_version6_extension_fragment_context_t *);
 
 struct internet_protocol_version6_extension_fragment_module {
     internet_protocol_version6_extension_fragment_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_extension_fragment_context_handler_t on;
 };
 
 struct internet_protocol_version6_extension_fragment_module_func {
@@ -496,13 +534,16 @@ struct internet_protocol_version6_extension_fragment_module_func {
 //    int32_t (*out)(internet_protocol_version6_extension_fragment_module_t *, internet_protocol_version6_context_t *, internet_protocol_version6_extension_fragment_context_t *, protocol_packet_t **, uint64_t *);
 };
 
-extern internet_protocol_version6_extension_fragment_module_t * internet_protocol_version6_extension_fragment_module_gen(void);
+extern internet_protocol_version6_extension_fragment_module_t * internet_protocol_version6_extension_fragment_module_gen(internet_protocol_version6_extension_fragment_context_handler_t on);
+extern int32_t internet_protocol_version6_extension_fragment_module_func_on(internet_protocol_version6_extension_fragment_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_fragment_context_t * context);
 
 #define internet_protocol_version6_extension_fragment_module_rem(module)                                                ((module)->func->rem(module))
 #define internet_protocol_version6_extension_fragment_module_deserialize(module, packet, packetlen, parent, context)    ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version6_extension_fragment_module_serialize(module, parent, context, packet, packetlen)      ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version6_extension_fragment_module_debug(module, stream, context)                             ((module)->func->debug(module, stream, context))
 #define internet_protocol_version6_extension_fragment_module_in(module, packet, packetlen, parent, context)             ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version6_extension_fragment_module_on(module, type, parent, context)                          ((module)->on(module, type, parent, context))
 
 struct internet_protocol_version6_extension_fragment_context {
     internet_protocol_version6_extension_fragment_context_func_t * func;
@@ -530,12 +571,14 @@ extern internet_protocol_version6_extension_fragment_context_t * internet_protoc
 #define internet_protocol_version6_extension_fragment_context_length_set(context, v)    ((context)->extensionlen = v)
 #define internet_protocol_version6_extension_fragment_context_length_get(context)       ((context)->extensionlen)
 
-typedef uint64_t (*internet_protocol_version6_extension_destination_context_handler_t)(void);
+typedef int32_t (*internet_protocol_version6_extension_destination_context_handler_t)(internet_protocol_version6_extension_destination_module_t *, uint32_t, internet_protocol_version6_context_t *, internet_protocol_version6_extension_destination_context_t *);
 
 struct internet_protocol_version6_extension_destination_module {
     internet_protocol_version6_extension_destination_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+
+    internet_protocol_version6_extension_destination_context_handler_t on;
 };
 
 struct internet_protocol_version6_extension_destination_module_func {
@@ -547,13 +590,17 @@ struct internet_protocol_version6_extension_destination_module_func {
 //    int32_t (*out)(internet_protocol_version6_extension_destination_module_t *, internet_protocol_version6_context_t *, internet_protocol_version6_extension_destination_context_t *, protocol_packet_t **, uint64_t *);
 };
 
-extern internet_protocol_version6_extension_destination_module_t * internet_protocol_version6_extension_destination_module_gen(void);
+extern internet_protocol_version6_extension_destination_module_t * internet_protocol_version6_extension_destination_module_gen(internet_protocol_version6_extension_destination_context_handler_t on);
+extern int32_t internet_protocol_version6_extension_destination_module_func_on(internet_protocol_version6_extension_destination_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_destination_context_t * context);
+
 
 #define internet_protocol_version6_extension_destination_module_rem(module)                                                 ((module)->func->rem(module))
 #define internet_protocol_version6_extension_destination_module_deserialize(module, packet, packetlen, parent, context)     ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_version6_extension_destination_module_serialize(module, parent, context, packet, packetlen)       ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version6_extension_destination_module_debug(module, stream, context)                              ((module)->func->debug(module, stream, context))
-#define internet_protocol_version6_extension_destination_module_on(module, packet, packetlen, parent, context)              ((module)->func->in(module, packet, packetlen, parent, context))
+#define internet_protocol_version6_extension_destination_module_in(module, packet, packetlen, parent, context)              ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version6_extension_destination_module_on(module, type, parent, context)                           ((module)->on(module, type, parent, context))
 
 struct internet_protocol_version6_extension_destination_context {
     internet_protocol_version6_extension_destination_context_func_t * func;

@@ -7,18 +7,21 @@ static internet_protocol_version6_extension_fragment_module_t * internet_protoco
 static int32_t internet_protocol_version6_extension_fragment_module_func_deserialize(internet_protocol_version6_extension_fragment_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_fragment_context_t ** context);
 static int32_t internet_protocol_version6_extension_fragment_module_func_serialize(internet_protocol_version6_extension_fragment_module_t * module, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_fragment_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_protocol_version6_extension_fragment_module_func_debug(internet_protocol_version6_extension_fragment_module_t * module, FILE * stream, internet_protocol_version6_extension_fragment_context_t * context);
+static int32_t internet_protocol_version6_extension_fragment_module_func_in(internet_protocol_version6_extension_fragment_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_fragment_context_t ** context);
 
 static internet_protocol_version6_extension_fragment_module_func_t func = {
     internet_protocol_version6_extension_fragment_module_func_rem,
     internet_protocol_version6_extension_fragment_module_func_deserialize,
     internet_protocol_version6_extension_fragment_module_func_serialize,
-    internet_protocol_version6_extension_fragment_module_func_debug
+    internet_protocol_version6_extension_fragment_module_func_debug,
+    internet_protocol_version6_extension_fragment_module_func_in
 };
 
-extern internet_protocol_version6_extension_fragment_module_t * internet_protocol_version6_extension_fragment_module_gen(void) {
+extern internet_protocol_version6_extension_fragment_module_t * internet_protocol_version6_extension_fragment_module_gen(internet_protocol_version6_extension_fragment_context_handler_t on) {
     internet_protocol_version6_extension_fragment_module_t * module = (internet_protocol_version6_extension_fragment_module_t *) calloc(1, sizeof(internet_protocol_version6_extension_fragment_module_t));
 
     module->func = address_of(func);
+    module->on = on;
 
     return module;
 }
@@ -75,4 +78,26 @@ static void internet_protocol_version6_extension_fragment_module_func_debug(inte
     fprintf(stream, "| %04x ", context->extension->flag);
     fprintf(stream, "| %d ", context->extension->identification);
     fprintf(stream, "|\n");
+}
+
+extern int32_t internet_protocol_version6_extension_fragment_module_func_on(internet_protocol_version6_extension_fragment_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_fragment_context_t * context) {
+    return success;
+}
+
+static int32_t internet_protocol_version6_extension_fragment_module_func_in(internet_protocol_version6_extension_fragment_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_fragment_context_t ** context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(packet == nil, false, "critical", "");
+    snorlaxdbg(packetlen == 0, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(*context) *context = internet_protocol_version6_extension_fragment_context_gen(parent, packet, packetlen);
+
+    if(internet_protocol_version6_extension_fragment_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        internet_protocol_version6_extension_fragment_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    return internet_protocol_version6_extension_fragment_module_on(module, protocol_event_in, parent, *context);
 }

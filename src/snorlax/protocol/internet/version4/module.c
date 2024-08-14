@@ -10,6 +10,7 @@ static internet_protocol_version4_module_t * internet_protocol_version4_module_f
 static int32_t internet_protocol_version4_module_func_deserialize(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
 static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_protocol_version4_module_func_debug(internet_protocol_version4_module_t * module, FILE * stream, internet_protocol_version4_context_t * context);
+static int32_t internet_protocol_version4_module_func_in(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
 
 static void internet_protocol_version4_option_end_debug(FILE * stream, internet_protocol_version4_option_t * option);
 static void internet_protocol_version4_option_no_operation_debug(FILE * stream, internet_protocol_version4_option_t * option);
@@ -24,14 +25,16 @@ static internet_protocol_version4_module_func_t func = {
     internet_protocol_version4_module_func_rem,
     internet_protocol_version4_module_func_deserialize,
     internet_protocol_version4_module_func_serialize,
-    internet_protocol_version4_module_func_debug
+    internet_protocol_version4_module_func_debug,
+    internet_protocol_version4_module_func_in
 };
 
-extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map) {
+extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map, internet_protocol_version4_context_handler_t on) {
     internet_protocol_version4_module_t * module = (internet_protocol_version4_module_t *) calloc(1, sizeof(internet_protocol_version4_module_t));
 
     module->func = address_of(func);
     module->map = map;
+    module->on = on;
 
     return module;
 }
@@ -245,4 +248,26 @@ static void internet_protocol_version4_option_internet_timestamp_debug(FILE * st
     }
 
     fprintf(stream, "|\n");
+}
+
+static int32_t internet_protocol_version4_module_func_in(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(packet == nil, false, "critical", "");
+    snorlaxdbg(packetlen == 0, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(*context == nil) *context = internet_protocol_version4_context_gen(parent, (internet_protocol_version4_packet_t *) packet, packetlen);
+
+    if(internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        internet_protocol_version4_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    return internet_protocol_version4_module_on(module, protocol_event_in, parent, *context);
+}
+
+extern int32_t internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context) {
+    return success;
 }

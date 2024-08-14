@@ -8,20 +8,23 @@ static transmission_control_protocol_module_t * transmission_control_protocol_mo
 static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
 static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void transmission_control_protocol_module_func_debug(transmission_control_protocol_module_t * module, FILE * stream, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_in(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
 
 static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_rem,
     transmission_control_protocol_module_func_deserialize,
     transmission_control_protocol_module_func_serialize,
-    transmission_control_protocol_module_func_debug
+    transmission_control_protocol_module_func_debug,
+    transmission_control_protocol_module_func_in
 };
 
-extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map) {
+extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on) {
     transmission_control_protocol_module_t * module = (transmission_control_protocol_module_t *) calloc(1, sizeof(transmission_control_protocol_module_t));
 
     module->func = address_of(func);
 
     module->map = map;
+    module->on = on;
 
     return module;
 }
@@ -111,4 +114,29 @@ static void transmission_control_protocol_module_func_debug(transmission_control
     fprintf(stream, "| %d ", transmission_control_protocol_context_checksum_get(context));
     fprintf(stream, "| %d ", transmission_control_protocol_context_urgent_get(context));
     fprintf(stream, "|\n");
+}
+
+static int32_t transmission_control_protocol_module_func_in(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(packet == nil, false, "critical", "");
+    snorlaxdbg(packetlen == 0, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    transmission_control_protocol_packet_t * segment = (transmission_control_protocol_packet_t *) packet;
+
+    if(*context == nil) *context = transmission_control_protocol_context_gen(parent, segment, packetlen);
+
+    if(transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    return transmission_control_protocol_module_on(module, protocol_event_in, parent, *context);
+}
+
+extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+    return success;
 }

@@ -10,6 +10,7 @@ static internet_control_message_protocol_version6_module_t * internet_control_me
 static int32_t internet_control_message_protocol_version6_module_func_deserialize(internet_control_message_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t ** context);
 static int32_t internet_control_message_protocol_version6_module_func_serialize(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_control_message_protocol_version6_module_func_debug(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
+static int32_t internet_control_message_protocol_version6_module_func_in(internet_control_message_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t ** context);
 
 static void internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_destination_unreachable_t * context);
 static void internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_packet_too_big_t * context);
@@ -24,13 +25,15 @@ static internet_control_message_protocol_version6_module_func_t func = {
     internet_control_message_protocol_version6_module_func_rem,
     internet_control_message_protocol_version6_module_func_deserialize,
     internet_control_message_protocol_version6_module_func_serialize,
-    internet_control_message_protocol_version6_module_func_debug
+    internet_control_message_protocol_version6_module_func_debug,
+    internet_control_message_protocol_version6_module_func_in
 };
 
-extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(void) {
+extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(internet_control_message_protocol_version6_context_handler_t on) {
     internet_control_message_protocol_version6_module_t * module = (internet_control_message_protocol_version6_module_t *) calloc(1, sizeof(internet_control_message_protocol_version6_module_t));
 
     module->func = address_of(func);
+    module->on = on;
 
     return module;
 }
@@ -215,4 +218,27 @@ static void internet_control_message_protocol_version6_module_func_debug_neighbo
     fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_code_get(context));
     fprintf(stream, "| %d ", internet_control_message_protocol_version6_context_checksum_get(context));
     fprintf(stream, "|\n");
+}
+
+static int32_t internet_control_message_protocol_version6_module_func_in(internet_control_message_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t ** context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(packet == nil, false, "critical", "");
+    snorlaxdbg(packetlen == 0, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(*context == nil) *context = internet_control_message_protocol_version6_context_gen(parent, (internet_control_message_protocol_version6_packet_t * ) packet, packetlen);
+
+    if(internet_control_message_protocol_version6_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        internet_control_message_protocol_version6_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    return internet_control_message_protocol_version6_module_on(module, protocol_event_in, parent, *context);
+}
+
+extern int32_t internet_control_message_protocol_version6_module_func_on(internet_control_message_protocol_version6_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t * context) {
+    return success;
 }

@@ -56,14 +56,14 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     application->func = address_of(func);
 
-    application->protocol.transmission_control = transmission_control_protocol_module_gen(nil);
-    application->protocol.user_datagram = user_datagram_protocol_module_gen(nil);
-    application->protocol.internet_protocol_version6_extension_hopbyhop = internet_protocol_version6_extension_hopbyhop_module_gen();
-    application->protocol.internet_control_message_protocol_version4 = internet_control_message_protocol_version4_module_gen();
-    application->protocol.internet_protocol_version6_extension_routing = internet_protocol_version6_extension_routing_module_gen();
-    application->protocol.internet_protocol_version6_extension_fragment = internet_protocol_version6_extension_fragment_module_gen();
-    application->protocol.internet_protocol_version6_extension_destination = internet_protocol_version6_extension_destination_module_gen();
-    application->protocol.internet_control_message_protocol_version6 = internet_control_message_protocol_version6_module_gen();
+    application->protocol.transmission_control = transmission_control_protocol_module_gen(nil, transmission_control_protocol_module_func_on);
+    application->protocol.user_datagram = user_datagram_protocol_module_gen(nil, user_datagram_protocol_module_func_on);
+    application->protocol.internet_protocol_version6_extension_hopbyhop = internet_protocol_version6_extension_hopbyhop_module_gen(internet_protocol_version6_extension_hopbyhop_module_func_on);
+    application->protocol.internet_control_message_protocol_version4 = internet_control_message_protocol_version4_module_gen(internet_control_message_protocol_version4_module_func_on);
+    application->protocol.internet_protocol_version6_extension_routing = internet_protocol_version6_extension_routing_module_gen(internet_protocol_version6_extension_routing_module_func_on);
+    application->protocol.internet_protocol_version6_extension_fragment = internet_protocol_version6_extension_fragment_module_gen(internet_protocol_version6_extension_fragment_module_func_on);
+    application->protocol.internet_protocol_version6_extension_destination = internet_protocol_version6_extension_destination_module_gen(internet_protocol_version6_extension_destination_module_func_on);
+    application->protocol.internet_control_message_protocol_version6 = internet_control_message_protocol_version6_module_gen(internet_control_message_protocol_version6_module_func_on);
 
     protocol_module_t * modules[] = {
         (protocol_module_t *) application->protocol.transmission_control,
@@ -88,7 +88,10 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_index_get);
 
-    application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport);
+    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on);
+    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on);
+
+    application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport, internet_protocol_module_func_on, version4, version6);
 
     return application;
 }

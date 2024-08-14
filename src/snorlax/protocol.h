@@ -12,6 +12,10 @@
 
 #include <snorlax.h>
 
+#define protocol_event_in                   1
+#define protocol_event_out                  2
+#define protocol_event_exception            3
+
 struct protocol_module;
 struct protocol_module_func;
 struct protocol_context;
@@ -35,12 +39,13 @@ typedef struct protocol_context_array_func protocol_context_array_func_t;
 
 typedef uint32_t (*protocol_module_map_index_t)(uint32_t);
 
-typedef uint64_t (*protocol_context_handler_t)(void);
+typedef int32_t (*protocol_context_handler_t)(protocol_module_t *, uint32_t, protocol_context_t *, protocol_context_t *);
 
 struct protocol_module {
     protocol_module_func_t * func;
     sync_t * sync;
     ___reference protocol_module_map_t * map;
+    protocol_context_handler_t on;
 };
 
 struct protocol_module_func {
@@ -48,15 +53,19 @@ struct protocol_module_func {
     int32_t (*deserialize)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
     int32_t (*serialize)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(protocol_module_t *, FILE *, protocol_context_t *);
-    int32_t (*in)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
+    int32_t (*in)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t *);
 //    int32_t (*out)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
 };
+
+extern int32_t protocol_module_func_on(protocol_module_t * module, uint32_t type, protocol_context_t * parent, protocol_context_t * context);
 
 #define protocol_module_rem(module)                                                     ((module)->func->rem(module))
 #define protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define protocol_module_serialize(module, parent, context, packet, len)                 ((module)->func->serialize(module, parent, context, packet, len))
 #define protocol_module_debug(module, stream, context)                                  ((module)->func->debug(module, stream, context))
 #define protocol_module_in(module, packet, packetlen, parent, context)                  ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define protocol_module_on(module, type, parent, context)                               ((module)->on(module, type, parent, context))
 
 struct protocol_context {
     protocol_context_func_t * func;

@@ -36,7 +36,37 @@ static int32_t internet_control_message_protocol_version6_context_router_solicit
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(false, true, "critical", "");
+    if(internet_protocol_version6_context_hop_limit_get(context->parent) != 255) {
+        /**
+         * The Internet Protocol <sup>IP</sup> Hop Limit field has a value of 255,
+         * i.e., the packet could not possibly have been forwarded by a router.
+         */
+        return false;
+    }
+
+    if(!internet_control_message_protocol_context_router_solicitation_checksum_valid(context)) {
+        /**
+         * Internet Control Message Protocl <sup>ICMP</sup> Checksum is valid.
+         */
+        return false;
+    }
+
+    if(internet_control_message_protocol_version6_context_router_solicitation_code_get(context) != 0) {
+        /**
+         * Internet Control Message Protocol <sup>ICMP</sup> Code is 0.
+         */
+        return false;
+    }
+
+    if(internet_control_message_protocol_version6_context_router_solicitation_length(context) < 8) {
+        /**
+         * Internet Control Message Protocol <sup>ICMP</sup> length is 8 or more octets.
+         */
+        return false;
+    }
+
+    snorlaxdbg(false, true, "implement", "All included options have a length that is greater than zero.");
+    snorlaxdbg(false, true, "implement", "If the Internet Protocol <sup>IP</sup> source address is the unspecified address, there is no source link layer address option in the message.");
 
     return true;
 }
