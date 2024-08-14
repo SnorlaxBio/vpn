@@ -44,7 +44,7 @@ static int32_t internet_control_message_protocol_version6_context_router_solicit
         return false;
     }
 
-    if(!internet_control_message_protocol_context_router_solicitation_checksum_valid(context)) {
+    if(!internet_control_message_protocol_version6_context_router_solicitation_checksum_valid(context)) {
         /**
          * Internet Control Message Protocl <sup>ICMP</sup> Checksum is valid.
          */

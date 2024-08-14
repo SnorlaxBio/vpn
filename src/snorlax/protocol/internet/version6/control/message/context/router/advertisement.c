@@ -44,21 +44,21 @@ static int32_t internet_control_message_protocol_version6_context_router_adverti
         return false;
     }
 
-    if(!internet_control_message_protocol_context_router_solicitation_checksum_valid(context)) {
+    if(!internet_control_message_protocol_version6_context_router_advertisement_checksum_valid(context)) {
         /**
          * Internet Control Message Protocl <sup>ICMP</sup> Checksum is valid.
          */
         return false;
     }
 
-    if(internet_control_message_protocol_version6_context_router_solicitation_code_get(context) != 0) {
+    if(internet_control_message_protocol_version6_context_router_advertisement_code_get(context) != 0) {
         /**
          * Internet Control Message Protocol <sup>ICMP</sup> Code is 0.
          */
         return false;
     }
 
-    if(internet_control_message_protocol_version6_context_router_solicitation_length(context) <= 16) {
+    if(internet_control_message_protocol_version6_context_router_advertisement_length(context) <= 16) {
         /**
          * Internet Control Message Protocol <sup>ICMP</sup> length is 8 or more octets.
          */

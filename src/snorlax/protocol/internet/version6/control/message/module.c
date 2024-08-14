@@ -61,7 +61,7 @@ static int32_t internet_control_message_protocol_version6_module_func_deserializ
 
     if(*context == nil) *context = internet_control_message_protocol_version6_context_gen(parent, (internet_control_message_protocol_version6_packet_t * ) packet, packetlen);
 
-    if(packetlen < internet_control_message_protocol_version6_message_length_min) {
+    if(packetlen < internet_control_message_protocol_version6_length_min) {
         internet_control_message_protocol_version6_context_error_set(*context, EAGAIN);
         return fail;
     }
@@ -75,11 +75,6 @@ static int32_t internet_control_message_protocol_version6_module_func_deserializ
 
     internet_control_message_protocol_version6_module_debug(module, stdout, *context);
 
-    switch(internet_control_message_protocol_version6_context_type_get(*context)) {
-        case internet_control_message_protocol_version6_message_type_router_solicitation:   snorlaxdbg(false, true, "debug", "discard");    break;
-        default:                                                                            snorlaxdbg(false, true, "implement", "");       break;
-    }
-
     return success;
 }
 
@@ -91,16 +86,16 @@ static int32_t internet_control_message_protocol_version6_module_func_serialize(
 
 static void internet_control_message_protocol_version6_module_func_debug(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context) {
     switch(internet_control_message_protocol_version6_context_type_get(context)) {
-        case internet_control_message_protocol_version6_message_type_destination_unreachable:   internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(module, stream, (internet_control_message_protocol_version6_context_destination_unreachable_t *) context);     break;
-        case internet_control_message_protocol_version6_message_type_packet_too_big:            internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(module, stream, (internet_control_message_protocol_version6_context_packet_too_big_t *) context);                       break;
-        case internet_control_message_protocol_version6_message_type_time_exceeded:             internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(module, stream, (internet_control_message_protocol_version6_context_time_exceeded_t *) context);                         break;
-        case internet_control_message_protocol_version6_message_type_parameter_problem:         internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(module, stream, (internet_control_message_protocol_version6_context_parameter_problem_t *) context);                 break;
-        case internet_control_message_protocol_version6_message_type_echo_request:              internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
-        case internet_control_message_protocol_version6_message_type_echo_reply:                internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
-        case internet_control_message_protocol_version6_message_type_router_solicitation:       internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_router_solicitation_t *) context);             break;
-        case internet_control_message_protocol_version6_message_type_router_advertisement:      internet_control_message_protocol_version6_module_func_debug_router_advertisement_message(module, stream, (internet_control_message_protocol_version6_context_router_advertisement_t *) context);           break;
-        case internet_control_message_protocol_version6_message_type_neighbor_solicitation:     internet_control_message_protocol_version6_module_func_debug_neighbor_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_neighbor_solicitation_t *) context);         break;
-        default:                                                                                snorlaxdbg(true, false, "critical", "");                                                                                                                                                                    break;
+        case internet_control_message_protocol_version6_type_destination_unreachable:   internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(module, stream, (internet_control_message_protocol_version6_context_destination_unreachable_t *) context);     break;
+        case internet_control_message_protocol_version6_type_packet_too_big:            internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(module, stream, (internet_control_message_protocol_version6_context_packet_too_big_t *) context);                       break;
+        case internet_control_message_protocol_version6_type_time_exceeded:             internet_control_message_protocol_version6_module_func_debug_time_exceeded_message(module, stream, (internet_control_message_protocol_version6_context_time_exceeded_t *) context);                         break;
+        case internet_control_message_protocol_version6_type_parameter_problem:         internet_control_message_protocol_version6_module_func_debug_parameter_problem_message(module, stream, (internet_control_message_protocol_version6_context_parameter_problem_t *) context);                 break;
+        case internet_control_message_protocol_version6_type_echo_request:              internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
+        case internet_control_message_protocol_version6_type_echo_reply:                internet_control_message_protocol_version6_module_func_debug_echo_message(module, stream, (internet_control_message_protocol_version6_context_echo_t *) context);                                           break;
+        case internet_control_message_protocol_version6_type_router_solicitation:       internet_control_message_protocol_version6_module_func_debug_router_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_router_solicitation_t *) context);             break;
+        case internet_control_message_protocol_version6_type_router_advertisement:      internet_control_message_protocol_version6_module_func_debug_router_advertisement_message(module, stream, (internet_control_message_protocol_version6_context_router_advertisement_t *) context);           break;
+        case internet_control_message_protocol_version6_type_neighbor_solicitation:     internet_control_message_protocol_version6_module_func_debug_neighbor_solicitation_message(module, stream, (internet_control_message_protocol_version6_context_neighbor_solicitation_t *) context);         break;
+        default:                                                                        snorlaxdbg(true, false, "critical", "");                                                                                                                                                                    break;
     }
 }
 
@@ -240,5 +235,12 @@ static int32_t internet_control_message_protocol_version6_module_func_in(interne
 }
 
 extern int32_t internet_control_message_protocol_version6_module_func_on(internet_control_message_protocol_version6_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t * context) {
+
+    if(type == protocol_event_in) {
+        switch(internet_control_message_protocol_version6_context_type_get(context)) {
+            case internet_control_message_protocol_version6_type_router_solicitation:   return internet_protocol_version6_module_control_message_context_in(context->parent->module, context);
+        }
+    }
+
     return success;
 }

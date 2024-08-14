@@ -17,20 +17,20 @@
 struct internet_protocol_version6_module;
 struct internet_protocol_version6_context;
 
-#define internet_control_message_protocol_version6_message_length_min                           4
+#define internet_control_message_protocol_version6_length_min                           4
 
-#define internet_control_message_protocol_version6_message_type_destination_unreachable         1
-#define internet_control_message_protocol_version6_message_type_packet_too_big                  2
-#define internet_control_message_protocol_version6_message_type_time_exceeded                   3
-#define internet_control_message_protocol_version6_message_type_parameter_problem               4
-#define internet_control_message_protocol_version6_message_type_echo_request                    128
-#define internet_control_message_protocol_version6_message_type_echo_reply                      129
+#define internet_control_message_protocol_version6_type_destination_unreachable         1
+#define internet_control_message_protocol_version6_type_packet_too_big                  2
+#define internet_control_message_protocol_version6_type_time_exceeded                   3
+#define internet_control_message_protocol_version6_type_parameter_problem               4
+#define internet_control_message_protocol_version6_type_echo_request                    128
+#define internet_control_message_protocol_version6_type_echo_reply                      129
 
-#define internet_control_message_protocol_version6_message_type_router_solicitation             133
-#define internet_control_message_protocol_version6_message_type_router_advertisement            134
-#define internet_control_message_protocol_version6_message_type_neighbor_solicitation           135
-#define internet_control_message_protocol_version6_message_type_neighbor_advertisement          136
-#define internet_control_message_protocol_version6_message_type_redirect                        137
+#define internet_control_message_protocol_version6_type_router_solicitation             133
+#define internet_control_message_protocol_version6_type_router_advertisement            134
+#define internet_control_message_protocol_version6_type_neighbor_solicitation           135
+#define internet_control_message_protocol_version6_type_neighbor_advertisement          136
+#define internet_control_message_protocol_version6_type_redirect                        137
 
 struct internet_control_message_protocol_version6_packet;
 struct internet_control_message_protocol_version6_destination_unreachable;
@@ -499,9 +499,9 @@ struct internet_control_message_protocol_version6_context_router_solicitation_fu
 
 extern internet_control_message_protocol_version6_context_router_solicitation_t * internet_control_message_protocol_version6_context_router_solicitation_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_router_solicitation_t * packet, uint64_t packetlen);
 
-#define internet_control_message_protocol_context_router_solicitation_checksum_valid(context)       ((context)->checksum == (context)->packet->checksum)
-#define internet_control_message_protocol_version6_context_router_solicitation_code_get(context)    ((context)->packet->code)
-#define internet_control_message_protocol_version6_context_router_solicitation_length(context)      ((context)->packetlen)
+#define internet_control_message_protocol_version6_context_router_solicitation_checksum_valid(context)      ((context)->checksum == (context)->packet->checksum)
+#define internet_control_message_protocol_version6_context_router_solicitation_code_get(context)            ((context)->packet->code)
+#define internet_control_message_protocol_version6_context_router_solicitation_length(context)              ((context)->packetlen)
 
 struct internet_control_message_protocol_version6_context_router_advertisement {
     internet_control_message_protocol_version6_context_router_advertisement_func_t * func;
@@ -521,6 +521,10 @@ struct internet_control_message_protocol_version6_context_router_advertisement_f
 };
 
 extern internet_control_message_protocol_version6_context_router_advertisement_t * internet_control_message_protocol_version6_context_router_advertisemen_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_router_advertisement_t * packet, uint64_t packetlen);
+
+#define internet_control_message_protocol_version6_context_router_advertisement_checksum_valid(context)     ((context)->checksum == (context)->packet->checksum)
+#define internet_control_message_protocol_version6_context_router_advertisement_code_get(context)           ((context)->packet->code)
+#define internet_control_message_protocol_version6_context_router_advertisement_length(context)             ((context)->packetlen)
 
 struct internet_control_message_protocol_version6_context_neighbor_solicitation {
     internet_control_message_protocol_version6_context_neighbor_solicitation_func_t * func;
