@@ -53,7 +53,7 @@ struct protocol_module_func {
     int32_t (*deserialize)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
     int32_t (*serialize)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(protocol_module_t *, FILE *, protocol_context_t *);
-    int32_t (*in)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t *);
+    int32_t (*in)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
 //    int32_t (*out)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
 };
 
@@ -74,7 +74,7 @@ struct protocol_context {
     protocol_context_t * parent;
     protocol_context_array_t * children;
     int32_t error;
-    uint8_t * packet;
+    protocol_packet_t * packet;
     uint64_t packetlen;
 };
 
@@ -105,10 +105,6 @@ extern protocol_module_map_t * protocol_module_map_gen(protocol_module_t ** modu
 
 #define protocol_module_map_rem(map)                    ((map) ? (map)->func->rem(map) : nil)
 #define protocol_module_map_get(map, no)                ((map) ? (map)->get(map, no) : nil)
-
-// #define protocol_module_map_modules_get(map)            ((map) ? (map)->modules : nil)
-// #define protocol_module_map_size_get(map)               ((map) ? (map)->size : 0)
-// #define protocol_module_map_index_get(map)              ((map) ? (map)->index : nil)
 
 struct protocol_context_array {
     protocol_context_array_func_t * func;

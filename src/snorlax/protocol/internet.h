@@ -16,6 +16,7 @@
 /**
  * @see     [Protocol Numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
  */
+// REFACTOR PROTOCOL_NO_INTERNET_VERSION6_EXTENSION_HOPBYHOP_NO
 #define internet_protocol_version6_extension_hopbyhop_no        0
 #define internet_control_message_protocol_version4_no           1
 #define transmission_control_protocol_no                        6
@@ -38,10 +39,7 @@ struct internet_protocol_context;
 struct internet_protocol_context_func;
 
 struct internet_protocol_version4_module;
-// struct internet_protocol_version4_context;
-
 struct internet_protocol_version6_module;
-// struct internet_protocol_version6_context;
 
 struct internet_protocol_address;
 
@@ -55,14 +53,9 @@ typedef struct internet_protocol_context internet_protocol_context_t;
 typedef struct internet_protocol_context_func internet_protocol_context_func_t;
 
 typedef struct internet_protocol_version4_module internet_protocol_version4_module_t;
-// typedef struct internet_protocol_version4_context internet_protocol_version4_context_t;
-
 typedef struct internet_protocol_version6_module internet_protocol_version6_module_t;
-// typedef struct internet_protocol_version6_context internet_protocol_version6_context_t;
 
 typedef int32_t (*internet_protocol_context_handler_t)(internet_protocol_module_t *, uint32_t, protocol_context_t *, internet_protocol_context_t *);
-// typedef int32_t (*internet_protocol_version4_context_handler_t)(internet_protocol_version4_module_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t *);
-// typedef int32_t (*internet_protocol_version6_context_handler_t)(internet_protocol_version6_module_t *, uint32_t, protocol_context_t *, internet_protocol_version6_context_t *);
 
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
