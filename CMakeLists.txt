@@ -96,6 +96,15 @@ set(SNORLAX_VPN_ClIENT_HEADER   src/snorlax/vpn/client/app.h
                                 src/snorlax/vpn/client/app/netlink.h
                                 src/snorlax/vpn/client/event/subscription.h)
 
+set(SNORLAX_VPN_SINGLE_SOURCE   src/snorlax/vpn/single/app.c
+                                src/snorlax/vpn/single/app/config.c
+                                src/snorlax/vpn/single/app/tun.c
+                                src/snorlax/vpn/single/app/netlink.c)
+set(SNORLAX_VPN_SINGLE_HEADER   src/snorlax/vpn/single/app.h
+                                src/snorlax/vpn/single/app/config.h
+                                src/snorlax/vpn/single/app/tun.h
+                                src/snorlax/vpn/single/app/netlink.h)
+
 set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/context/array.c
                                 src/snorlax/protocol/internet/module.c
@@ -155,6 +164,13 @@ add_executable(snorlax-vpn-client   ${SNORLAX_VPN_CLIENT_SOURCE}
                                     ${SNORLAX_VPN_PROTOCOL_HEADER})
 target_compile_options(snorlax-vpn-client PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
 target_link_libraries(snorlax-vpn-client libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
+
+add_executable(snorlax-vpn-single   ${SNORLAX_VPN_SINGLE_SOURCE}
+                                    ${SNORLAX_VPN_SINGLE_HEADER}
+                                    ${SNORLAX_VPN_PROTOCOL_SOURCE}
+                                    ${SNORLAX_VPN_PROTOCOL_HEADER})
+target_compile_options(snorlax-vpn-single PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
+target_link_libraries(snorlax-vpn-single libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
 
 set(SNORLAX_VPN_SERVER_SOURCE   src/snorlax/vpn/server/app.c
                                 src/snorlax/vpn/server.c

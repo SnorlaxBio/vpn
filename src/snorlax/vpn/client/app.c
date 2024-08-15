@@ -38,7 +38,7 @@ static vpn_client_app_func_t func = {
     vpn_client_app_func_run
 };
 
-static protocol_module_t * transport_protocol_map_get(protocol_module_map_t * map, uint32_t no) {
+static protocol_module_t * transport_protocol_map_get(protocol_module_map_t * map, uint64_t no) {
     switch(no) {
         case transmission_control_protocol_no:                      return map->modules[0];
         case user_datagram_protocol_no:                             return map->modules[1];
