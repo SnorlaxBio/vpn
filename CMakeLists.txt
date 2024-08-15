@@ -85,6 +85,12 @@ ExternalProject_Add(snorlax-net
 include_directories(src include)
 link_directories(${PROJECT_SOURCE_DIR}/lib ${PROJECT_SOURCE_DIR}/build)
 
+set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/vpn/protocol.c
+                                src/snorlax/vpn/protocol/module.c
+                                src/snorlax/vpn/protocol/context.c)
+
+set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/vpn/protocol.h)
+
 set(SNORLAX_VPN_CLIENT_SOURCE   src/snorlax/vpn/client/app.c
                                 src/snorlax/vpn/client/app/config.c
                                 src/snorlax/vpn/client/app/tun.c
@@ -105,7 +111,14 @@ set(SNORLAX_VPN_SINGLE_HEADER   src/snorlax/vpn/single/app.h
                                 src/snorlax/vpn/single/app/tun.h
                                 src/snorlax/vpn/single/app/netlink.h)
 
-set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
+set(SNORLAX_VPN_SERVER_SOURCE   src/snorlax/vpn/server/app.c
+                                src/snorlax/vpn/server.c
+                                src/snorlax/vpn/session.c)
+set(SNORLAX_VPN_SERVER_HEADER   src/snorlax/vpn/server/app.h
+                                src/snorlax/vpn/server.h
+                                src/snorlax/vpn/session.h)
+
+set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/context/array.c
                                 src/snorlax/protocol/internet/module.c
                                 src/snorlax/protocol/internet/context.c
@@ -149,7 +162,7 @@ set(SNORLAX_VPN_PROTOCOL_SOURCE src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/internet/transmission/control/context.c
                                 src/snorlax/protocol/internet/transmission/control/block.c)
 
-set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol.h
+set(SNORLAX_PROTOCOL_HEADER     src/snorlax/protocol.h
                                 src/snorlax/protocol/internet.h
                                 src/snorlax/protocol/internet/version4.h
                                 src/snorlax/protocol/internet/version4/control/message.h
@@ -158,28 +171,25 @@ set(SNORLAX_VPN_PROTOCOL_HEADER src/snorlax/protocol.h
                                 src/snorlax/protocol/internet/user/datagram.h
                                 src/snorlax/protocol/internet/transmission/control.h)
 
-add_executable(snorlax-vpn-client   ${SNORLAX_VPN_CLIENT_SOURCE}
-                                    ${SNORLAX_VPN_ClIENT_HEADER}
-                                    ${SNORLAX_VPN_PROTOCOL_SOURCE}
+add_library(snorlax-vpn-protocol    ${SNORLAX_VPN_PROTOCOL_SOURCE}
                                     ${SNORLAX_VPN_PROTOCOL_HEADER})
+target_compile_options(snorlax-vpn-protocol PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
+
+add_library(snorlax-protocol        ${SNORLAX_PROTOCOL_SOURCE}
+                                    ${SNORLAX_PROTOCOL_HEADER})
+target_compile_options(snorlax-protocol PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
+
+add_executable(snorlax-vpn-client   ${SNORLAX_VPN_CLIENT_SOURCE}
+                                    ${SNORLAX_VPN_ClIENT_HEADER})
 target_compile_options(snorlax-vpn-client PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
-target_link_libraries(snorlax-vpn-client libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
+target_link_libraries(snorlax-vpn-client snorlax-vpn-protocol snorlax-protocol libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
 
 add_executable(snorlax-vpn-single   ${SNORLAX_VPN_SINGLE_SOURCE}
-                                    ${SNORLAX_VPN_SINGLE_HEADER}
-                                    ${SNORLAX_VPN_PROTOCOL_SOURCE}
-                                    ${SNORLAX_VPN_PROTOCOL_HEADER})
+                                    ${SNORLAX_VPN_SINGLE_HEADER})
 target_compile_options(snorlax-vpn-single PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
-target_link_libraries(snorlax-vpn-single libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
-
-set(SNORLAX_VPN_SERVER_SOURCE   src/snorlax/vpn/server/app.c
-                                src/snorlax/vpn/server.c
-                                src/snorlax/vpn/session.c)
-set(SNORLAX_VPN_SERVER_HEADER   src/snorlax/vpn/server/app.h
-                                src/snorlax/vpn/server.h
-                                src/snorlax/vpn/session.h)
+target_link_libraries(snorlax-vpn-single snorlax-vpn-protocol snorlax-protocol libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
 
 add_executable(snorlax-vpn-server   ${SNORLAX_VPN_SERVER_SOURCE}
                                     ${SNORLAX_VPN_SERVER_HEADER})
 target_compile_options(snorlax-vpn-server PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
-target_link_libraries(snorlax-vpn-server libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
+target_link_libraries(snorlax-vpn-server snorlax-vpn-protocol snorlax-protocol libsnorlax-net.a libsnorlax-eva.a libsnorlax-std.a)
