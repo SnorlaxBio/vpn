@@ -12,7 +12,6 @@
 #include "app/tun.h"
 #include "app/netlink.h"
 
-
 static vpn_client_app_t * app = nil;
 
 int main(int argc, char ** argv) {
@@ -24,6 +23,10 @@ int main(int argc, char ** argv) {
     app = vpn_client_app_rem(app);
 
     return ret;
+}
+
+extern vpn_client_app_t * vpn_client_app_get(void) {
+    return app;
 }
 
 static vpn_client_app_t * vpn_client_app_func_rem(vpn_client_app_t * application);

@@ -71,6 +71,8 @@ extern vpn_client_app_t * vpn_client_app_gen(void);
 
 extern void vpn_client_app_engine_cancel(___notnull const event_engine_t * engine);
 
+extern vpn_client_app_t * vpn_client_app_get(void);
+
 extern network_netlink_t * vpn_client_app_netlink_descriptor_get(void);
 extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(void);
 extern internet_protocol_module_t * vpn_client_app_internet_protocol_module_get(void);
