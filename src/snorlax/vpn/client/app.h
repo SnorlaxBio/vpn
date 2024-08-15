@@ -14,6 +14,8 @@
 #include <snorlax/event/engine.h>
 #include <snorlax/socket/client/event/subscription/pool.h>
 
+#include <snorlax/network/netlink.h>
+
 #include <snorlax/protocol/internet.h>
 #include <snorlax/protocol/internet/version4.h>
 #include <snorlax/protocol/internet/version6.h>
@@ -72,6 +74,11 @@ extern vpn_client_app_t * vpn_client_app_gen(void);
 extern void vpn_client_app_engine_cancel(___notnull const event_engine_t * engine);
 
 extern vpn_client_app_t * vpn_client_app_get(void);
+
+extern void vpn_client_app_network_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
+
+
+// static void onNetlinkIPRoutePrepend(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
 
 extern network_netlink_t * vpn_client_app_netlink_descriptor_get(void);
 extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(void);

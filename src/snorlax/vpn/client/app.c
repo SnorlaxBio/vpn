@@ -1,8 +1,14 @@
 #include <linux/netlink.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <stdio.h>
+#include <string.h>
 
 #include <snorlax/network/tun.h>
 #include <snorlax/network/netlink.h>
 #include <snorlax/socket/event/subscription.h>
+#include <snorlax/event/engine.h>
 #include <snorlax/descriptor/event/subscription.h>
 #include <snorlax/protocol.h>
 
@@ -11,6 +17,8 @@
 #include "event/subscription.h"
 #include "app/tun.h"
 #include "app/netlink.h"
+#include "event/subscription/handler.h"
+#include "../client.h"
 
 static vpn_client_app_t * app = nil;
 
@@ -189,4 +197,23 @@ extern socket_event_subscription_t * vpn_client_app_netlink_subscription_get(voi
 
 extern internet_protocol_module_t * vpn_client_app_internet_protocol_module_get(void) {
     return app->protocol.internet;
+}
+
+extern void vpn_client_app_network_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
+    snorlaxdbg(false, true, "implement", "response check");
+
+    struct sockaddr_in addr;
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr("172.30.1.59");
+    addr.sin_port = htons(6207);
+
+    // socket_client_t * descriptor = ;
+
+    // if(socket_client_open(descriptor) == fail) {
+    //     snorlaxdbg(false, true, "fail", "");
+    // }
+
+    // network_tun_protect((network_tun_t *) app->tun->descriptor, (descriptor_t *) descriptor);
+
+    event_engine_socket_client_sub(app->engine, (socket_client_t *) vpn_client_gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, &addr, sizeof(struct sockaddr_in)), vpn_client_event_subscription_handler_get(), app->pool);
 }
