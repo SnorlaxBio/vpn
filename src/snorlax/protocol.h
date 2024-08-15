@@ -26,7 +26,7 @@ struct protocol_context_array;
 struct protocol_context_array_func;
 
 typedef uint8_t protocol_packet_t;
-typedef uint16_t protocol_address_t;
+typedef uint16_t protocol_address_t;            // REFACTOR
 
 typedef struct protocol_module protocol_module_t;
 typedef struct protocol_module_func protocol_module_func_t;
@@ -37,7 +37,7 @@ typedef struct protocol_module_map_func protocol_module_map_func_t;
 typedef struct protocol_context_array protocol_context_array_t;
 typedef struct protocol_context_array_func protocol_context_array_func_t;
 
-typedef uint32_t (*protocol_module_map_index_t)(uint32_t);
+typedef protocol_module_t * (*protocol_module_map_get_t)(protocol_module_map_t *, uint64_t);
 
 typedef int32_t (*protocol_context_handler_t)(protocol_module_t *, uint32_t, protocol_context_t *, protocol_context_t *);
 
@@ -94,21 +94,21 @@ struct protocol_module_map {
     sync_t * sync;
     uint64_t size;
     protocol_module_t ** modules;
-    protocol_module_map_index_t index;
+    protocol_module_map_get_t get;
 };
 
 struct protocol_module_map_func {
     protocol_module_map_t * (*rem)(protocol_module_map_t *);
-    protocol_module_t * (*get)(protocol_module_map_t *, uint32_t);
 };
 
-extern protocol_module_map_t * protocol_module_map_gen(protocol_module_t ** modules, uint64_t n, protocol_module_map_index_t index);
+extern protocol_module_map_t * protocol_module_map_gen(protocol_module_t ** modules, uint64_t n, protocol_module_map_get_t get);
 
 #define protocol_module_map_rem(map)                    ((map) ? (map)->func->rem(map) : nil)
-#define protocol_module_map_get(map, no)                ((map) ? (map)->func->get(map, no) : nil)
-#define protocol_module_map_modules_get(map)            ((map) ? (map)->modules : nil)
-#define protocol_module_map_size_get(map)               ((map) ? (map)->size : 0)
-#define protocol_module_map_index_get(map)              ((map) ? (map)->index : nil)
+#define protocol_module_map_get(map, no)                ((map) ? (map)->get(map, no) : nil)
+
+// #define protocol_module_map_modules_get(map)            ((map) ? (map)->modules : nil)
+// #define protocol_module_map_size_get(map)               ((map) ? (map)->size : 0)
+// #define protocol_module_map_index_get(map)              ((map) ? (map)->index : nil)
 
 struct protocol_context_array {
     protocol_context_array_func_t * func;

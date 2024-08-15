@@ -4,13 +4,14 @@
 #include <snorlax/network/netlink.h>
 #include <snorlax/socket/event/subscription.h>
 #include <snorlax/descriptor/event/subscription.h>
+#include <snorlax/protocol.h>
 
 #include "app.h"
 #include "app/config.h"
 #include "event/subscription.h"
 #include "app/tun.h"
 #include "app/netlink.h"
-#include "protocol.h"
+
 
 static vpn_client_app_t * app = nil;
 
@@ -37,17 +38,17 @@ static vpn_client_app_func_t func = {
     vpn_client_app_func_run
 };
 
-static uint32_t transport_protocol_index_get(uint32_t no) {
+static protocol_module_t * transport_protocol_map_get(protocol_module_map_t * map, uint32_t no) {
     switch(no) {
-        case transmission_control_protocol_no:                      return 0;
-        case user_datagram_protocol_no:                             return 1;
-        case internet_protocol_version6_extension_hopbyhop_no:      return 2;
-        case internet_control_message_protocol_version4_no:         return 3;
-        case internet_protocol_version6_extension_routing_no:       return 4;
-        case internet_protocol_version6_extension_fragment_no:      return 5;
-        case internet_protocol_version6_extension_destination_no:   return 6;
-        case internet_control_message_protocol_version6_no:         return 7;
-        default:                                                    return 8;
+        case transmission_control_protocol_no:                      return map->modules[0];
+        case user_datagram_protocol_no:                             return map->modules[1];
+        case internet_protocol_version6_extension_hopbyhop_no:      return map->modules[2];
+        case internet_control_message_protocol_version4_no:         return map->modules[3];
+        case internet_protocol_version6_extension_routing_no:       return map->modules[4];
+        case internet_protocol_version6_extension_fragment_no:      return map->modules[5];
+        case internet_protocol_version6_extension_destination_no:   return map->modules[6];
+        case internet_control_message_protocol_version6_no:         return map->modules[7];
+        default:                                                    return nil;
     }
 }
 
@@ -86,7 +87,7 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     printf("%lu\n", sizeof(modules) / sizeof(protocol_module_t *));
 
-    application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_index_get);
+    application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_map_get);
 
     internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on);
     internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on);
