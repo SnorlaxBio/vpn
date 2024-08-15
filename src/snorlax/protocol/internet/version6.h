@@ -11,6 +11,7 @@
 #define   __SNORLAX__PROTOCOL_INTERNET_VERSION6__H__
 
 #include <snorlax.h>
+#include <snorlax/hashtable.h>
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
@@ -275,6 +276,10 @@ struct internet_protocol_version6_module_host {
     uint32_t base_reachable_time;
     uint32_t reachable_time;
     uint32_t retransmission_timer;
+
+#if       0
+    hashtable_t * default_router_table;
+#endif // 0
 };
 
 struct internet_protocol_version6_module_host_func {

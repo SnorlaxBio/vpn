@@ -522,9 +522,12 @@ struct internet_control_message_protocol_version6_context_router_advertisement_f
 
 extern internet_control_message_protocol_version6_context_router_advertisement_t * internet_control_message_protocol_version6_context_router_advertisemen_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_router_advertisement_t * packet, uint64_t packetlen);
 
-#define internet_control_message_protocol_version6_context_router_advertisement_checksum_valid(context)     ((context)->checksum == (context)->packet->checksum)
-#define internet_control_message_protocol_version6_context_router_advertisement_code_get(context)           ((context)->packet->code)
-#define internet_control_message_protocol_version6_context_router_advertisement_length(context)             ((context)->packetlen)
+#define internet_control_message_protocol_version6_context_router_advertisement_checksum_valid(context)             ((context)->checksum == (context)->packet->checksum)
+#define internet_control_message_protocol_version6_context_router_advertisement_code_get(context)                   ((context)->packet->code)
+#define internet_control_message_protocol_version6_context_router_advertisement_length(context)                     ((context)->packetlen)
+
+#define internet_control_message_protocol_version6_context_router_advertisement_current_hop_limit_get(context)      ((context)->packet->curhoplimit)
+#define internet_control_message_protocol_version6_context_router_advertisement_current_hop_limit_set(context, v)   ((context)->packet->curhoplimit = v)
 
 struct internet_control_message_protocol_version6_context_neighbor_solicitation {
     internet_control_message_protocol_version6_context_neighbor_solicitation_func_t * func;

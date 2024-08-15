@@ -5,6 +5,9 @@
 #include <arpa/inet.h>
 
 #include "../version6.h"
+#include "control/message.h"
+
+static int32_t internet_protocol_version6_module_func_control_message_context_in_discard(internet_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context);
 
 static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_rem,
@@ -149,5 +152,13 @@ extern int32_t internet_protocol_version6_module_func_in(internet_protocol_versi
 }
 
 extern int32_t internet_protocol_version6_module_func_control_message_context_in(internet_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context) {
+    switch(internet_control_message_protocol_version6_context_type_get(context)) {
+        case internet_control_message_protocol_version6_type_router_solicitation:       return internet_protocol_version6_module_func_control_message_context_in_discard(module, context);
+    }
+    return success;
+}
+
+static int32_t internet_protocol_version6_module_func_control_message_context_in_discard(internet_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context) {
+    // discard
     return success;
 }

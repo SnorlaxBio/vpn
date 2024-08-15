@@ -239,6 +239,7 @@ extern int32_t internet_control_message_protocol_version6_module_func_on(interne
     if(type == protocol_event_in) {
         switch(internet_control_message_protocol_version6_context_type_get(context)) {
             case internet_control_message_protocol_version6_type_router_solicitation:   return internet_protocol_version6_module_control_message_context_in(context->parent->module, context);
+            case internet_control_message_protocol_version6_type_router_advertisement:  return internet_protocol_version6_module_control_message_context_in(context->parent->module, context);
         }
     }
 
