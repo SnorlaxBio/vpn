@@ -140,9 +140,9 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
 
 #define internet_protocol_version4_module_on(module, type, parent, context)                         ((module)->on(module, type, parent, context))
 
-#define internet_protocol_version4_module_header_length_cal(datagram)       ((datagram)->length * 4)
-#define internet_protocol_version4_module_option_offset_cal(datagram)       (&(((uint8_t *)(datagram))[internet_protocol_version4_packet_header_length_min]))
-#define internet_protocol_version4_module_segment_offset_cal(datagram)      (&(((uint8_t *)(datagram))[internet_protocol_version4_module_header_length_cal(datagram)]))
+#define internet_protocol_version4_module_header_length_cal(datagram)                               ((datagram)->length * 4)
+#define internet_protocol_version4_module_option_offset_cal(datagram)                               (&(((uint8_t *)(datagram))[internet_protocol_version4_packet_header_length_min]))
+#define internet_protocol_version4_module_segment_offset_cal(datagram)                              (&(((uint8_t *)(datagram))[internet_protocol_version4_module_header_length_cal(datagram)]))
 
 struct internet_protocol_version4_context {
     internet_protocol_version4_context_func_t * func;
