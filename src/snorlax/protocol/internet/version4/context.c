@@ -49,6 +49,9 @@ static int32_t internet_protocol_version4_context_func_valid(internet_protocol_v
     if(internet_protocol_version4_context_error_get(context)) return false;
 
     if(internet_protocol_version4_context_checksum_get(context) != internet_protocol_version4_context_checksumcal_get(context)) {
+        snorlaxdbg(false, true, "debug", "checksum => %u", internet_protocol_version4_context_checksum_get(context));
+        snorlaxdbg(false, true, "debug", "checksumcal => %u", internet_protocol_version4_context_checksumcal_get(context));
+        
         internet_protocol_version4_context_error_set(context, EIO);
 
         return false;

@@ -181,13 +181,14 @@ struct transmission_control_protocol_context {
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
 
-    uint16_t source;
-    uint16_t destination;
-    uint32_t sequence;
-    uint32_t acknowledgment;
-    uint16_t window;
+    // uint16_t source;
+    // uint16_t destination;
+    // uint32_t sequence;
+    // uint32_t acknowledgment;
+    // uint16_t window;
+    // uint16_t checksum;
+    // uint16_t urgent;
     uint16_t checksum;
-    uint16_t urgent;
 
     uint32_t headerlen;
     uint32_t datalen;
@@ -210,18 +211,21 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 #define transmission_control_protocol_context_error_get(context)                ((context)->error)
 #define transmission_control_protocol_context_error_set(context, v)             ((context)->error = v)
 #define transmission_control_protocol_context_packetlen_get(context)            ((context)->packetlen)
+#define transmission_control_protocol_context_packetlen_set(context)            ((context)->packetlen = v)
 #define transmission_control_protocol_context_headerlen_get(context)            ((context)->headerlen)
 #define transmission_control_protocol_context_headerlen_set(context, v)         ((context)->headerlen = v)
 #define transmission_control_protocol_context_datalen_get(context)              ((context)->datalen)
 #define transmission_control_protocol_context_datalen_set(context, v)           ((context)->datalen = v)
-#define transmission_control_protocol_context_source_get(context)               ((context)->source)
-#define transmission_control_protocol_context_source_set(context, v)            ((context)->source = v)
-#define transmission_control_protocol_context_destination_get(context)          ((context)->destination)
-#define transmission_control_protocol_context_destination_set(context, v)       ((context)->destination = v)
-#define transmission_control_protocol_context_sequence_get(context)             ((context)->sequence)
-#define transmission_control_protocol_context_sequence_set(context, v)          ((context)->sequence = v)
-#define transmission_control_protocol_context_acknowledgment_get(context)       ((context)->acknowledgment)
-#define transmission_control_protocol_context_acknowledgment_set(context, v)    ((context)->acknowledgment = v)
+#define transmission_control_protocol_context_checksumcal_get(context)          ((context)->checksum)
+#define transmission_control_protocol_context_checksumcal_set(context, v)       ((context)->checksum =  v)
+#define transmission_control_protocol_context_source_get(context)               (htons((context)->packet->source))
+#define transmission_control_protocol_context_source_set(context, v)            ((context)->packet->source = ntohs(v))
+#define transmission_control_protocol_context_destination_get(context)          (htons((context)->packet->destination))
+#define transmission_control_protocol_context_destination_set(context, v)       ((context)->packet->destination = ntohs(v))
+#define transmission_control_protocol_context_sequence_get(context)             (htonl((context)->packet->sequence))
+#define transmission_control_protocol_context_sequence_set(context, v)          ((context)->packet->sequence = ntohl(v))
+#define transmission_control_protocol_context_acknowledgment_get(context)       (htonl((context)->packet->acknowledgment))
+#define transmission_control_protocol_context_acknowledgment_set(context, v)    ((context)->packet->acknowledgment = ntohl(v))
 #define transmission_control_protocol_context_offset_get(context)               ((context)->packet->offset)
 #define transmission_control_protocol_context_offset_set(context, v)            ((context)->packet->offset = v)
 #define transmission_control_protocol_context_cwr_get(context)                  ((context)->packet->cwr)
@@ -248,12 +252,12 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 #define transmission_control_protocol_context_fin_get(context)                  ((context)->packet->fin)
 #define transmission_control_protocol_context_fin_on(context)                   ((context)->packet->fin = 1)
 #define transmission_control_protocol_context_fin_off(context)                  ((context)->packet->fin = 0)
-#define transmission_control_protocol_context_window_get(context)               ((context)->window)
-#define transmission_control_protocol_context_window_set(context, v)            ((context)->window = v)
-#define transmission_control_protocol_context_checksum_get(context)             ((context)->checksum)
-#define transmission_control_protocol_context_checksum_set(context, v)          ((context)->checksum = v)
-#define transmission_control_protocol_context_urgent_get(context)               ((context)->urgent)
-#define transmission_control_protocol_context_urgent_set(context, v)            ((context)->urgent = v)
+#define transmission_control_protocol_context_window_get(context)               (htons((context)->packet->window))
+#define transmission_control_protocol_context_window_set(context, v)            ((context)->packet->window = ntohs(v))
+#define transmission_control_protocol_context_checksum_get(context)             (htons((context)->packet->checksum))
+#define transmission_control_protocol_context_checksum_set(context, v)          ((context)->packet->checksum = ntohs(v))
+#define transmission_control_protocol_context_urgent_get(context)               (htons((context)->packet->pointer))
+#define transmission_control_protocol_context_urgent_set(context, v)            ((context)->packet->pointer = ntohs(v))
 #define transmission_control_protocol_context_option_get(context)               ((context)->option)
 #define transmission_control_protocol_context_option_set(context, v)            ((context)->option = v)
 #define transmission_control_protocol_context_data_get(context)                 ((context)->data)

@@ -252,6 +252,11 @@ static int32_t internet_protocol_version4_module_func_in(internet_protocol_versi
 }
 
 extern int32_t internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context) {
-    snorlaxdbg(false, true, "implement", "");
+    snorlaxdbg(false, true, "debug", "type => %u", type);
+
+    if(type == protocol_event_exception) {
+        snorlaxdbg(false, true, "debug", "exception => %d", internet_protocol_version4_context_error_get(context));
+    }
+    
     return success;
 }

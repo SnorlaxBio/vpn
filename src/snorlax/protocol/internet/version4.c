@@ -21,7 +21,7 @@ extern uint16_t internet_protocol_version4_checksum_cal(internet_protocol_versio
     uint16_t checksum = datagram->checksum;
     datagram->checksum = 0;
 
-    uint16_t value = internet_protocol_checksum_sum((protocol_packet_t *) datagram, datagramlen);
+    uint32_t value = internet_protocol_checksum_sum((protocol_packet_t *) datagram, datagram->length * 4);
 
     while(value >> 16) value = (value >> 16) + (value & 0x0000FFFFu);
 
