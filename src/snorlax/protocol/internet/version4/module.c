@@ -30,6 +30,10 @@ static internet_protocol_version4_module_func_t func = {
 };
 
 extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map, internet_protocol_version4_context_handler_t on) {
+#ifndef   RELEASE
+    snorlaxdbg(on == nil, false, "critical", "");
+#endif // RELEASE
+
     internet_protocol_version4_module_t * module = (internet_protocol_version4_module_t *) calloc(1, sizeof(internet_protocol_version4_module_t));
 
     module->func = address_of(func);
@@ -39,27 +43,7 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
     return module;
 }
 
-extern uint16_t internet_protocol_version4_module_checksum_cal(internet_protocol_version4_packet_t * datagram) {
-    uint16_t checksum = datagram->checksum;
 
-    datagram->checksum = 0;
-
-    uint16_t * packet = (uint16_t *) datagram;
-    uint32_t n = (datagram->length * 2);
-    uint32_t v = 0;
-
-    for(uint32_t i = 0; i < n; i++) {
-        v = v + ntohs(packet[i]);
-    }
-
-    while(v >> 16) {
-        v = (v >> 16) + (v & 0x0000FFFFu);
-    }
-
-    datagram->checksum = checksum;
-
-    return (int16_t) (~v);
-}
 
 static internet_protocol_version4_module_t * internet_protocol_version4_module_func_rem(internet_protocol_version4_module_t * module) {
 #ifndef   RELEASE
@@ -90,50 +74,26 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
 
     internet_protocol_version4_packet_t * datagram = (internet_protocol_version4_packet_t *) packet;
 
-    internet_protocol_version4_context_total_set(*context, ntohs(datagram->total));
-
     if(packetlen < internet_protocol_version4_context_total_get(*context)) {
         internet_protocol_version4_context_error_set(*context, EAGAIN);
         return fail;
     }
 
-    internet_protocol_version4_context_packetlen_set(*context, ntohs(datagram->total));
-
-    internet_protocol_version4_context_checksum_set(*context, ntohs(datagram->checksum));
-
-    uint16_t checksum = internet_protocol_version4_module_checksum_cal(datagram);
-
-    if(checksum != internet_protocol_version4_context_checksum_get(*context)) {
-        internet_protocol_version4_context_error_set(*context, EIO);
-        return fail;
-    }
+    internet_protocol_version4_context_checksumcal_set(*context, internet_protocol_version4_checksum_cal(datagram, internet_protocol_version4_context_packetlen_get(*context)));
 
     internet_protocol_version4_context_pseudo_set(*context, internet_protocol_version4_pseudo_gen(datagram), sizeof(internet_protocol_version4_pseudo_t));
 
-    internet_protocol_version4_context_identification_set(*context, ntohs(datagram->identification));
-    internet_protocol_version4_context_fragment_set(*context, ntohs(datagram->fragment));
-    internet_protocol_version4_context_option_offset_set(*context, internet_protocol_version4_module_option_offset_cal(datagram));
-    internet_protocol_version4_context_segment_offset_set(*context, internet_protocol_version4_module_segment_offset_cal(datagram));
-    internet_protocol_version4_context_segment_length_set(*context, internet_protocol_version4_context_segment_length_cal(*context));
+    internet_protocol_version4_context_option_set(*context, internet_protocol_version4_module_option_offset_cal(datagram));
+    internet_protocol_version4_context_segment_set(*context, internet_protocol_version4_module_segment_offset_cal(datagram));
+    internet_protocol_version4_context_segmentlen_set(*context, internet_protocol_version4_context_segment_length_cal(*context));
 
     internet_protocol_version4_module_debug(module, stdout, *context);
 
-    protocol_module_t * submodule = protocol_module_map_get(module->map, internet_protocol_version4_context_protocol_get(*context));
-    protocol_packet_t * subpacket = internet_protocol_version4_context_segment_offset_get(*context);
-    uint64_t subpacketlen = internet_protocol_version4_context_segment_length_get(*context);
-
-    if(submodule) {
-        return protocol_module_deserialize(submodule, subpacket, subpacketlen, (protocol_context_t *) *context, protocol_context_array_pop((*context)->children));
-    } else {
-#ifndef   RELEASE
-        snorlaxdbg(false, true, "implement", "");
-#endif // RELEASE
-    }
-
-    return success;
+    return internet_protocol_version4_context_valid(*context) ? success : fail;
 }
 
 static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
+    snorlaxdbg(true, false, "implement", "");
     return fail;
 }
 
@@ -158,7 +118,7 @@ static void internet_protocol_version4_module_func_debug(internet_protocol_versi
     fprintf(stream, "| %15s ", internet_protocol_version4_address_uint32_to_str(internet_protocol_version4_context_destination_get(context)));
     fprintf(stream, "|\n");
 
-    for(internet_protocol_version4_option_t * option = internet_protocol_version4_context_option_offset_get(context); option != internet_protocol_version4_context_segment_offset_get(context) || *option == 0; option = internet_protocol_version4_context_option_offset_next(option)) {
+    for(internet_protocol_version4_option_t * option = internet_protocol_version4_context_option_get(context); option != internet_protocol_version4_context_segment_get(context) || *option == 0; option = internet_protocol_version4_context_option_offset_next(option)) {
         switch(internet_protocol_version4_option_type_get(option)) {
             case internet_protocol_version4_option_type_end:                    internet_protocol_version4_option_end_debug(stream, option);                    break;
             case internet_protocol_version4_option_type_no_operation:           internet_protocol_version4_option_no_operation_debug(stream, option);           break;
@@ -261,13 +221,37 @@ static int32_t internet_protocol_version4_module_func_in(internet_protocol_versi
     if(*context == nil) *context = internet_protocol_version4_context_gen(parent, (internet_protocol_version4_packet_t *) packet, packetlen);
 
     if(internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        snorlaxdbg(internet_protocol_version4_context_error_get(*context) == 0, false, "critical", "");
         internet_protocol_version4_module_on(module, protocol_event_exception, parent, *context);
         return fail;
     }
 
-    return internet_protocol_version4_module_on(module, protocol_event_in, parent, *context);
+    if(internet_protocol_version4_module_on(module, protocol_event_in, parent, *context) == fail) {
+        snorlaxdbg(internet_protocol_version4_context_error_get(*context) == 0, false, "critical", "");
+        internet_protocol_version4_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    snorlaxdbg(false, true, "implement", "option");
+
+    protocol_module_t * submodule = protocol_module_map_get(module->map, internet_protocol_version4_context_protocol_get(*context));
+
+    if(submodule) {
+        protocol_packet_t * segment = (protocol_packet_t *) internet_protocol_version4_context_segment_get(*context);
+        uint64_t segmentlen = internet_protocol_version4_context_segmentlen_get(*context);
+        if(protocol_module_in(submodule, segment, segmentlen, (protocol_context_t *) *context, protocol_context_array_pop((*context)->children)) == fail) {
+            internet_protocol_version4_context_error_set(*context, ECHILD);
+            internet_protocol_version4_module_on(module, protocol_event_exception, parent, *context);
+            return fail;
+        }
+    }
+
+    internet_protocol_version4_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }
 
 extern int32_t internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context) {
+    snorlaxdbg(false, true, "implement", "");
     return success;
 }

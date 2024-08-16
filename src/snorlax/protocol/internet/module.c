@@ -51,7 +51,7 @@ static int32_t internet_protocol_module_func_deserialize(internet_protocol_modul
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
     snorlaxdbg(packetlen == 0, false, "critical", "");
-#endif // RELEASE   
+#endif // RELEASE
 
     uint8_t version = internet_protocol_version_get(packet);
 
@@ -113,7 +113,6 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(packet == nil, false, "critical", "");
-    snorlaxdbg(packetlen == 0, false, "critical", "");
 #endif // RELEASE
 
     if(packetlen == 0) {
@@ -142,6 +141,7 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
         return success;
     } else if(version == 6) {
         if(internet_protocol_version6_module_in(module->version6, packet, packetlen, parent, (internet_protocol_version6_context_t **) context) == success) {
+
             internet_protocol_version6_module_on(module->version6, protocol_event_in, parent, (internet_protocol_version6_context_t *) *context);
             internet_protocol_module_on(module, protocol_event_in, parent, *context);
         }

@@ -108,6 +108,7 @@ struct internet_protocol_version4_pseudo {
 };
 
 extern internet_protocol_version4_pseudo_t * internet_protocol_version4_pseudo_gen(internet_protocol_version4_packet_t * datagram);
+extern uint16_t internet_protocol_version4_checksum_cal(internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
 
 typedef int32_t (*internet_protocol_version4_context_handler_t)(internet_protocol_version4_module_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t *);
 
@@ -143,8 +144,6 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
 #define internet_protocol_version4_module_option_offset_cal(datagram)       (&(((uint8_t *)(datagram))[internet_protocol_version4_packet_header_length_min]))
 #define internet_protocol_version4_module_segment_offset_cal(datagram)      (&(((uint8_t *)(datagram))[internet_protocol_version4_module_header_length_cal(datagram)]))
 
-extern uint16_t internet_protocol_version4_module_checksum_cal(internet_protocol_version4_packet_t * datagram);
-
 struct internet_protocol_version4_context {
     internet_protocol_version4_context_func_t * func;
     sync_t * sync;
@@ -157,24 +156,10 @@ struct internet_protocol_version4_context {
     internet_protocol_version4_pseudo_t * pseudo;
     uint64_t pseudolen;
 
-    uint16_t total;
-    uint16_t checksum;
-    uint16_t identification;
-    union {
-        uint16_t value;
-        struct {
-            uint8_t zero:1;
-            uint8_t df:1;
-            uint8_t mf:1;
-            uint16_t offset: 13;
-        } detail;
-    } fragment;
-    
-    uint32_t source;
-    uint32_t destination;
+    uint16_t checksumcal;
     internet_protocol_version4_option_t * option;
     internet_protocol_version4_segment_t * segment;
-    uint32_t segmentlen;
+    uint64_t segmentlen;
 };
 
 struct internet_protocol_version4_context_func {
@@ -191,30 +176,36 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 #define internet_protocol_version4_context_error_get(context)               ((context)->error)
 #define internet_protocol_version4_context_packetlen_set(context, v)        ((context)->datagramlen = v)
 #define internet_protocol_version4_context_packetlen_get(context)           ((context)->datagramlen)
-#define internet_protocol_version4_context_total_set(context, v)            ((context)->total = v)
-#define internet_protocol_version4_context_total_get(context)               ((context)->total)
-#define internet_protocol_version4_context_checksum_set(context, v)         ((context)->checksum = v)
-#define internet_protocol_version4_context_checksum_get(context)            ((context)->checksum)
-#define internet_protocol_version4_context_identification_set(context, v)   ((context)->identification = v)
-#define internet_protocol_version4_context_identification_get(context)      ((context)->identification)
-#define internet_protocol_version4_context_fragment_set(context, v)         ((context)->fragment.value = v)
-#define internet_protocol_version4_context_fragment_get(context)            ((context)->fragment.value)
-#define internet_protocol_version4_context_fragment_offset_set(context, v)  ((context)->fragment.detail.offset = v)
-#define internet_protocol_version4_context_fragment_offset_get(context)     ((context)->fragment.detail.offset)
-#define internet_protocol_version4_context_fragment_df_set(context, v)      ((context)->fragment.detail.df = v)
-#define internet_protocol_version4_context_fragment_df_get(context)         ((context)->fragment.detail.df)
-#define internet_protocol_version4_context_fragment_mf_set(context, v)      ((context)->fragment.detail.mf = v)
-#define internet_protocol_version4_context_fragment_mf_get(context)         ((context)->fragment.detail.mf)
-#define internet_protocol_version4_context_source_set(context, v)           ((context)->datagram->source = v)
-#define internet_protocol_version4_context_source_get(context)              ((context)->datagram->source)
-#define internet_protocol_version4_context_destination_set(context, v)      ((context)->datagram->destination = v)
-#define internet_protocol_version4_context_destination_get(context)         ((context)->datagram->destination)
-#define internet_protocol_version4_context_option_offset_set(context, v)    ((context)->option = ((internet_protocol_version4_option_t *) v))
-#define internet_protocol_version4_context_option_offset_get(context)       ((context)->option)
-#define internet_protocol_version4_context_segment_offset_set(context, v)   ((context)->segment = ((internet_protocol_version4_segment_t *) v))
-#define internet_protocol_version4_context_segment_offset_get(context)      ((context)->segment)
-#define internet_protocol_version4_context_segment_length_set(context, v)   ((context)->segmentlen = v)
-#define internet_protocol_version4_context_segment_length_get(context)      ((context)->segmentlen)
+#define internet_protocol_version4_context_checksumcal_get(context)         ((context)->checksumcal)
+#define internet_protocol_version4_context_checksumcal_set(context, v)      ((context)->checksumcal = v)
+
+#define internet_protocol_version4_context_total_set(context, v)            ((context)->datagram->total = ntohs(v))
+#define internet_protocol_version4_context_total_get(context)               (htons((context)->datagram->total))
+#define internet_protocol_version4_context_checksum_set(context, v)         ((context)->datagram->checksum = ntohs(v))
+#define internet_protocol_version4_context_checksum_get(context)            (htons((context)->datagram->checksum))
+#define internet_protocol_version4_context_identification_set(context, v)   ((context)->datagram->identification = ntohs(v))
+#define internet_protocol_version4_context_identification_get(context)      (htons((context)->datagram->identification))
+#define internet_protocol_version4_context_fragment_set(context, v)         ((context)->datagram->fragment = ntohs(v))
+#define internet_protocol_version4_context_fragment_get(context)            (htons((context)->datagram->fragment))
+// TODO: MUST UPGRADE START
+// #define internet_protocol_version4_context_fragment_offset_set(context, v)  ((context)->fragment.detail.offset = v)
+// #define internet_protocol_version4_context_fragment_offset_get(context)     ((context)->fragment.detail.offset)
+// #define internet_protocol_version4_context_fragment_df_set(context, v)      ((context)->fragment.detail.df = v)
+// #define internet_protocol_version4_context_fragment_df_get(context)         ((context)->fragment.detail.df)
+// #define internet_protocol_version4_context_fragment_mf_set(context, v)      ((context)->fragment.detail.mf = v)
+// #define internet_protocol_version4_context_fragment_mf_get(context)         ((context)->fragment.detail.mf)
+// TODO: MUST UPGRADE END
+#define internet_protocol_version4_context_source_set(context, v)           ((context)->datagram->source = ntohl(v))
+#define internet_protocol_version4_context_source_get(context)              (htonl((context)->datagram->source))
+#define internet_protocol_version4_context_destination_set(context, v)      ((context)->datagram->destination = ntohl(v))
+#define internet_protocol_version4_context_destination_get(context)         (htonl((context)->datagram->destination))
+#define internet_protocol_version4_context_option_set(context, v)           ((context)->option = ((internet_protocol_version4_option_t *) v))
+#define internet_protocol_version4_context_option_get(context)              ((context)->option)
+
+#define internet_protocol_version4_context_segment_set(context, v)          ((context)->segment = ((internet_protocol_version4_segment_t *) v))
+#define internet_protocol_version4_context_segment_get(context)             ((context)->segment)
+#define internet_protocol_version4_context_segmentlen_set(context, v)       ((context)->segmentlen = v)
+#define internet_protocol_version4_context_segmentlen_get(context)          ((context)->segmentlen)
 
 #define internet_protocol_version4_context_version_set(context, v)          ((context)->datagram->version = v)
 #define internet_protocol_version4_context_version_get(context)             ((context)->datagram->version)

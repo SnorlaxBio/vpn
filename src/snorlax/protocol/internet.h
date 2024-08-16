@@ -57,6 +57,8 @@ typedef struct internet_protocol_version6_module internet_protocol_version6_modu
 
 typedef int32_t (*internet_protocol_context_handler_t)(internet_protocol_module_t *, uint32_t, protocol_context_t *, internet_protocol_context_t *);
 
+extern uint32_t internet_protocol_checksum_sum(protocol_packet_t * packet, uint64_t packetlen);
+
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
     sync_t * sync;

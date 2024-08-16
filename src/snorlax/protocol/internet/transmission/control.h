@@ -85,7 +85,7 @@ struct transmission_control_address {
 
 #define transmission_control_protocol_packet_length_min                     20
 
-extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
+extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
 #define transmission_control_protocol_option_type_end                       0
 #define transmission_control_protocol_option_type_no_operation              1
@@ -105,6 +105,7 @@ struct transmission_control_block {
     transmission_control_address_t source;
     transmission_control_address_t destination;
     uint32_t state;
+    uint32_t sequence;
 };
 
 struct transmission_control_block_func {

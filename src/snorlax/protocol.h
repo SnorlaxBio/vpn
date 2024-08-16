@@ -16,6 +16,8 @@
 #define protocol_event_out                  2
 #define protocol_event_exception            3
 
+#define protocol_event_complete_in          4
+
 struct protocol_module;
 struct protocol_module_func;
 struct protocol_context;
@@ -40,6 +42,7 @@ typedef struct protocol_context_array_func protocol_context_array_func_t;
 typedef protocol_module_t * (*protocol_module_map_get_t)(protocol_module_map_t *, uint64_t);
 
 typedef int32_t (*protocol_context_handler_t)(protocol_module_t *, uint32_t, protocol_context_t *, protocol_context_t *);
+// typedef int64_t (*protocol_packet_out_t)(protocol_module_t *, protocol_context_t *);
 
 struct protocol_module {
     protocol_module_func_t * func;

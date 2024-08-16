@@ -1,8 +1,5 @@
 #include "../message.h"
 
-static internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_func_rem(internet_control_message_protocol_version4_context_t * context);
-static int32_t internet_control_message_protocol_version4_context_func_valid(internet_control_message_protocol_version4_context_t * context);
-
 static internet_control_message_protocol_version4_context_func_t func = {
     internet_control_message_protocol_version4_context_func_rem,
     internet_control_message_protocol_version4_context_func_valid
@@ -12,15 +9,15 @@ extern internet_control_message_protocol_version4_context_t * internet_control_m
     internet_control_message_protocol_version4_context_t * context = (internet_control_message_protocol_version4_context_t *) calloc(1, sizeof(internet_control_message_protocol_version4_context_t));
 
     context->func = address_of(func);
-    context->children = protocol_context_array_gen();
+    context->children = nil;
     context->parent = parent;
-    context->message.packet = packet;
-    context->packetlen = packetlen;
+    context->message = packet;
+    context->messagelen = packetlen;
 
     return context;
 }
 
-static internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_func_rem(internet_control_message_protocol_version4_context_t * context) {
+extern internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_func_rem(internet_control_message_protocol_version4_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
@@ -34,7 +31,7 @@ static internet_control_message_protocol_version4_context_t * internet_control_m
     return nil;
 }
 
-static int32_t internet_control_message_protocol_version4_context_func_valid(internet_control_message_protocol_version4_context_t * context) {
+extern int32_t internet_control_message_protocol_version4_context_func_valid(internet_control_message_protocol_version4_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE

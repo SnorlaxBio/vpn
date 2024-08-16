@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <errno.h>
+#include <arpa/inet.h>
 
 #include "../version4.h"
 
@@ -43,7 +45,13 @@ static int32_t internet_protocol_version4_context_func_valid(internet_protocol_v
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(false, true, "implement", "");
+    if(internet_protocol_version4_context_error_get(context)) return false;
+
+    if(internet_protocol_version4_context_checksum_get(context) != internet_protocol_version4_context_checksumcal_get(context)) {
+        internet_protocol_version4_context_error_set(context, EIO);
+
+        return false;
+    }
 
     return true;
 }

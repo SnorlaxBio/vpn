@@ -124,6 +124,7 @@ set(SNORLAX_VPN_SERVER_HEADER   src/snorlax/vpn/server/app.h
 
 set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/context/array.c
+                                src/snorlax/protocol/internet.c
                                 src/snorlax/protocol/internet/module.c
                                 src/snorlax/protocol/internet/context.c
                                 src/snorlax/protocol/internet/version4.c
@@ -132,6 +133,14 @@ set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol/module/map.c
                                 src/snorlax/protocol/internet/version4/control/message.c
                                 src/snorlax/protocol/internet/version4/control/message/module.c
                                 src/snorlax/protocol/internet/version4/control/message/context.c
+                                src/snorlax/protocol/internet/version4/control/message/context/destination/unreachable.c
+                                src/snorlax/protocol/internet/version4/control/message/context/parameter/problem.c
+                                src/snorlax/protocol/internet/version4/control/message/context/source/quench.c
+                                src/snorlax/protocol/internet/version4/control/message/context/time/exceeded.c
+                                src/snorlax/protocol/internet/version4/control/message/context/echo.c
+                                src/snorlax/protocol/internet/version4/control/message/context/information.c
+                                src/snorlax/protocol/internet/version4/control/message/context/redirect.c
+                                src/snorlax/protocol/internet/version4/control/message/context/timestamp.c
                                 src/snorlax/protocol/internet/version6.c
                                 src/snorlax/protocol/internet/version6/context.c
                                 src/snorlax/protocol/internet/version6/module.c

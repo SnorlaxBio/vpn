@@ -69,7 +69,7 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
     transmission_control_protocol_context_datalen_set(*context, packetlen - transmission_control_protocol_context_headerlen_get(*context));
     transmission_control_protocol_context_checksum_set(*context, ntohs(segment->checksum));
 
-    uint16_t checksum = transmission_control_protocol_checksum_cal(segment, internet_protocol_context_pseudo_get(parent), internet_protocol_context_pseudolen_get(parent));
+    uint16_t checksum = transmission_control_protocol_checksum_cal(segment, packetlen, internet_protocol_context_pseudo_get(parent), internet_protocol_context_pseudolen_get(parent));
 
     if(checksum != transmission_control_protocol_context_checksum_get(*context)) {
         transmission_control_protocol_context_error_set(*context, EIO);
