@@ -202,7 +202,7 @@ struct transmission_control_protocol_context_func {
     int32_t (*valid)(transmission_control_protocol_context_t *);
 };
 
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
 
 #define transmission_control_protocol_context_rem(context)                      ((context)->func->rem(context))
 #define transmission_control_protocol_context_valid(context)                    ((context)->func->valid(context))

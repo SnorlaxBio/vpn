@@ -10,10 +10,11 @@ static transmission_control_protocol_context_func_t func = {
     transmission_control_protocol_context_func_valid
 };
 
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen) {
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen) {
     transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
 
     context->func = address_of(func);
+    context->module = module;
     context->children = protocol_context_array_gen();
     context->parent = parent;
     context->packet = packet;

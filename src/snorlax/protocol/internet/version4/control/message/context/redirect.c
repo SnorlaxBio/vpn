@@ -8,10 +8,11 @@ static internet_control_message_protocol_version4_context_redirect_func_t func =
     (internet_control_message_protocol_version4_context_redirect_func_valid_t) internet_control_message_protocol_version4_context_func_valid,
 };
 
-extern internet_control_message_protocol_version4_context_redirect_t * internet_control_message_protocol_version4_context_redirect_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_redirect_t * packet, uint64_t packetlen) {
+extern internet_control_message_protocol_version4_context_redirect_t * internet_control_message_protocol_version4_context_redirect_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_redirect_t * packet, uint64_t packetlen) {
     internet_control_message_protocol_version4_context_redirect_t * context = (internet_control_message_protocol_version4_context_redirect_t *) calloc(1, sizeof(internet_control_message_protocol_version4_context_redirect_t));
 
     context->func = address_of(func);
+    context->module = module;
     context->children = nil;
     context->parent = parent;
     context->message = packet;

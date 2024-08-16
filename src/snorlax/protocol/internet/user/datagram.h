@@ -90,7 +90,7 @@ struct user_datagram_protocol_context_func {
     int32_t (*valid)(user_datagram_protocol_context_t *);
 };
 
-extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen);
+extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen);
 
 #define user_datagram_protocol_context_rem(context)                 ((context)->func->rem(context))
 #define user_datagram_protocol_context_valid(context)               ((context)->func->valid(context))

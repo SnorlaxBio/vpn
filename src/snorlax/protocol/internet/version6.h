@@ -335,7 +335,7 @@ struct internet_protocol_version6_context {
     uint8_t version;
     uint8_t traffic;
     uint32_t label;
-    uint16_t payloadlen;
+//    uint16_t payloadlen;
 };
 
 struct internet_protocol_version6_context_func {
@@ -343,7 +343,7 @@ struct internet_protocol_version6_context_func {
     int32_t (*valid)(internet_protocol_version6_context_t *);
 };
 
-extern internet_protocol_version6_context_t * internet_protocol_version6_context_gen(protocol_context_t * parent, internet_protocol_version6_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version6_context_t * internet_protocol_version6_context_gen(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version6_context_rem(context)                     ((context)->func->rem(context))
 #define internet_protocol_version6_context_valid(context)                   ((context)->func->valid(context))
@@ -358,8 +358,8 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 #define internet_protocol_version6_context_traffic_class_set(context, v)    ((context)->traffic = v)
 #define internet_protocol_version6_context_flow_label_get(context)          ((context)->label)
 #define internet_protocol_version6_context_flow_label_set(context, v)       ((context)->label = v)
-#define internet_protocol_version6_context_payload_length_get(context)      ((context)->payloadlen)
-#define internet_protocol_version6_context_payload_length_set(context, v)   ((context)->payloadlen = v)
+#define internet_protocol_version6_context_payload_length_get(context)      (htons((context)->datagram->payload))
+#define internet_protocol_version6_context_payload_length_set(context, v)   ((context)->datagram->payload = ntohs(v))
 #define internet_protocol_version6_context_next_header_get(context)         ((context)->datagram->next)
 #define internet_protocol_version6_context_next_header_set(context, v)      ((context)->datagram->next = v)
 #define internet_protocol_version6_context_hop_limit_get(context)           ((context)->datagram->limit)
@@ -372,7 +372,7 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 #define internet_protocol_version6_context_pseudo_get(context)              ((context)->pseudo)
 #define internet_protocol_version6_context_pseudolen_get(context)           ((context)->pseudolen)
 
-#define internet_protocol_version6_context_next_protocolno_get(context)     ((context)->datagram->next)
+#define internet_protocol_version6_context_next_protocol_get(context)       ((context)->datagram->next)
 #define internet_protocol_version6_context_next_packet_get(context)         (&((protocol_packet_t *)((context)->datagram))[internet_protocol_version6_packet_header_length_min])
 #define internet_protocol_version6_context_next_packetlen_get(context)      ((context)->datagramlen - sizeof(internet_protocol_version6_packet_t))
 
@@ -420,9 +420,9 @@ struct internet_protocol_version6_extension_context_func {
     internet_protocol_version6_extension_context_t * (*rem)(internet_protocol_version6_extension_context_t *);
     int32_t (*valid)(internet_protocol_version6_extension_context_t *);
 };
-#define internet_protocol_version6_extension_context_next_protocolno_get(context)   (((internet_protocol_version6_extension_context_t *) (context))->packet->next)
+#define internet_protocol_version6_extension_context_next_protocol_get(context)     (((internet_protocol_version6_extension_context_t *) (context))->packet->next)
 #define internet_protocol_version6_extension_context_next_packetlen_get(context)    (((((internet_protocol_version6_extension_context_t *) (context))->packet->length) + 1) * 8)
-#define internet_protocol_version6_extension_context_next_packet_get(context)       (&((protocol_packet_t *) (context))[internet_protocol_version6_extension_context_next_packetlen_get(context)])
+#define internet_protocol_version6_extension_context_next_packet_get(context)       (&((protocol_packet_t *) ((context)->packet))[internet_protocol_version6_extension_context_next_packetlen_get(context)])
 
 #define internet_protocol_version6_extension_context_rem(context)                   ((context)->func->rem(context))
 #define internet_protocol_version6_extension_context_valid(context)                 ((context)->func->valid(context))
@@ -479,7 +479,7 @@ struct internet_protocol_version6_extension_hopbyhop_context_func {
     int32_t (*valid)(internet_protocol_version6_extension_hopbyhop_context_t *);
 };
 
-extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version6_extension_hopbyhop_context_option_begin(context)     (&((uint8_t *) ((context)->extension))[2])
 #define internet_protocol_version6_extension_hopbyhop_context_option_end(context)       (&((uint8_t *) ((context)->extension))[(context)->extensionlen])
@@ -538,7 +538,7 @@ struct internet_protocol_version6_extension_routing_context_func {
     int32_t (*valid)(internet_protocol_version6_extension_routing_context_t *);
 };
 
-extern internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_gen(internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_gen(internet_protocol_version6_extension_routing_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version6_extension_routing_context_rem(context)               ((context)->func->rem(context))
 #define internet_protocol_version6_extension_routing_context_valid(context)             ((context)->func->valid(context))
@@ -594,7 +594,7 @@ struct internet_protocol_version6_extension_fragment_context_func {
     int32_t (*valid)(internet_protocol_version6_extension_fragment_context_t *);
 };
 
-extern internet_protocol_version6_extension_fragment_context_t * internet_protocol_version6_extension_fragment_context_gen(internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version6_extension_fragment_context_t * internet_protocol_version6_extension_fragment_context_gen(internet_protocol_version6_extension_fragment_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version6_extension_fragment_context_rem(context)              ((context)->func->rem(context))
 #define internet_protocol_version6_extension_fragment_context_valid(context)            ((context)->func->valid(context))
@@ -650,7 +650,7 @@ struct internet_protocol_version6_extension_destination_context_func {
     int32_t (*valid)(internet_protocol_version6_extension_destination_context_t *);
 };
 
-extern internet_protocol_version6_extension_destination_context_t * internet_protocol_version6_extension_destination_context_gen(internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version6_extension_destination_context_t * internet_protocol_version6_extension_destination_context_gen(internet_protocol_version6_extension_destination_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version6_extension_destination_context_option_begin(context)      (&((uint8_t *) ((context)->extension))[2])
 #define internet_protocol_version6_extension_destination_context_option_end(context)        (&((uint8_t *) ((context)->extension))[(context)->extensionlen])

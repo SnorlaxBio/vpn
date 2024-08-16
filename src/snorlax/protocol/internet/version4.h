@@ -167,7 +167,7 @@ struct internet_protocol_version4_context_func {
     int32_t (*valid)(internet_protocol_version4_context_t *);
 };
 
-extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version4_context_rem(context)                     ((context)->func->rem(context))
 #define internet_protocol_version4_context_valid(context)                   ((context)->func->valid(context))

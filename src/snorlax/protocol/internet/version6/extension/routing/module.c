@@ -46,7 +46,7 @@ static int32_t internet_protocol_version6_extension_routing_module_func_deserial
     snorlaxdbg(parent == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_extension_routing_context_gen(parent, packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_extension_routing_context_gen(module, parent, packet, packetlen);
 
     if(packetlen < internet_protocol_version6_extension_length_min) {
         internet_protocol_version6_extension_routing_context_error_set(*context, EAGAIN);
@@ -101,7 +101,7 @@ static int32_t internet_protocol_version6_extension_routing_module_func_in(inter
     snorlaxdbg(parent == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_extension_routing_context_gen(parent, packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_extension_routing_context_gen(module, parent, packet, packetlen);
 
     if(internet_protocol_version6_extension_routing_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         internet_protocol_version6_extension_routing_module_on(module, protocol_event_exception, parent, *context);

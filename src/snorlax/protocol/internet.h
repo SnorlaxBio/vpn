@@ -107,7 +107,7 @@ struct internet_protocol_context_func {
     int32_t (*valid)(internet_protocol_context_t *);
 };
 
-extern internet_protocol_context_t * internet_protocol_context_gen(protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
+extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
 
 #define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
 #define internet_protocol_context_valid(context)                ((context)->func->valid(context))

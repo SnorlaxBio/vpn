@@ -8,7 +8,7 @@ static internet_protocol_version6_extension_hopbyhop_context_func_t func = {
     internet_protocol_version6_extension_hopbyhop_context_func_valid
 };
 
-extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen) {
+extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen) {
 #ifndef   RELEASE
     snorlaxdbg(parent == nil, false, "critical", "");
     snorlaxdbg(datagram == nil, false, "critical", "");
@@ -18,7 +18,7 @@ extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protoc
     internet_protocol_version6_extension_hopbyhop_context_t * context = (internet_protocol_version6_extension_hopbyhop_context_t *) calloc(1, sizeof(internet_protocol_version6_extension_hopbyhop_context_t));
 
     context->func = address_of(func);
-    context->children = protocol_context_array_gen();
+    context->children = nil;
     context->parent = parent;
     context->extension = (internet_protocol_version6_extension_hopbyhop_t *) datagram;
     context->extensionlen = datagramlen;

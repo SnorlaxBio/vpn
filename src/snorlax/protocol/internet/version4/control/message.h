@@ -217,7 +217,7 @@ struct internet_control_message_protocol_version4_context_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_t *);
 };
 
-extern internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_packet_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_packet_t * packet, uint64_t packetlen);
 extern internet_control_message_protocol_version4_context_t * internet_control_message_protocol_version4_context_func_rem(internet_control_message_protocol_version4_context_t * context);
 extern int32_t internet_control_message_protocol_version4_context_func_valid(internet_control_message_protocol_version4_context_t * context);
 
@@ -245,7 +245,7 @@ struct internet_control_message_protocol_version4_context_destination_unreachabl
     int32_t (*valid)(internet_control_message_protocol_version4_context_destination_unreachable_t *);
 };
 
-extern internet_control_message_protocol_version4_context_destination_unreachable_t * internet_control_message_protocol_version4_context_destination_unreachable_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_destination_unreachable_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_destination_unreachable_t * internet_control_message_protocol_version4_context_destination_unreachable_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_destination_unreachable_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_destination_unreachable_rem(context)             ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_destination_unreachable_valid(context)           ((context)->func->valid(context))
@@ -271,7 +271,7 @@ struct internet_control_message_protocol_version4_context_time_exceeded_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_time_exceeded_t *);
 };
 
-extern internet_control_message_protocol_version4_context_time_exceeded_t * internet_control_message_protocol_version4_context_time_exceeded_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_time_exceeded_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_time_exceeded_t * internet_control_message_protocol_version4_context_time_exceeded_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_time_exceeded_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_time_exceeded_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_time_exceeded_valid(context)             ((context)->func->valid(context))
@@ -297,7 +297,7 @@ struct internet_control_message_protocol_version4_context_parameter_problem_func
     int32_t (*valid)(internet_control_message_protocol_version4_context_parameter_problem_t *);
 };
 
-extern internet_control_message_protocol_version4_context_parameter_problem_t * internet_control_message_protocol_version4_context_parameter_problem_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_parameter_problem_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_parameter_problem_t * internet_control_message_protocol_version4_context_parameter_problem_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_parameter_problem_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_parameter_problem_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_parameter_problem_valid(context)             ((context)->func->valid(context))
@@ -323,7 +323,7 @@ struct internet_control_message_protocol_version4_context_source_quench_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_source_quench_t *);
 };
 
-extern internet_control_message_protocol_version4_context_source_quench_t * internet_control_message_protocol_version4_context_source_quench_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_source_quench_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_source_quench_t * internet_control_message_protocol_version4_context_source_quench_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_source_quench_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_source_quench_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_source_quench_valid(context)             ((context)->func->valid(context))
@@ -349,7 +349,7 @@ struct internet_control_message_protocol_version4_context_redirect_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_redirect_t *);
 };
 
-extern internet_control_message_protocol_version4_context_redirect_t * internet_control_message_protocol_version4_context_redirect_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_redirect_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_redirect_t * internet_control_message_protocol_version4_context_redirect_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_redirect_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_redirect_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_redirect_valid(context)             ((context)->func->valid(context))
@@ -375,7 +375,7 @@ struct internet_control_message_protocol_version4_context_echo_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_echo_t *);
 };
 
-extern internet_control_message_protocol_version4_context_echo_t * internet_control_message_protocol_version4_context_echo_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_echo_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_echo_t * internet_control_message_protocol_version4_context_echo_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_echo_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_echo_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_echo_valid(context)             ((context)->func->valid(context))
@@ -401,7 +401,7 @@ struct internet_control_message_protocol_version4_context_timestamp_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_timestamp_t *);
 };
 
-extern internet_control_message_protocol_version4_context_timestamp_t * internet_control_message_protocol_version4_context_timestamp_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_timestamp_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_timestamp_t * internet_control_message_protocol_version4_context_timestamp_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_timestamp_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_timestamp_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_timestamp_valid(context)             ((context)->func->valid(context))
@@ -427,7 +427,7 @@ struct internet_control_message_protocol_version4_context_information_func {
     int32_t (*valid)(internet_control_message_protocol_version4_context_information_t *);
 };
 
-extern internet_control_message_protocol_version4_context_information_t * internet_control_message_protocol_version4_context_information_gen(internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_information_t * packet, uint64_t packetlen);
+extern internet_control_message_protocol_version4_context_information_t * internet_control_message_protocol_version4_context_information_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_information_t * packet, uint64_t packetlen);
 
 #define internet_control_message_protocol_version4_context_information_rem(context)               ((context)->func->rem(context))
 #define internet_control_message_protocol_version4_context_information_valid(context)             ((context)->func->valid(context))

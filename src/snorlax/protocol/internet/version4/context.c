@@ -12,10 +12,11 @@ static internet_protocol_version4_context_func_t func = {
     internet_protocol_version4_context_func_valid
 };
 
-extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen) {
+extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen) {
     internet_protocol_version4_context_t * context = (internet_protocol_version4_context_t *) calloc(1, sizeof(internet_protocol_version4_context_t));
 
     context->func = address_of(func);
+    context->module = module;
     context->children = protocol_context_array_gen();
     context->parent = parent;
     context->datagram = datagram;

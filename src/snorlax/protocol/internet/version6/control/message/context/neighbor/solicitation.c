@@ -8,10 +8,11 @@ static internet_control_message_protocol_version6_context_neighbor_solicitation_
     internet_control_message_protocol_version6_context_neighbor_solicitation_func_valid
 };
 
-extern internet_control_message_protocol_version6_context_neighbor_solicitation_t * internet_control_message_protocol_version6_context_neighbor_solicitation_gen(internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_neighbor_solicitation_t * packet, uint64_t packetlen) {
+extern internet_control_message_protocol_version6_context_neighbor_solicitation_t * internet_control_message_protocol_version6_context_neighbor_solicitation_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_neighbor_solicitation_t * packet, uint64_t packetlen) {
     internet_control_message_protocol_version6_context_neighbor_solicitation_t * context = (internet_control_message_protocol_version6_context_neighbor_solicitation_t *) calloc(1, sizeof(internet_control_message_protocol_version6_context_neighbor_solicitation_t));
 
     context->func = address_of(func);
+    context->module = module;
     context->parent = parent;
     context->packet = packet;
     context->packetlen = packetlen;

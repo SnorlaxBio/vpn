@@ -49,7 +49,7 @@ extern int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_context_gen(parent, (internet_protocol_version6_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_context_gen(module, parent, (internet_protocol_version6_packet_t *) packet, packetlen);
 
     if(packetlen < internet_protocol_version6_packet_header_length_min) {
         internet_protocol_version6_context_error_set(*context, EAGAIN);
@@ -57,49 +57,20 @@ extern int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     }
 
     internet_protocol_version6_packet_t * datagram = (internet_protocol_version6_packet_t *) packet;
+    uint64_t datagramlen = internet_protocol_version6_packet_header_length_min + internet_protocol_version6_context_payload_length_get(*context);
 
-    internet_protocol_version6_context_payload_length_set(*context, ntohs(datagram->payload));
-
-    if(packetlen < internet_protocol_version6_packet_header_length_min + internet_protocol_version6_context_payload_length_get(*context)) {
+    if(packetlen < datagramlen) {
         internet_protocol_version6_context_error_set(*context, EAGAIN);
         return fail;
     }
 
-    internet_protocol_version6_context_packetlen_set(*context, internet_protocol_version6_packet_header_length_min + internet_protocol_version6_context_payload_length_get(*context));
+    internet_protocol_version6_context_packetlen_set(*context, datagramlen);
 
     internet_protocol_version6_context_version_set(*context, internet_protocol_version6_version_get(datagram));
     internet_protocol_version6_context_traffic_class_set(*context, internet_protocol_version6_traffic_class_get(datagram));
     internet_protocol_version6_context_flow_label_set(*context, internet_protocol_version6_flow_label_get(datagram));
 
     internet_protocol_version6_module_debug(module, stdout, *context);
-
-    // TODO: UPGRADE PACKET PARSING ... 
-
-    if(packetlen != internet_protocol_version6_packet_header_length_min) {
-        uint8_t protocolno = 0;
-        int32_t index = 0;
-        protocol_module_t * submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_context_next_protocolno_get(*context));
-        protocol_packet_t * subpacket = internet_protocol_version6_context_next_packet_get(*context);
-        uint64_t subpacketlen = internet_protocol_version6_context_next_packetlen_get(*context);
-        packetlen = packetlen - internet_protocol_version6_packet_header_length_min;
-
-        while(submodule) {
-            protocol_context_t ** subcontext = protocol_context_array_pop((*context)->children);
-            protocol_module_deserialize(submodule, subpacket, subpacketlen, (protocol_context_t *) *context, subcontext);
-
-            if(internet_protocol_version6_extension_check(protocolno)) {
-                submodule = protocol_module_map_get(module->map, protocolno = internet_protocol_version6_extension_context_next_protocolno_get(*subcontext));
-                subpacket = internet_protocol_version6_extension_context_next_packet_get(*context);
-                subpacketlen = internet_protocol_version6_extension_context_next_packetlen_get(*context);
-            } else {
-                submodule = nil;
-            }
-        }
-    }
-
-    
-
-    // TODO: UPDATE
 
     return success;
 }
@@ -129,7 +100,13 @@ extern void internet_protocol_version6_module_func_debug(internet_protocol_versi
     fprintf(stream, "|\n");
 }
 
-extern int32_t internet_protocol_version6_module_func_on(internet_protocol_version6_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context){
+extern int32_t internet_protocol_version6_module_func_on(internet_protocol_version6_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context) {
+    snorlaxdbg(false, true, "debug", "type => %u", type);
+
+    if(type == protocol_event_exception) {
+        snorlaxdbg(false, true, "debug", "exception => %d", internet_protocol_version6_context_error_get(context));
+    }
+    
     return success;
 }
 
@@ -141,14 +118,48 @@ extern int32_t internet_protocol_version6_module_func_in(internet_protocol_versi
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_context_gen(parent, (internet_protocol_version6_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_context_gen(module, parent, (internet_protocol_version6_packet_t *) packet, packetlen);
 
     if(internet_protocol_version6_module_deserialize(module, packet, packetlen, parent, context) == fail) {
+        snorlaxdbg(false, true, "debug", "");
         internet_protocol_version6_module_on(module, protocol_event_exception, parent, *context);
         return fail;
     }
 
-    return internet_protocol_version6_module_on(module, protocol_event_in, parent, *context);
+    internet_protocol_version6_module_on(module, protocol_event_in, parent, *context);
+
+    uint8_t protocol = 0;
+    protocol_module_t * submodule = protocol_module_map_get(module->map, protocol = internet_protocol_version6_context_next_protocol_get(*context));
+
+    packet = internet_protocol_version6_context_next_packet_get(*context);
+    packetlen = packetlen - internet_protocol_version6_packet_header_length_min;
+
+    while(submodule) {
+        protocol_context_t ** subcontext = protocol_context_array_pop((*context)->children);
+        if(protocol_module_in(submodule, packet, packetlen, (protocol_context_t *) *context, subcontext) == fail) {
+            snorlaxdbg(internet_protocol_version6_context_error_get(*subcontext) == 0, false, "critical", "");
+
+            protocol_module_on(submodule, protocol_event_exception, (protocol_context_t *) *context, (protocol_context_t *) *subcontext);
+
+            internet_protocol_version6_context_error_set(*context, ECHILD);
+
+            internet_protocol_version6_module_on(module, protocol_event_exception, parent, *context);
+
+            return fail;
+        }
+
+        if(internet_protocol_version6_extension_check(protocol)) {
+            submodule = protocol_module_map_get(module->map, protocol = internet_protocol_version6_extension_context_next_protocol_get(*subcontext));
+            packet = internet_protocol_version6_extension_context_next_packet_get(*subcontext);
+            packetlen = packetlen - internet_protocol_version6_extension_context_length_get(*subcontext);
+        } else {
+            submodule = nil;
+        }
+    }
+
+    internet_protocol_version6_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }
 
 extern int32_t internet_protocol_version6_module_func_control_message_context_in(internet_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context) {

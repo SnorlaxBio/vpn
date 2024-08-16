@@ -8,10 +8,11 @@ static internet_protocol_context_func_t func = {
     internet_protocol_context_func_valid
 };
 
-extern internet_protocol_context_t * internet_protocol_context_gen(protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen) {
+extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen) {
     internet_protocol_context_t * context = (internet_protocol_context_t *) calloc(1, sizeof(internet_protocol_context_t));
 
     context->func = address_of(func);
+    context->module = module;
     context->children = protocol_context_array_gen();
 
     context->parent = parent;
