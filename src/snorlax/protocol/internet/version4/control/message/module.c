@@ -98,7 +98,14 @@ static int32_t internet_control_message_protocol_version4_module_func_in(interne
         return fail;
     }
 
-    return internet_control_message_protocol_version4_module_on(module, protocol_event_in, parent, *context);
+    if(internet_control_message_protocol_version4_module_on(module, protocol_event_in, parent, *context) == fail) {
+        internet_control_message_protocol_version4_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    internet_control_message_protocol_version4_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }
 
 extern int32_t internet_control_message_protocol_version4_module_func_on(internet_control_message_protocol_version4_module_t * module, uint32_t type, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t * context) {

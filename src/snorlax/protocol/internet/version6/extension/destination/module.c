@@ -118,5 +118,12 @@ static int32_t internet_protocol_version6_extension_destination_module_func_in(i
         return fail;
     }
 
-    return internet_protocol_version6_extension_destination_module_on(module, protocol_event_in, parent, *context);
+    if(internet_protocol_version6_extension_destination_module_on(module, protocol_event_in, parent, *context) == fail) {
+        internet_protocol_version6_extension_destination_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    internet_protocol_version6_extension_destination_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }

@@ -139,8 +139,6 @@ extern int32_t internet_protocol_version6_module_func_in(internet_protocol_versi
         if(protocol_module_in(submodule, packet, packetlen, (protocol_context_t *) *context, subcontext) == fail) {
             snorlaxdbg(internet_protocol_version6_context_error_get(*subcontext) == 0, false, "critical", "");
 
-            protocol_module_on(submodule, protocol_event_exception, (protocol_context_t *) *context, (protocol_context_t *) *subcontext);
-
             internet_protocol_version6_context_error_set(*context, ECHILD);
 
             internet_protocol_version6_module_on(module, protocol_event_exception, parent, *context);

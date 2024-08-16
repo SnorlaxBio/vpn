@@ -134,7 +134,14 @@ static int32_t transmission_control_protocol_module_func_in(transmission_control
         return fail;
     }
 
-    return transmission_control_protocol_module_on(module, protocol_event_in, parent, *context);
+    if(transmission_control_protocol_module_on(module, protocol_event_in, parent, *context) == fail) {
+        transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    transmission_control_protocol_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }
 
 extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {

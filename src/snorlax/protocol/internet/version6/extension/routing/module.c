@@ -108,5 +108,12 @@ static int32_t internet_protocol_version6_extension_routing_module_func_in(inter
         return fail;
     }
 
-    return internet_protocol_version6_extension_routing_module_on(module, protocol_event_in, parent, *context);
+    if(internet_protocol_version6_extension_routing_module_on(module, protocol_event_in, parent, *context) == fail) {
+        internet_protocol_version6_extension_routing_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    internet_protocol_version6_extension_routing_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }

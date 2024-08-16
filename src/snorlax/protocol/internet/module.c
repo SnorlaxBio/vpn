@@ -127,12 +127,10 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
 
     if(version == 4) {
         if(internet_protocol_version4_module_in(module->version4, packet, packetlen, parent, (internet_protocol_version4_context_t **) context) == success) {
-            internet_protocol_version4_module_on(module->version4, protocol_event_in, parent, (internet_protocol_version4_context_t *) *context);
             internet_protocol_module_on(module, protocol_event_in, parent, *context);
         }
         
         if(internet_protocol_context_error_get(*context) != EAGAIN) {
-            internet_protocol_version4_module_on(module->version4, protocol_event_exception, parent, (internet_protocol_version4_context_t *) *context);
             internet_protocol_module_on(module, protocol_event_exception, parent, *context);
 
             return fail;
@@ -141,13 +139,10 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
         return success;
     } else if(version == 6) {
         if(internet_protocol_version6_module_in(module->version6, packet, packetlen, parent, (internet_protocol_version6_context_t **) context) == success) {
-
-            internet_protocol_version6_module_on(module->version6, protocol_event_in, parent, (internet_protocol_version6_context_t *) *context);
             internet_protocol_module_on(module, protocol_event_in, parent, *context);
         }
         
         if(internet_protocol_context_error_get(*context) != EAGAIN) {
-            internet_protocol_version6_module_on(module->version6, protocol_event_exception, parent, (internet_protocol_version6_context_t *) *context);
             internet_protocol_module_on(module, protocol_event_exception, parent, *context);
 
             return fail;

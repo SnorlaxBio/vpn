@@ -123,7 +123,14 @@ static int32_t user_datagram_protocol_module_func_in(user_datagram_protocol_modu
         return fail;
     }
 
-    return user_datagram_protocol_module_on(module, protocol_event_in, parent, *context);
+    if(user_datagram_protocol_module_on(module, protocol_event_in, parent, *context) == fail) {
+        user_datagram_protocol_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    user_datagram_protocol_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }
 
 extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context) {

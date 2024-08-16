@@ -231,16 +231,26 @@ static int32_t internet_control_message_protocol_version6_module_func_in(interne
         return fail;
     }
 
-    return internet_control_message_protocol_version6_module_on(module, protocol_event_in, parent, *context);
+    if(internet_control_message_protocol_version6_module_on(module, protocol_event_in, parent, *context) == fail) {
+        internet_control_message_protocol_version6_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    internet_control_message_protocol_version6_module_on(module, protocol_event_complete_in, parent, *context);
+
+    return success;
 }
 
 extern int32_t internet_control_message_protocol_version6_module_func_on(internet_control_message_protocol_version6_module_t * module, uint32_t type, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t * context) {
+    snorlaxdbg(false, true, "debug", "type => %u", type);
 
     if(type == protocol_event_in) {
         switch(internet_control_message_protocol_version6_context_type_get(context)) {
             case internet_control_message_protocol_version6_type_router_solicitation:   return internet_protocol_version6_module_control_message_context_in(context->parent->module, context);
             case internet_control_message_protocol_version6_type_router_advertisement:  return internet_protocol_version6_module_control_message_context_in(context->parent->module, context);
         }
+    } else if(type == protocol_event_exception) {
+        snorlaxdbg(false, true, "debug", "exception => %d", internet_control_message_protocol_version6_context_error_get(context));
     }
 
     return success;
