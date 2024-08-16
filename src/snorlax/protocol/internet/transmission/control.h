@@ -181,13 +181,6 @@ struct transmission_control_protocol_context {
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
 
-    // uint16_t source;
-    // uint16_t destination;
-    // uint32_t sequence;
-    // uint32_t acknowledgment;
-    // uint16_t window;
-    // uint16_t checksum;
-    // uint16_t urgent;
     uint16_t checksum;
 
     uint32_t headerlen;
