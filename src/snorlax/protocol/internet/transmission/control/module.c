@@ -25,6 +25,8 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
 
     module->map = map;
     module->on = on;
+    snorlaxdbg(true, false, "critical", "implement internet protocol version 6 & version 4 hash");
+    module->block = hashtable_gen(nil);
 
     return module;
 }
@@ -136,7 +138,9 @@ static int32_t transmission_control_protocol_module_func_in(transmission_control
 extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
     snorlaxdbg(false, true, "debug", "type => %u", type);
 
-    if(type == protocol_event_exception) {
+    if(type == protocol_event_in) {
+        // module->
+    } else if(type == protocol_event_exception) {
         snorlaxdbg(false, true, "debug", "exception => %u", transmission_control_protocol_context_error_get(context));
     }
 

@@ -147,6 +147,8 @@ struct transmission_control_protocol_module {
     ___reference protocol_module_map_t * map;
 
     transmission_control_protocol_context_handler_t on;
+
+    hashtable_t * block;
 };
 
 struct transmission_control_protocol_module_func {
