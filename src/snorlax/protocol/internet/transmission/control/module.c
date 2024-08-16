@@ -15,7 +15,9 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_deserialize,
     transmission_control_protocol_module_func_serialize,
     transmission_control_protocol_module_func_debug,
-    transmission_control_protocol_module_func_in
+    transmission_control_protocol_module_func_in,
+
+    transmission_control_protocol_module_func_blockon
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on) {

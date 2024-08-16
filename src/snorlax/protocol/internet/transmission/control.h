@@ -158,16 +158,21 @@ struct transmission_control_protocol_module_func {
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
     int32_t (*in)(transmission_control_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
 //    int32_t (*out)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint64_t *);
+
+//    int32_t (*blockon)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *);
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on);
 extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 #define transmission_control_protocol_module_rem(module)                                                        ((module)->func->rem(module))
 #define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define transmission_control_protocol_module_serialize(module, parent, context, packet, len)                    ((module)->func->serialize(module, parent, context, packet, len))
 #define transmission_control_protocol_module_debug(module, stream, context)                                     ((module)->func->debug(module, stream, context))
 #define transmission_control_protocol_module_in(module, packet, packetlen, parent, context)                     ((module)->func->in(module, packet, packetlen, parent, context))
+
+// #define transmission_control_protocol_module_blockon(module, parent, context)                                   ((module)->func->blockon(module, parent, context))
 
 #define transmission_control_protocol_module_on(module, type, parent, context)                                  ((module)->on(module, type, parent, context))
 
@@ -190,6 +195,8 @@ struct transmission_control_protocol_context {
 
     transmission_control_protocol_option_t * option;
     uint8_t * data;
+
+    transmission_control_block_t * block;
     
 };
 
@@ -257,6 +264,9 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 #define transmission_control_protocol_context_option_set(context, v)            ((context)->option = v)
 #define transmission_control_protocol_context_data_get(context)                 ((context)->data)
 #define transmission_control_protocol_context_data_set(context, v)              ((context)->data = v)
+
+#define transmission_control_protocol_context_block_set(context, v)             ((context)->block = v)
+#define transmission_control_protocol_context_block_get(context)                ((context)->block)
 
 #define transmission_control_protocol_context_data_cal(context)                 (transmission_control_protocol_context_headerlen_get(context) == transmission_control_protocol_context_packetlen_get(context) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
 #define transmission_control_protocol_context_option_cal(context)               (transmission_control_protocol_context_headerlen_get(context) == (transmission_control_protocol_context_offset_get(context) * 4) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
