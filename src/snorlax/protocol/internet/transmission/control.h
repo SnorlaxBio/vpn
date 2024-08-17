@@ -187,6 +187,8 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
 #define transmission_control_protocol_module_in(module, packet, packetlen, parent, context)                     ((module)->func->in(module, packet, packetlen, parent, context))
 #define transmission_control_protocol_module_blockon(module, type, parent, context)                             ((module)->func->blockon(module, type, parent, context))
 
+// #define transmission_control_protocol_module_blockon(module, parent, context)                                   ((module)->func->blockon(module, parent, context))
+
 #define transmission_control_protocol_module_on(module, type, parent, context)                                  ((module)->on(module, type, parent, context))
 
 struct transmission_control_protocol_context {
@@ -279,6 +281,9 @@ extern int32_t transmission_control_protocol_context_key_gen(transmission_contro
 #define transmission_control_protocol_context_option_set(context, v)            ((context)->option = v)
 #define transmission_control_protocol_context_data_get(context)                 ((context)->data)
 #define transmission_control_protocol_context_data_set(context, v)              ((context)->data = v)
+
+#define transmission_control_protocol_context_block_set(context, v)             ((context)->block = v)
+#define transmission_control_protocol_context_block_get(context)                ((context)->block)
 
 #define transmission_control_protocol_context_data_cal(context)                 (transmission_control_protocol_context_headerlen_get(context) == transmission_control_protocol_context_packetlen_get(context) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
 #define transmission_control_protocol_context_option_cal(context)               (transmission_control_protocol_context_headerlen_get(context) == (transmission_control_protocol_context_offset_get(context) * 4) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
