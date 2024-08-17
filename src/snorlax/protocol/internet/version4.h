@@ -115,6 +115,7 @@ struct internet_protocol_version4_address {
 
 extern internet_protocol_version4_pseudo_t * internet_protocol_version4_pseudo_gen(internet_protocol_version4_packet_t * datagram);
 extern uint16_t internet_protocol_version4_checksum_cal(internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
+extern uint32_t internet_protocol_version4_direction_cal(uint32_t source, uint32_t destination, uint32_t * local);
 
 typedef int32_t (*internet_protocol_version4_context_handler_t)(internet_protocol_version4_module_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t *);
 
@@ -124,8 +125,8 @@ struct internet_protocol_version4_module {
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version4_context_handler_t on;
-
-    uint32_t * addr;
+    
+    ___reference uint32_t * addr;
 };
 
 struct internet_protocol_version4_module_func {
@@ -171,6 +172,7 @@ struct internet_protocol_version4_context {
     uint64_t datagramlen;
     internet_protocol_version4_pseudo_t * pseudo;
     uint64_t pseudolen;
+    uint32_t direction;
 
     uint16_t checksumcal;
     internet_protocol_version4_option_t * option;
@@ -194,6 +196,8 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 #define internet_protocol_version4_context_packetlen_get(context)           ((context)->datagramlen)
 #define internet_protocol_version4_context_checksumcal_get(context)         ((context)->checksumcal)
 #define internet_protocol_version4_context_checksumcal_set(context, v)      ((context)->checksumcal = v)
+#define internet_protocol_version4_context_direction_get(context)           ((context)->direction)
+#define internet_protocol_version4_context_direction_set(context, v)        ((context)->direction = v)
 
 #define internet_protocol_version4_context_total_set(context, v)            ((context)->datagram->total = ntohs(v))
 #define internet_protocol_version4_context_total_get(context)               (htons((context)->datagram->total))

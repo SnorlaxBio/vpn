@@ -34,7 +34,13 @@
 #define internet_protocol_version_get(datagram)     (datagram[0] & 0x0Fu)
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
 
-#define internet_protocol_version_hash          default_hash
+#define internet_protocol_version_hash                          default_hash
+
+#define internet_protocol_direction_none                        0
+#define internet_protocol_direction_in                          1
+#define internet_protocol_direction_out                         2
+#define internet_protocol_direction_internal                    3
+
 
 struct internet_protocol_module;
 struct internet_protocol_module_func;
@@ -65,7 +71,10 @@ struct internet_protocol_module {
     sync_t * sync;
     ___reference protocol_module_map_t * map;
     internet_protocol_context_handler_t on;
+    
+    ___reference uint8_t * addr;
 
+    // NO INHERIED
     internet_protocol_version4_module_t * version4;
     internet_protocol_version6_module_t * version6;
 };
@@ -101,6 +110,7 @@ struct internet_protocol_context {
     uint64_t packetlen;
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
+    uint32_t direction;
 };
 
 struct internet_protocol_context_func {
@@ -119,6 +129,9 @@ extern internet_protocol_context_t * internet_protocol_context_gen(internet_prot
 #define internet_protocol_context_pseudolen_get(context)        ((context)->pseudolen)
 #define internet_protocol_context_pseudo_set(context, v, len)   (((context)->pseudolen = len), ((context)->pseudo = v))
 #define internet_protocol_context_packetlen_get(context)        ((context)->packetlen)
+
+#define internet_protocol_context_direction_get(context)        ((context)->direction)
+#define internet_protocol_context_direction_set(context, v)     ((context)->direction = v)
 
 #define internet_protocol_context_version_get(context)          (internet_protocol_version_get((context)->packet))
 

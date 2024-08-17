@@ -74,3 +74,19 @@ extern int32_t transmission_control_protocol_context_key_gen(transmission_contro
 
     return fail;
 }
+
+extern uint32_t transmission_control_protocol_direction_cal(transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(context->parent->direction == internet_protocol_direction_none) {
+        return internet_protocol_direction_none;
+    }
+
+    if(context->parent->direction == internet_protocol_direction_internal) {
+        snorlaxdbg(false, true, "debug", "");
+    }
+
+    return context->parent->direction;
+}

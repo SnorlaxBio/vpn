@@ -116,8 +116,7 @@ typedef struct internet_control_message_protocol_version6_context internet_contr
 
 extern const char * internet_protocol_version6_addr_to_str(char * destination, uint8_t * addr);
 extern int32_t internet_protocol_version6_extension_check(uint32_t no);
-
-
+extern uint32_t internet_protocol_version6_direction_cal(uint8_t * source, uint8_t * destination, uint8_t * local);
 
 struct internet_protocol_version6_packet {
 #if       __BYTE_ORDER == __LITTLE_ENDIAN
@@ -236,8 +235,8 @@ struct internet_protocol_version6_module {
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version6_context_handler_t on;
-
-    uint8_t * addr;
+    
+    ___reference uint8_t * addr;
 };
 
 struct internet_protocol_version6_module_func {
@@ -347,6 +346,7 @@ struct internet_protocol_version6_context {
     uint64_t datagramlen;
     internet_protocol_version6_pseudo_t * pseudo;
     uint64_t pseudolen;
+    uint32_t direction;
 
     uint8_t version;
     uint8_t traffic;
@@ -368,6 +368,8 @@ extern internet_protocol_version6_context_t * internet_protocol_version6_context
 #define internet_protocol_version6_context_error_set(context, v)            ((context)->error = v)
 #define internet_protocol_version6_context_packetlen_get(context)           ((context)->datagramlen)
 #define internet_protocol_version6_context_packetlen_set(context, v)        ((context)->datagramlen = v)
+#define internet_protocol_version6_context_direction_get(context)           ((context)->direction)
+#define internet_protocol_version6_context_direction_set(context, v)        ((context)->direction = v)
 #define internet_protocol_version6_context_version_get(context)             ((context)->version)
 #define internet_protocol_version6_context_version_set(context, v)          ((context)->version = v)
 #define internet_protocol_version6_context_traffic_class_get(contex)        ((context)->traffic)

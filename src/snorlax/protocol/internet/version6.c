@@ -42,3 +42,25 @@ extern internet_protocol_version6_pseudo_t * internet_protocol_version6_pseudo_g
 
     return pseudo;
 }
+
+extern uint32_t internet_protocol_version6_direction_cal(uint8_t * source, uint8_t * destination, uint8_t * local) {
+#ifndef   RELEASE
+    snorlaxdbg(source == nil, false, "critical", "");
+    snorlaxdbg(destination == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(local == nil) return internet_protocol_direction_none;
+
+    int32_t out = (memcmp(source, local, 16) == 0);
+    int32_t in = (memcmp(destination, local, 16) == 0);
+
+    if(in && out) {
+        return internet_protocol_direction_internal;
+    } else if(in) {
+        return internet_protocol_direction_in;
+    } else if(out) {
+        return internet_protocol_direction_out;
+    }
+
+    return internet_protocol_direction_none;
+}

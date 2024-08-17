@@ -96,10 +96,9 @@ union transmission_control_protocol_address_pair {
 };
 
 extern int32_t transmission_control_protocol_address_pair_init(transmission_control_protocol_address_pair_t * pair, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
 #define transmission_control_protocol_packet_length_min                     20
-
-extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
 #define transmission_control_protocol_option_type_end                       0
 #define transmission_control_protocol_option_type_no_operation              1
@@ -223,6 +222,7 @@ struct transmission_control_protocol_context_func {
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
 
 extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context);
+extern uint32_t transmission_control_protocol_direction_cal(transmission_control_protocol_context_t * context);
 
 #define transmission_control_protocol_context_rem(context)                      ((context)->func->rem(context))
 #define transmission_control_protocol_context_valid(context)                    ((context)->func->valid(context))

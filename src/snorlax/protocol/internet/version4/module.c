@@ -87,6 +87,8 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
     internet_protocol_version4_context_segment_set(*context, internet_protocol_version4_module_segment_offset_cal(datagram));
     internet_protocol_version4_context_segmentlen_set(*context, internet_protocol_version4_context_segment_length_cal(*context));
 
+    internet_protocol_version4_context_direction_set(*context, internet_protocol_version4_direction_cal(internet_protocol_version4_context_source_get(*context), internet_protocol_version4_context_destination_get(*context), module->addr));
+
     internet_protocol_version4_module_debug(module, stdout, *context);
 
     return internet_protocol_version4_context_valid(*context) ? success : fail;

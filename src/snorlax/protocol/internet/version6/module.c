@@ -74,6 +74,8 @@ extern int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     internet_protocol_version6_context_traffic_class_set(*context, internet_protocol_version6_traffic_class_get(datagram));
     internet_protocol_version6_context_flow_label_set(*context, internet_protocol_version6_flow_label_get(datagram));
 
+    internet_protocol_version6_context_direction_set(*context, internet_protocol_version6_direction_cal(internet_protocol_version6_context_source_get(*context), internet_protocol_version6_context_destination_get(*context), module->addr));
+
     internet_protocol_version6_module_debug(module, stdout, *context);
 
     return success;

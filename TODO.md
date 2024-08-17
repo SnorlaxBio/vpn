@@ -9,3 +9,6 @@
   - Single: Packet 전송이 클라이언트에서 이루어진다.
 
 ### 20240816 | TCP TEST 방법을 찾자.
+
+- snorlax network tcp/ip socket ... test
+- simple connect 

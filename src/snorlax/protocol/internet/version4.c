@@ -29,3 +29,20 @@ extern uint16_t internet_protocol_version4_checksum_cal(internet_protocol_versio
 
     return (int16_t) (~value);
 }
+
+extern uint32_t internet_protocol_version4_direction_cal(uint32_t source, uint32_t destination, uint32_t * local) {
+    if(local == nil) return internet_protocol_direction_none;
+
+    int32_t in = (*local == destination);
+    int32_t out = (*local == source);
+
+    if(in && out) {
+        return internet_protocol_direction_internal;
+    } else if(in) {
+        return internet_protocol_direction_in;
+    } else if(out) {
+        return internet_protocol_direction_out;
+    }
+
+    return internet_protocol_direction_none;
+}

@@ -78,6 +78,8 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
     // TODO: 메모리를 절약할 수 있는 방법을 찾자 혹은 계산량을 줄일 수 있는 방법을 찾자.
     transmission_control_protocol_context_key_gen(*context);
 
+    // if(internet_protocol_local)
+
     transmission_control_protocol_module_debug(module, stdout, *context);
 
     return success;
@@ -159,7 +161,7 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
 
         context->block = (transmission_control_block_t *) hashtable_get(module->block, address_of(context->key));
 
-
+        
     }
 
     return success;
