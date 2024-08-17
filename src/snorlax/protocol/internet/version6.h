@@ -24,6 +24,7 @@
 
 struct internet_protocol_version6_packet;
 struct internet_protocol_version6_pseudo;
+struct internet_protocol_version6_address;
 
 struct internet_protocol_version6_extension;
 struct internet_protocol_version6_extension_hopbyhop;
@@ -65,7 +66,7 @@ struct internet_control_message_protocol_version6_context;
 typedef struct internet_protocol_version6_packet internet_protocol_version6_packet_t;
 typedef struct internet_protocol_version6_pseudo internet_protocol_version6_pseudo_t;
 
-typedef uint8_t internet_protocol_version6_address_t;
+typedef struct internet_protocol_version6_address internet_protocol_version6_address_t;
 typedef uint8_t internet_protocol_version6_option_t;
 typedef uint8_t internet_protocol_version6_routing_data_t;
 typedef uint8_t internet_protocol_version6_segment_t;
@@ -116,6 +117,8 @@ typedef struct internet_control_message_protocol_version6_context internet_contr
 extern const char * internet_protocol_version6_addr_to_str(char * destination, uint8_t * addr);
 extern int32_t internet_protocol_version6_extension_check(uint32_t no);
 
+
+
 struct internet_protocol_version6_packet {
 #if       __BYTE_ORDER == __LITTLE_ENDIAN
     uint32_t prefix;
@@ -137,6 +140,10 @@ struct internet_protocol_version6_pseudo {
     uint32_t length;
     uint32_t zero:24;
     uint8_t next;
+};
+
+struct internet_protocol_version6_address {
+    uint8_t value[16];
 };
 
 extern internet_protocol_version6_pseudo_t * internet_protocol_version6_pseudo_gen(internet_protocol_version6_packet_t * datagram, uint8_t next, uint64_t len);
@@ -229,6 +236,8 @@ struct internet_protocol_version6_module {
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version6_context_handler_t on;
+
+    uint8_t * addr;
 };
 
 struct internet_protocol_version6_module_func {
@@ -238,10 +247,15 @@ struct internet_protocol_version6_module_func {
     void (*debug)(internet_protocol_version6_module_t *, FILE *, internet_protocol_version6_context_t *);
     int32_t (*in)(internet_protocol_version6_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version6_context_t **);
 //    int32_t (*out)(internet_protocol_version6_module_t *, protocol_context_t *, internet_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
+    int32_t (*local_is)(internet_protocol_version6_module_t *, uint8_t *);
+
     int32_t (*control_message_context_in)(internet_protocol_version6_module_t *, internet_control_message_protocol_version6_context_t *);
 };
 
-extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map, internet_protocol_version6_context_handler_t on);
+extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map, internet_protocol_version6_context_handler_t on, uint8_t * addr);
+
+extern int32_t internet_protocol_version6_module_func_local_is(internet_protocol_version6_module_t * module, uint8_t * addr);
+
 extern int32_t internet_protocol_version6_module_func_on(internet_protocol_version6_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version6_context_t * context);
 
 extern internet_protocol_version6_module_t * internet_protocol_version6_module_func_rem(internet_protocol_version6_module_t * module);
@@ -257,6 +271,8 @@ extern int32_t internet_protocol_version6_module_func_control_message_context_in
 #define internet_protocol_version6_module_serialize(module, parent, context, packet, packetlen)     ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version6_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
 #define internet_protocol_version6_module_in(module, packet, packetlen, parent, context)            ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version6_module_local_is(module, addr)                                    ((module)->func->local_is(module, addr))
 
 #define internet_protocol_version6_module_control_message_context_in(module, context)               ((module)->func->control_message_context_in(module, context))
 

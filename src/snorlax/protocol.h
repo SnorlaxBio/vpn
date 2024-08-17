@@ -28,7 +28,7 @@ struct protocol_context_array;
 struct protocol_context_array_func;
 
 typedef uint8_t protocol_packet_t;
-typedef uint16_t protocol_address_t;            // REFACTOR
+typedef uint8_t protocol_address_t;            // REFACTOR
 
 typedef struct protocol_module protocol_module_t;
 typedef struct protocol_module_func protocol_module_func_t;

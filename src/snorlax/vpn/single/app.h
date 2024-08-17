@@ -43,6 +43,14 @@ struct vpn_single_app {
 
     descriptor_event_subscription_t * tun;
     socket_event_subscription_t * netlink;
+
+    char ifname[16];
+    struct {
+        struct {
+            uint32_t version4;
+            uint8_t version6[16];
+        } addr;
+    } internet;
 };
 
 struct vpn_single_app_func {
@@ -62,5 +70,8 @@ extern vpn_single_app_t * vpn_single_app_gen(void);
 extern void vpn_single_app_engine_cancel(___notnull const event_engine_t * engine);
 
 extern vpn_single_app_t * vpn_single_app_get(void);
+
+extern void vpn_single_app_interface_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
+extern void vpn_single_app_network_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
 
 #endif // __SNORLAX__VPN_SINGLE__H__

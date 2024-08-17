@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 #include "../control.h"
 
@@ -28,6 +30,8 @@ static transmission_control_protocol_context_t * transmission_control_protocol_c
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
+    if(context->key.value) context->key.value = memory_rem(context->key.value);
+
     if(context->children) context->children = protocol_context_array_rem(context->children);
 
     context->sync = sync_rem(context->sync);
@@ -45,4 +49,28 @@ static int32_t transmission_control_protocol_context_func_valid(transmission_con
     snorlaxdbg(false, true, "implement", "");
 
     return true;
+}
+
+extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+    transmission_control_protocol_address_pair_t pair;
+    if(transmission_control_protocol_address_pair_init(&pair, context->parent, context) == fail) {
+        snorlaxdbg(false, true, "warning", "");
+        /**
+         * 라우터의 경우 키가 정상적으로 설정되지 않을 수 있다.
+         */
+        return fail;
+    }
+
+    uint8_t version = internet_protocol_context_version_get(context->parent);
+
+    if(version == 4) context->key.length = (sizeof(uint32_t) + sizeof(uint16_t)) * 2;
+    if(version == 6) context->key.length = ((sizeof(uint32_t) * 4) + sizeof(uint16_t)) * 2;
+
+    context->key.value = memory_gen(context->key.value, context->key.length);
+    memcpy(context->key.value, &pair, context->key.length);
+
+    return fail;
 }

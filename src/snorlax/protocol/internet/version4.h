@@ -32,6 +32,7 @@
 
 struct internet_protocol_version4_packet;
 struct internet_protocol_version4_pseudo;
+struct internet_protocol_version6_address;
 
 struct internet_protocol_version4_module;
 struct internet_protocol_version4_module_func;
@@ -40,6 +41,7 @@ struct internet_protocol_version4_context_func;
 
 typedef struct internet_protocol_version4_packet internet_protocol_version4_packet_t;
 typedef struct internet_protocol_version4_pseudo internet_protocol_version4_pseudo_t;
+typedef struct internet_protocol_version6_address internet_protocol_version6_address_t;
 
 typedef struct internet_protocol_version4_module internet_protocol_version4_module_t;
 typedef struct internet_protocol_version4_module_func internet_protocol_version4_module_func_t;
@@ -107,6 +109,10 @@ struct internet_protocol_version4_pseudo {
     uint8_t length;
 };
 
+struct internet_protocol_version4_address {
+    uint32_t value;
+};
+
 extern internet_protocol_version4_pseudo_t * internet_protocol_version4_pseudo_gen(internet_protocol_version4_packet_t * datagram);
 extern uint16_t internet_protocol_version4_checksum_cal(internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
 
@@ -118,6 +124,8 @@ struct internet_protocol_version4_module {
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version4_context_handler_t on;
+
+    uint32_t * addr;
 };
 
 struct internet_protocol_version4_module_func {
@@ -127,9 +135,15 @@ struct internet_protocol_version4_module_func {
     void (*debug)(internet_protocol_version4_module_t *, FILE *, internet_protocol_version4_context_t *);
     int32_t (*in)(internet_protocol_version4_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version4_context_t **);
 //    int32_t (*out)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
+
+    int32_t (*local_is)(internet_protocol_version4_module_t *, uint32_t);
+
 };
 
-extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map, internet_protocol_version4_context_handler_t on);
+extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map, internet_protocol_version4_context_handler_t on, uint32_t * addr);
+
+extern int32_t internet_protocol_version4_module_func_local_is(internet_protocol_version4_module_t * module, uint32_t addr);
+
 extern int32_t internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context);
 
 #define internet_protocol_version4_module_rem(module)                                               ((module)->func->rem(module))
@@ -137,6 +151,8 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
 #define internet_protocol_version4_module_serialize(module, parent, context, packet, packetlen)     ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version4_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
 #define internet_protocol_version4_module_in(module, packet, packetlen, parent, context)            ((module)->func->in(module, packet, packetlen, parent, context))
+
+#define internet_protocol_version4_module_local_is(module, addr)                                    ((module)->func->local_is(module, addr))
 
 #define internet_protocol_version4_module_on(module, type, parent, context)                         ((module)->on(module, type, parent, context))
 

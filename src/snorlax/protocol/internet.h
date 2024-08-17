@@ -11,6 +11,7 @@
 #define   __SNORLAX__PROTOCOL_INTERNET__H__
 
 #include <snorlax.h>
+#include <snorlax/hash.h>
 #include <snorlax/protocol.h>
 
 /**
@@ -33,6 +34,8 @@
 #define internet_protocol_version_get(datagram)     (datagram[0] & 0x0Fu)
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
 
+#define internet_protocol_version_hash          default_hash
+
 struct internet_protocol_module;
 struct internet_protocol_module_func;
 struct internet_protocol_context;
@@ -41,11 +44,9 @@ struct internet_protocol_context_func;
 struct internet_protocol_version4_module;
 struct internet_protocol_version6_module;
 
-struct internet_protocol_address;
-
 typedef uint8_t internet_protocol_packet_t;
 typedef uint8_t internet_protocol_pseudo_t;
-typedef struct internet_protocol_address internet_protocol_address_t;
+typedef uint8_t internet_protocol_address_t;
 
 typedef struct internet_protocol_module internet_protocol_module_t;
 typedef struct internet_protocol_module_func internet_protocol_module_func_t;
@@ -119,12 +120,13 @@ extern internet_protocol_context_t * internet_protocol_context_gen(internet_prot
 #define internet_protocol_context_pseudo_set(context, v, len)   (((context)->pseudolen = len), ((context)->pseudo = v))
 #define internet_protocol_context_packetlen_get(context)        ((context)->packetlen)
 
-struct internet_protocol_address {
-    protocol_address_t type;
-    union {
-        uint8_t version4[4];
-        uint8_t version6[16];
-    } value;
-};
+#define internet_protocol_context_version_get(context)          (internet_protocol_version_get((context)->packet))
+
+// struct internet_protocol_address {
+//     union {
+//         uint8_t version4[4];
+//         uint8_t version6[16];
+//     } value;
+// };
 
 #endif // __SNORLAX__PROTOCOL_INTERNET__H__

@@ -19,9 +19,8 @@ struct transmission_control_block_func;
 
 typedef hashtable_t transmission_control_block_map_t;
 
-struct transmission_control_address;
-
 struct transmission_control_protocol_packet;
+union transmission_control_protocol_address_pair;
 
 struct transmission_control_protocol_module;
 struct transmission_control_protocol_module_func;
@@ -31,9 +30,8 @@ struct transmission_control_protocol_context_func;
 typedef struct transmission_control_block transmission_control_block_t;
 typedef struct transmission_control_block_func transmission_control_block_func_t;
 
-typedef struct transmission_control_address transmission_control_address_t;
-
 typedef struct transmission_control_protocol_packet transmission_control_protocol_packet_t;
+typedef union transmission_control_protocol_address_pair transmission_control_protocol_address_pair_t;
 typedef uint8_t transmission_control_protocol_option_t;
 
 typedef struct transmission_control_protocol_module transmission_control_protocol_module_t;
@@ -74,14 +72,30 @@ struct transmission_control_protocol_packet {
     uint16_t pointer;
 };
 
-struct transmission_control_address {
-    protocol_address_t type;
-    union {
-        uint8_t version4[4];
-        uint8_t version6[16];
-    } value;
-    uint16_t port;
+union transmission_control_protocol_address_pair {
+    struct {
+        struct {
+            uint32_t addr;
+            uint16_t port;
+        } local;
+        struct {
+            uint32_t addr;
+            uint16_t port;
+        } foreign;
+    } version4;
+    struct {
+        struct {
+            uint8_t addr[16];
+            uint16_t port;
+        } local;
+        struct {
+            uint8_t addr[16];
+            uint16_t port;
+        } foreign;
+    } version6;
 };
+
+extern int32_t transmission_control_protocol_address_pair_init(transmission_control_protocol_address_pair_t * pair, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 #define transmission_control_protocol_packet_length_min                     20
 
@@ -102,8 +116,6 @@ struct transmission_control_block {
     hashtable_node_t * next;
     hashtable_node_key_t key;
 
-    transmission_control_address_t source;
-    transmission_control_address_t destination;
     uint32_t state;
     uint32_t sequence;
 };
@@ -131,7 +143,9 @@ struct transmission_control_block_func {
 #define transmission_control_state_time_wait                        10
 #define transmission_control_state_closed                           0
 
-extern transmission_control_block_t * transmission_control_block_gen(transmission_control_address_t * source, transmission_control_address_t * destination);
+extern transmission_control_block_t * transmission_control_block_gen(transmission_control_protocol_address_pair_t * pair);
+
+#define transmission_control_block_func_hash                        internet_protocol_version_hash
 
 #define transmission_control_block_rem(block)                       ((block)->func->rem(block))
 #define transmission_control_block_open(block)                      ((block)->func->open(block))
@@ -147,6 +161,8 @@ struct transmission_control_protocol_module {
     ___reference protocol_module_map_t * map;
 
     transmission_control_protocol_context_handler_t on;
+
+    hashtable_t * block;
 };
 
 struct transmission_control_protocol_module_func {
@@ -156,16 +172,20 @@ struct transmission_control_protocol_module_func {
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
     int32_t (*in)(transmission_control_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
 //    int32_t (*out)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *, protocol_packet_t **, uint64_t *);
+
+    int32_t (*blockon)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on);
 extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 #define transmission_control_protocol_module_rem(module)                                                        ((module)->func->rem(module))
 #define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define transmission_control_protocol_module_serialize(module, parent, context, packet, len)                    ((module)->func->serialize(module, parent, context, packet, len))
 #define transmission_control_protocol_module_debug(module, stream, context)                                     ((module)->func->debug(module, stream, context))
 #define transmission_control_protocol_module_in(module, packet, packetlen, parent, context)                     ((module)->func->in(module, packet, packetlen, parent, context))
+#define transmission_control_protocol_module_blockon(module, type, parent, context)                             ((module)->func->blockon(module, type, parent, context))
 
 #define transmission_control_protocol_module_on(module, type, parent, context)                                  ((module)->on(module, type, parent, context))
 
@@ -188,7 +208,9 @@ struct transmission_control_protocol_context {
 
     transmission_control_protocol_option_t * option;
     uint8_t * data;
-    
+
+    hashtable_node_key_t key;
+    transmission_control_block_t * block;
 };
 
 struct transmission_control_protocol_context_func {
@@ -197,6 +219,8 @@ struct transmission_control_protocol_context_func {
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
+
+extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context);
 
 #define transmission_control_protocol_context_rem(context)                      ((context)->func->rem(context))
 #define transmission_control_protocol_context_valid(context)                    ((context)->func->valid(context))
@@ -258,5 +282,9 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 
 #define transmission_control_protocol_context_data_cal(context)                 (transmission_control_protocol_context_headerlen_get(context) == transmission_control_protocol_context_packetlen_get(context) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
 #define transmission_control_protocol_context_option_cal(context)               (transmission_control_protocol_context_headerlen_get(context) == (transmission_control_protocol_context_offset_get(context) * 4) ? nil : (&((uint8_t *) ((context)->packet))[transmission_control_protocol_context_headerlen_get(context)]))
+
+#define transmission_control_protocol_context_key_get(context)                  (address_of((context)->key))
+
+#define transmission_control_protocol_context_key_has(context)                  ((context)->key.value != nil)
 
 #endif // __SNORLAX__PROTOCOL_INTERNET_TRANSMISSION_CONTROL__H__

@@ -26,10 +26,11 @@ static internet_protocol_version4_module_func_t func = {
     internet_protocol_version4_module_func_deserialize,
     internet_protocol_version4_module_func_serialize,
     internet_protocol_version4_module_func_debug,
-    internet_protocol_version4_module_func_in
+    internet_protocol_version4_module_func_in,
+    internet_protocol_version4_module_func_local_is
 };
 
-extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map, internet_protocol_version4_context_handler_t on) {
+extern internet_protocol_version4_module_t * internet_protocol_version4_module_gen(protocol_module_map_t * map, internet_protocol_version4_context_handler_t on, uint32_t * addr) {
 #ifndef   RELEASE
     snorlaxdbg(on == nil, false, "critical", "");
 #endif // RELEASE
@@ -39,11 +40,10 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
     module->func = address_of(func);
     module->map = map;
     module->on = on;
+    module->addr = addr;
 
     return module;
 }
-
-
 
 static internet_protocol_version4_module_t * internet_protocol_version4_module_func_rem(internet_protocol_version4_module_t * module) {
 #ifndef   RELEASE
@@ -259,4 +259,12 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
     }
     
     return success;
+}
+
+extern int32_t internet_protocol_version4_module_func_local_is(internet_protocol_version4_module_t * module, uint32_t addr) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+#endif // RELEASE
+
+    return false;
 }

@@ -1,15 +1,20 @@
 #include <linux/netlink.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 #include <snorlax/network/tun.h>
 #include <snorlax/network/netlink.h>
 #include <snorlax/socket/event/subscription.h>
 #include <snorlax/descriptor/event/subscription.h>
 #include <snorlax/protocol.h>
+#include <snorlax/network/if.h>
+// #include <snorlax/network
 
 #include "app.h"
 #include "app/config.h"
 #include "app/tun.h"
 #include "app/netlink.h"
+#include "protocol/transmission/control.h"
 
 static vpn_single_app_t * app = nil;
 
@@ -59,7 +64,7 @@ extern vpn_single_app_t * vpn_single_app_gen(void) {
 
     application->func = address_of(func);
 
-    application->protocol.transmission_control = transmission_control_protocol_module_gen(nil, transmission_control_protocol_module_func_on);
+    application->protocol.transmission_control = transmission_control_protocol_module_gen(nil, transmission_control_protocol_module_func_vpn_single_on);
     application->protocol.user_datagram = user_datagram_protocol_module_gen(nil, user_datagram_protocol_module_func_on);
     application->protocol.internet_protocol_version6_extension_hopbyhop = internet_protocol_version6_extension_hopbyhop_module_gen(internet_protocol_version6_extension_hopbyhop_module_func_on);
     application->protocol.internet_control_message_protocol_version4 = internet_control_message_protocol_version4_module_gen(internet_control_message_protocol_version4_module_func_on);
@@ -91,8 +96,8 @@ extern vpn_single_app_t * vpn_single_app_gen(void) {
 
     application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_map_get);
 
-    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on);
-    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on);
+    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on, address_of(application->internet.addr.version4));
+    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on, application->internet.addr.version6);
 
     application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport, internet_protocol_module_func_on, version4, version6);
 
@@ -177,3 +182,15 @@ extern void vpn_single_app_engine_cancel(___notnull const event_engine_t * engin
 #endif // RELEASE
 }
 
+extern void vpn_single_app_interface_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
+    snorlaxdbg(false, true, "debug", "");
+    if(state == network_netlink_request_state_done) {
+        if(network_if_addr_get("tun0", address_of(app->internet.addr.version4), app->internet.addr.version6) == fail) {
+            snorlaxdbg(false, true, "warning", "");
+        }
+    }
+}
+
+extern void vpn_single_app_network_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
+    snorlaxdbg(false, true, "debug", "");
+}

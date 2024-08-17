@@ -13,7 +13,7 @@
  * 필요한 메서드 말고는 거의 대부분 ,... 라이브러리로 옮겨서 공통적으로 사용할 수 있도록 하자.
  */
 
-static void onNetlinkIPRoutePrepend(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
+// static void onNetlinkIPRoutePrepend(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
 
 static void onSubscription(___notnull descriptor_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node);
 static void onOpen(___notnull descriptor_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node);
@@ -53,11 +53,13 @@ static void onOpen(___notnull descriptor_event_subscription_t * subscription, ui
 
     // TODO: IMPLEMENT CALLBACK
     network_netlink_req(descriptor, app->netlink, network_netlink_message_ipaddr_add_gen(AF_INET, addr, 24, "tun0"), nil);
-    network_netlink_req(descriptor, app->netlink, network_netlink_message_iplink_setup_gen("tun0"), nil);
+
+    network_netlink_req(descriptor, app->netlink, network_netlink_message_iplink_setup_gen("tun0"), vpn_single_app_interface_on);
+
     network_netlink_req(descriptor, app->netlink, network_netlink_message_iprule_add_gen(network_netlink_table_main_mark, network_netlink_table_main_priority, network_netlink_table_main_id), nil);
     // TODO: ENCAPSULATED PACKET MUST BE ROUTED VIA REAL ROUTER
     network_netlink_req(descriptor, app->netlink, network_netlink_message_iprule_add_gen(network_netlink_table_tun_mark, network_netlink_table_tun_priority, network_netlink_table_tun_id), nil);
-    network_netlink_req(descriptor, app->netlink, network_netlink_message_iproute_prepend_gen(all, 0, addr, network_netlink_table_tun_id), onNetlinkIPRoutePrepend);
+    network_netlink_req(descriptor, app->netlink, network_netlink_message_iproute_prepend_gen(all, 0, addr, network_netlink_table_tun_id), vpn_single_app_network_on);
     // TODO: 마지막 메시지까지 처리되면, 로그인을 처리하도록 하자.
     // DEFAULT ROUTE GET
 }
@@ -114,17 +116,17 @@ static void onException(___notnull descriptor_event_subscription_t * subscriptio
 
 }
 
-static void onNetlinkIPRoutePrepend(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
-#ifndef   RELEASE
-    snorlaxdbg(request == nil, false, "critical", "");
-    snorlaxdbg(response == nil, false, "critical", "");
-#endif // RELEASE
+// static void onNetlinkIPRoutePrepend(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
+// #ifndef   RELEASE
+//     snorlaxdbg(request == nil, false, "critical", "");
+//     snorlaxdbg(response == nil, false, "critical", "");
+// #endif // RELEASE
 
-    if(state == network_netlink_request_state_done) {
-        // 모든 클라이언트를 만든다 ...
-        // 모든 클라리언트를 접속하도록 한다 ...
-        printf("done\n");
-        // internet_protocol_module_t * module = vpn_client_app_internet_protocol_module_get();
-        // snorlaxdbg(false, true, "implement", "internet control message protocol version6 router solicitation");
-    }
-}
+//     if(state == network_netlink_request_state_done) {
+//         // 모든 클라이언트를 만든다 ...
+//         // 모든 클라리언트를 접속하도록 한다 ...
+//         printf("done\n");
+//         // internet_protocol_module_t * module = vpn_client_app_internet_protocol_module_get();
+//         // snorlaxdbg(false, true, "implement", "internet control message protocol version6 router solicitation");
+//     }
+// }

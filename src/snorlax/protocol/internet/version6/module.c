@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <string.h>
 
 #include "../version6.h"
 #include "control/message.h"
@@ -16,15 +17,18 @@ static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_debug,
     internet_protocol_version6_module_func_in,
 
+    internet_protocol_version6_module_func_local_is,
+
     internet_protocol_version6_module_func_control_message_context_in
 };
 
-extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map, internet_protocol_version6_context_handler_t on) {
+extern internet_protocol_version6_module_t * internet_protocol_version6_module_gen(protocol_module_map_t * map, internet_protocol_version6_context_handler_t on, uint8_t * addr) {
     internet_protocol_version6_module_t * module = (internet_protocol_version6_module_t *) calloc(1, sizeof(internet_protocol_version6_module_t));
 
     module->func = address_of(func);
     module->map = map;
     module->on = on;
+    module->addr = addr;
 
     return module;
 }
@@ -170,4 +174,8 @@ extern int32_t internet_protocol_version6_module_func_control_message_context_in
 static int32_t internet_protocol_version6_module_func_control_message_context_in_discard(internet_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context) {
     // discard
     return success;
+}
+
+extern int32_t internet_protocol_version6_module_func_local_is(internet_protocol_version6_module_t * module, uint8_t * addr) {
+    snorlaxdbg(true, false, "implement", "");
 }

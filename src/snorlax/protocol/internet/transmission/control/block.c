@@ -17,13 +17,12 @@ static transmission_control_block_func_t func = {
     transmission_control_block_func_close
 };
 
-extern transmission_control_block_t * transmission_control_block_gen(transmission_control_address_t * source, transmission_control_address_t * destination) {
+extern transmission_control_block_t * transmission_control_block_gen(transmission_control_protocol_address_pair_t * pair) {
     transmission_control_block_t * block = (transmission_control_block_t *) calloc(1, sizeof(transmission_control_block_t));
 
     block->func = address_of(func);
     
-    memcpy(address_of(block->source), source, sizeof(transmission_control_address_t));
-    memcpy(address_of(block->destination), destination, sizeof(transmission_control_address_t));
+    snorlaxdbg(true, false, "implement", "");
 
     return block;
 }

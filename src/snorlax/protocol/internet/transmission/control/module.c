@@ -15,7 +15,9 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_deserialize,
     transmission_control_protocol_module_func_serialize,
     transmission_control_protocol_module_func_debug,
-    transmission_control_protocol_module_func_in
+    transmission_control_protocol_module_func_in,
+
+    transmission_control_protocol_module_func_blockon
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on) {
@@ -25,6 +27,7 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
 
     module->map = map;
     module->on = on;
+    module->block = hashtable_gen(transmission_control_block_func_hash);
 
     return module;
 }
@@ -71,6 +74,9 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
 
     transmission_control_protocol_context_data_set(*context, transmission_control_protocol_context_data_cal(*context));
     transmission_control_protocol_context_option_set(*context, transmission_control_protocol_context_option_cal(*context));
+
+    // TODO: 메모리를 절약할 수 있는 방법을 찾자 혹은 계산량을 줄일 수 있는 방법을 찾자.
+    transmission_control_protocol_context_key_gen(*context);
 
     transmission_control_protocol_module_debug(module, stdout, *context);
 
@@ -138,6 +144,20 @@ extern int32_t transmission_control_protocol_module_func_on(transmission_control
 
     if(type == protocol_event_exception) {
         snorlaxdbg(false, true, "debug", "exception => %u", transmission_control_protocol_context_error_get(context));
+    }
+
+    return success;
+}
+
+extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+    if(type == protocol_event_in) {
+        if(context->block != nil) {
+            snorlaxdbg(context->block != nil, false, "critical", "");
+        }
+
+        context->block = (transmission_control_block_t *) hashtable_get(module->block, address_of(context->key));
+
+        
     }
 
     return success;
