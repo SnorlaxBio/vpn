@@ -12,6 +12,37 @@
 
 #include <snorlax/protocol/internet/transmission/control.h>
 
+struct transmission_control_block_agent_single;
+struct transmission_control_block_agent_single_func;
+
+typedef struct transmission_control_block_agent_single          transmission_control_block_agent_single_t;
+typedef struct transmission_control_block_agent_single_func     transmission_control_block_agent_single_func_t;
+
+struct transmission_control_block_agent_single {
+    transmission_control_block_agent_single_func_t * func;
+    sync_t * sync;
+
+    ___reference transmission_control_block_t * block;
+};
+
+struct transmission_control_block_agent_single_func {
+    transmission_control_block_agent_single_t * (*rem)(transmission_control_block_agent_single_t *);
+
+    int32_t (*open)(transmission_control_block_agent_single_t *);
+    int32_t (*send)(transmission_control_block_agent_single_t *);
+    int32_t (*recv)(transmission_control_block_agent_single_t *);
+    int32_t (*close)(transmission_control_block_agent_single_t *);
+};
+
+extern transmission_control_block_agent_single_t * transmission_control_block_agent_single_gen(___notnull transmission_control_block_t * block);
+
+#define transmission_control_block_agent_single_rem(agent)              ((agent)->func->rem(agent))
+
+#define transmission_control_block_agent_single_open(agent)             ((agent)->func->open(agent))
+#define transmission_control_block_agent_single_send(agent)             ((agent)->func->send(agent))
+#define transmission_control_block_agent_single_recv(agent)             ((agent)->func->recv(agent))
+#define transmission_control_block_agent_single_close(agent)            ((agent)->func->close(agent))
+
 extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 #endif // __SNORLAX__VPN_SINGLE_PROTOCOL_TRANSMISSION_CONTROL__H__

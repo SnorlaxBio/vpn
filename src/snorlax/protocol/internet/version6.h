@@ -117,6 +117,7 @@ typedef struct internet_control_message_protocol_version6_context internet_contr
 extern const char * internet_protocol_version6_addr_to_str(char * destination, uint8_t * addr);
 extern int32_t internet_protocol_version6_extension_check(uint32_t no);
 extern uint32_t internet_protocol_version6_direction_cal(uint8_t * source, uint8_t * destination, uint8_t * local);
+extern const char * internet_protocol_version6_address_to_string(char * s, const uint8_t * addr);
 
 struct internet_protocol_version6_packet {
 #if       __BYTE_ORDER == __LITTLE_ENDIAN

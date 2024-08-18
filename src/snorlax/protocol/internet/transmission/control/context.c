@@ -28,6 +28,7 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 static transmission_control_protocol_context_t * transmission_control_protocol_context_func_rem(transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
+//    snorlaxdbg(context->block != nil, false, "critical", "");   // 사용한 컨트롤 블록은 nil 로 설정하거나, 해쉬테이블에서 삭제해야 한다.
 #endif // RELEASE
 
     if(context->key.value) context->key.value = memory_rem(context->key.value);
@@ -55,6 +56,7 @@ extern int32_t transmission_control_protocol_context_key_gen(transmission_contro
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
+    snorlaxdbg(false, true, "debug", "");
     transmission_control_protocol_address_pair_t pair;
     if(transmission_control_protocol_address_pair_init(&pair, context->parent, context) == fail) {
         snorlaxdbg(false, true, "warning", "");
@@ -89,4 +91,23 @@ extern uint32_t transmission_control_protocol_direction_cal(transmission_control
     }
 
     return context->parent->direction;
+}
+
+extern int32_t transmission_control_protocol_context_is_connect_syn(transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    uint8_t flags = transmission_control_protocol_context_flags_get(context);
+
+    if(flags == transmission_control_flag_control_syn) {
+        snorlaxdbg(false, true, "debug", "connect syn");
+        return true;
+    }
+
+    return false;
+}
+
+extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context) {
+    snorlaxdbg(true, false, "implement", "");
 }

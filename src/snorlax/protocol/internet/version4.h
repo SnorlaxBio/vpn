@@ -116,6 +116,7 @@ struct internet_protocol_version4_address {
 extern internet_protocol_version4_pseudo_t * internet_protocol_version4_pseudo_gen(internet_protocol_version4_packet_t * datagram);
 extern uint16_t internet_protocol_version4_checksum_cal(internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
 extern uint32_t internet_protocol_version4_direction_cal(uint32_t source, uint32_t destination, uint32_t * local);
+extern const char * internet_protocol_version4_address_to_string(char * s, uint32_t addr);
 
 typedef int32_t (*internet_protocol_version4_context_handler_t)(internet_protocol_version4_module_t *, uint32_t, protocol_context_t *, internet_protocol_version4_context_t *);
 
@@ -215,10 +216,12 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 // #define internet_protocol_version4_context_fragment_mf_set(context, v)      ((context)->fragment.detail.mf = v)
 // #define internet_protocol_version4_context_fragment_mf_get(context)         ((context)->fragment.detail.mf)
 // TODO: MUST UPGRADE END
-#define internet_protocol_version4_context_source_set(context, v)           ((context)->datagram->source = ntohl(v))
-#define internet_protocol_version4_context_source_get(context)              (htonl((context)->datagram->source))
-#define internet_protocol_version4_context_destination_set(context, v)      ((context)->datagram->destination = ntohl(v))
-#define internet_protocol_version4_context_destination_get(context)         (htonl((context)->datagram->destination))
+#define internet_protocol_version4_context_source_set(context, v)           ((context)->datagram->source = htonl(v))
+#define internet_protocol_version4_context_source_get(context)              (ntohl((context)->datagram->source))
+#define internet_protocol_version4_context_source_ptr_get(context)          ((uint8_t *) (&((context)->datagram->source)))
+#define internet_protocol_version4_context_destination_set(context, v)      ((context)->datagram->destination = htonl(v))
+#define internet_protocol_version4_context_destination_get(context)         (ntohl((context)->datagram->destination))
+#define internet_protocol_version4_context_destination_ptr_get(context)     ((uint8_t *) (&((context)->datagram->destination)))
 #define internet_protocol_version4_context_option_set(context, v)           ((context)->option = ((internet_protocol_version4_option_t *) v))
 #define internet_protocol_version4_context_option_get(context)              ((context)->option)
 

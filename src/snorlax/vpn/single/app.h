@@ -1,6 +1,8 @@
 #ifndef   __SNORLAX__VPN_SINGLE__H__
 #define   __SNORLAX__VPN_SINGLE__H__
 
+#include <linux/netlink.h>
+
 #include <snorlax.h>
 #include <snorlax/event/engine.h>
 #include <snorlax/socket/client/event/subscription/pool.h>

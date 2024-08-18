@@ -65,6 +65,7 @@ typedef struct internet_protocol_version6_module internet_protocol_version6_modu
 typedef int32_t (*internet_protocol_context_handler_t)(internet_protocol_module_t *, uint32_t, protocol_context_t *, internet_protocol_context_t *);
 
 extern uint32_t internet_protocol_checksum_sum(protocol_packet_t * packet, uint64_t packetlen);
+extern const char * internet_protocol_address_to_string(uint8_t version, char * s, const uint8_t * addr);
 
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
@@ -119,6 +120,8 @@ struct internet_protocol_context_func {
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
+extern uint8_t * internet_protocol_context_source_get(internet_protocol_context_t * context);
+extern uint8_t * internet_protocol_context_destination_get(internet_protocol_context_t * context);
 
 #define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
 #define internet_protocol_context_valid(context)                ((context)->func->valid(context))
@@ -134,12 +137,5 @@ extern internet_protocol_context_t * internet_protocol_context_gen(internet_prot
 #define internet_protocol_context_direction_set(context, v)     ((context)->direction = v)
 
 #define internet_protocol_context_version_get(context)          (internet_protocol_version_get((context)->packet))
-
-// struct internet_protocol_address {
-//     union {
-//         uint8_t version4[4];
-//         uint8_t version6[16];
-//     } value;
-// };
 
 #endif // __SNORLAX__PROTOCOL_INTERNET__H__

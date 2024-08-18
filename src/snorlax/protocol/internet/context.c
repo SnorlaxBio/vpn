@@ -1,4 +1,9 @@
+#include <arpa/inet.h>
+
 #include "../internet.h"
+
+#include "../internet/version4.h"
+#include "../internet/version6.h"
 
 static internet_protocol_context_t * internet_protocol_context_func_rem(internet_protocol_context_t * context);
 static int32_t internet_protocol_context_func_valid(internet_protocol_context_t * context);
@@ -44,4 +49,40 @@ static int32_t internet_protocol_context_func_valid(internet_protocol_context_t 
 #endif // RELEASE
 
     return false;
+}
+
+extern uint8_t * internet_protocol_context_source_get(internet_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    uint8_t version = internet_protocol_context_version_get(context);
+
+    if(version == 4) {
+        return internet_protocol_version4_context_source_ptr_get((internet_protocol_version4_context_t *) context);
+    } else if(version == 6) {
+        return internet_protocol_version6_context_source_get((internet_protocol_version6_context_t *) context);
+    } else {
+        snorlaxdbg(true, false, "crtical", "");
+    }
+
+    return nil;
+}
+
+extern uint8_t * internet_protocol_context_destination_get(internet_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    uint8_t version = internet_protocol_context_version_get(context);
+
+    if(version == 4) {
+        return internet_protocol_version4_context_destination_ptr_get((internet_protocol_version4_context_t *) context);
+    } else if(version == 6) {
+        return internet_protocol_version6_context_destination_get((internet_protocol_version6_context_t *) context);
+    } else {
+        snorlaxdbg(true, false, "crtical", "");
+    }
+
+    return nil;
 }

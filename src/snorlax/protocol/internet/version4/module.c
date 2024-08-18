@@ -268,5 +268,11 @@ extern int32_t internet_protocol_version4_module_func_local_is(internet_protocol
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
 
+    if(module->addr) {
+        uint32_t local = htons(*module->addr);
+
+        return local = addr;
+    }
+    
     return false;
 }

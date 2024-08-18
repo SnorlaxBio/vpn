@@ -16,6 +16,8 @@
 
 struct transmission_control_block;
 struct transmission_control_block_func;
+struct transmission_control_block_agent;
+struct transmission_control_block_agent_func;
 
 typedef hashtable_t transmission_control_block_map_t;
 
@@ -27,8 +29,10 @@ struct transmission_control_protocol_module_func;
 struct transmission_control_protocol_context;
 struct transmission_control_protocol_context_func;
 
-typedef struct transmission_control_block transmission_control_block_t;
-typedef struct transmission_control_block_func transmission_control_block_func_t;
+typedef struct transmission_control_block               transmission_control_block_t;
+typedef struct transmission_control_block_func          transmission_control_block_func_t;
+typedef struct transmission_control_block_agent         transmission_control_block_agent_t;
+typedef struct transmission_control_block_agent_func    transmission_control_block_agent_func_t;
 
 typedef struct transmission_control_protocol_packet transmission_control_protocol_packet_t;
 typedef union transmission_control_protocol_address_pair transmission_control_protocol_address_pair_t;
@@ -47,31 +51,42 @@ struct transmission_control_protocol_packet {
 #if       __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t reserved:4;
     uint8_t offset:4;
-    uint8_t fin:1;
-    uint8_t syn:1;
-    uint8_t rst:1;
-    uint8_t psh:1;
-    uint8_t ack:1;
-    uint8_t urg:1;
-    uint8_t ece:1;
-    uint8_t cwr:1;
+    union {
+        struct {
+            uint8_t fin:1;
+            uint8_t syn:1;
+            uint8_t rst:1;
+            uint8_t psh:1;
+            uint8_t ack:1;
+            uint8_t urg:1;
+            uint8_t ece:1;
+            uint8_t cwr:1;
+        } bit;
+        uint8_t flags;
+    } control;
 #else  // __BYTE_ORDER == __LITTLE_ENDIAN
     uint8_t offset:4;
     uint8_t reserved:4;
-    uint8_t cwr:1;
-    uint8_t ece:1;
-    uint8_t urg:1;
-    uint8_t ack:1;
-    uint8_t psh:1;
-    uint8_t rst:1;
-    uint8_t syn:1;
-    uint8_t fin:1;
+    union {
+        uint8_t flags;
+        struct {
+            uint8_t cwr:1;
+            uint8_t ece:1;
+            uint8_t urg:1;
+            uint8_t ack:1;
+            uint8_t psh:1;
+            uint8_t rst:1;
+            uint8_t syn:1;
+            uint8_t fin:1;
+        } bit;
+    } control;
 #endif // __BYTE_ORDER == __LITTLE_ENDIAN
     uint16_t window;
     uint16_t checksum;
     uint16_t pointer;
 };
 
+// 필요한지 고민해보자.
 union transmission_control_protocol_address_pair {
     struct {
         struct {
@@ -106,7 +121,31 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
 
 #define transmission_control_protocol_option_length_get(option)             ((*(option) == 0 || *(option) == 1) ? 1 : *(option)[1])
 
+struct transmission_control_block_agent {
+    transmission_control_block_agent_func_t * func;
+    sync_t * sync;
 
+    ___reference transmission_control_block_t * block;
+};
+
+struct transmission_control_block_agent_func {
+    transmission_control_block_agent_t * (*rem)(transmission_control_block_agent_t *);
+
+    int32_t (*open)(transmission_control_block_agent_t *);
+    int32_t (*send)(transmission_control_block_agent_t *);
+    int32_t (*recv)(transmission_control_block_agent_t *);
+    int32_t (*close)(transmission_control_block_agent_t *);
+};
+
+#define transmission_control_block_agent_rem(agent)             ((agent)->func->rem(agent))
+#define transmission_control_blcok_agent_open(agent)            ((agent)->func->open(agent))
+#define transmission_control_block_agent_send(agent)            ((agent)->func->send(agent))
+#define transmission_control_block_agent_recv(agent)            ((agent)->func->recv(agent))
+#define transmission_control_block_agent_close(agent)           ((agent)->func->close(agent))
+
+/**
+ * Inherited hashtable_node_t
+ */
 struct transmission_control_block {
     transmission_control_block_func_t * func;
     sync_t * sync;
@@ -117,6 +156,10 @@ struct transmission_control_block {
 
     uint32_t state;
     uint32_t sequence;
+    uint32_t acknowledgment;
+    uint16_t window;
+
+    transmission_control_block_agent_t * agent;
 };
 
 struct transmission_control_block_func {
@@ -129,20 +172,39 @@ struct transmission_control_block_func {
     int32_t (*listen)(transmission_control_block_t *);
 };
 
+#define transmission_control_block_state_get(block)                 ((block)->state)
+#define transmission_control_block_state_set(block, v)              ((block)->state = v)
+
 #define transmission_control_state_none                             0
 #define transmission_control_state_listen                           1
-#define transmission_control_state_synchronize_sent                 2
-#define transmission_control_state_synchronize_received             3
-#define transmission_control_state_established                      4
-#define transmission_control_state_finish_wait_1                    5
-#define transmission_control_state_finish_wait_2                    6
+#define transmission_control_state_syn_sent                         2
+#define transmission_control_state_syn_received                     3
+#define transmission_control_state_est                              4
+#define transmission_control_state_fin_wait_1                       5
+#define transmission_control_state_fin_wait_2                       6
 #define transmission_control_state_close_wait                       7
 #define transmission_control_state_closing                          8
-#define transmission_control_state_last_acknowledgment              9
+#define transmission_control_state_last_ack                         9
 #define transmission_control_state_time_wait                        10
 #define transmission_control_state_closed                           0
 
-extern transmission_control_block_t * transmission_control_block_gen(transmission_control_protocol_address_pair_t * pair);
+#define transmission_control_flag_control_cwr                       (0x01u << 7u)
+#define transmission_control_flag_control_ece                       (0x01u << 6u)
+#define transmission_control_flag_control_urg                       (0x01u << 5u)
+#define transmission_control_flag_control_ack                       (0x01u << 4u)
+#define transmission_control_flag_control_psh                       (0x01u << 3u)
+#define transmission_control_flag_control_rst                       (0x01u << 2u)
+#define transmission_control_flag_control_syn                       (0x01u << 1u)
+#define transmission_control_flag_control_fin                       (0x01u << 0u)
+
+extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key);
+
+#define transmission_control_block_sequence_set(block, v)           ((block)->sequence = v)
+#define transmission_control_block_sequence_get(block)              ((block)->sequence)
+#define transmission_control_block_acknowledgment_set(block, v)     ((block)->acknowledgment = v)
+#define transmission_control_block_acknowledgment_get(block)        ((block)->acknowledgment)
+#define transmission_control_block_window_set(block, v)             ((block)->window = v)
+#define transmission_control_block_window_get(block)                ((block)->window)
 
 #define transmission_control_block_func_hash                        internet_protocol_version_hash
 
@@ -224,6 +286,9 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context);
 extern uint32_t transmission_control_protocol_direction_cal(transmission_control_protocol_context_t * context);
 
+extern int32_t transmission_control_protocol_context_is_connect_syn(transmission_control_protocol_context_t * context);
+extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context);
+
 #define transmission_control_protocol_context_rem(context)                      ((context)->func->rem(context))
 #define transmission_control_protocol_context_valid(context)                    ((context)->func->valid(context))
 
@@ -237,46 +302,48 @@ extern uint32_t transmission_control_protocol_direction_cal(transmission_control
 #define transmission_control_protocol_context_datalen_set(context, v)           ((context)->datalen = v)
 #define transmission_control_protocol_context_checksumcal_get(context)          ((context)->checksum)
 #define transmission_control_protocol_context_checksumcal_set(context, v)       ((context)->checksum =  v)
-#define transmission_control_protocol_context_source_get(context)               (htons((context)->packet->source))
-#define transmission_control_protocol_context_source_set(context, v)            ((context)->packet->source = ntohs(v))
-#define transmission_control_protocol_context_destination_get(context)          (htons((context)->packet->destination))
-#define transmission_control_protocol_context_destination_set(context, v)       ((context)->packet->destination = ntohs(v))
-#define transmission_control_protocol_context_sequence_get(context)             (htonl((context)->packet->sequence))
-#define transmission_control_protocol_context_sequence_set(context, v)          ((context)->packet->sequence = ntohl(v))
-#define transmission_control_protocol_context_acknowledgment_get(context)       (htonl((context)->packet->acknowledgment))
-#define transmission_control_protocol_context_acknowledgment_set(context, v)    ((context)->packet->acknowledgment = ntohl(v))
+#define transmission_control_protocol_context_source_get(context)               (ntohs((context)->packet->source))
+#define transmission_control_protocol_context_source_set(context, v)            ((context)->packet->source = htons(v))
+#define transmission_control_protocol_context_destination_get(context)          (ntohs((context)->packet->destination))
+#define transmission_control_protocol_context_destination_set(context, v)       ((context)->packet->destination = htons(v))
+#define transmission_control_protocol_context_sequence_get(context)             (ntohl((context)->packet->sequence))
+#define transmission_control_protocol_context_sequence_set(context, v)          ((context)->packet->sequence = htonl(v))
+#define transmission_control_protocol_context_acknowledgment_get(context)       (ntohl((context)->packet->acknowledgment))
+#define transmission_control_protocol_context_acknowledgment_set(context, v)    ((context)->packet->acknowledgment = htonl(v))
 #define transmission_control_protocol_context_offset_get(context)               ((context)->packet->offset)
 #define transmission_control_protocol_context_offset_set(context, v)            ((context)->packet->offset = v)
-#define transmission_control_protocol_context_cwr_get(context)                  ((context)->packet->cwr)
-#define transmission_control_protocol_context_cwr_on(context)                   ((context)->packet->cwr = 1)
-#define transmission_control_protocol_context_cwr_off(context)                  ((context)->packet->cwr = 0)
-#define transmission_control_protocol_context_ece_get(context)                  ((context)->packet->ece)
-#define transmission_control_protocol_context_ece_on(context)                   ((context)->packet->ece = 1)
-#define transmission_control_protocol_context_ece_off(context)                  ((context)->packet->ece = 0)
-#define transmission_control_protocol_context_urg_get(context)                  ((context)->packet->urg)
-#define transmission_control_protocol_context_urg_on(context)                   ((context)->packet->urg = 1)
-#define transmission_control_protocol_context_urg_off(context)                  ((context)->packet->urg = 0)
-#define transmission_control_protocol_context_ack_get(context)                  ((context)->packet->ack)
-#define transmission_control_protocol_context_ack_on(context)                   ((context)->packet->ack = 1)
-#define transmission_control_protocol_context_ack_off(context)                  ((context)->packet->ack = 0)
-#define transmission_control_protocol_context_psh_get(context)                  ((context)->packet->psh)
-#define transmission_control_protocol_context_psh_on(context)                   ((context)->packet->psh = 1)
-#define transmission_control_protocol_context_psh_off(context)                  ((context)->packet->psh = 0)
-#define transmission_control_protocol_context_rst_get(context)                  ((context)->packet->rst)
-#define transmission_control_protocol_context_rst_on(context)                   ((context)->packet->rst = 1)
-#define transmission_control_protocol_context_rst_off(context)                  ((context)->packet->rst = 0)
-#define transmission_control_protocol_context_syn_get(context)                  ((context)->packet->syn)
-#define transmission_control_protocol_context_syn_on(context)                   ((context)->packet->syn = 1)
-#define transmission_control_protocol_context_syn_off(context)                  ((context)->packet->syn = 0)
-#define transmission_control_protocol_context_fin_get(context)                  ((context)->packet->fin)
-#define transmission_control_protocol_context_fin_on(context)                   ((context)->packet->fin = 1)
-#define transmission_control_protocol_context_fin_off(context)                  ((context)->packet->fin = 0)
-#define transmission_control_protocol_context_window_get(context)               (htons((context)->packet->window))
-#define transmission_control_protocol_context_window_set(context, v)            ((context)->packet->window = ntohs(v))
-#define transmission_control_protocol_context_checksum_get(context)             (htons((context)->packet->checksum))
-#define transmission_control_protocol_context_checksum_set(context, v)          ((context)->packet->checksum = ntohs(v))
-#define transmission_control_protocol_context_urgent_get(context)               (htons((context)->packet->pointer))
-#define transmission_control_protocol_context_urgent_set(context, v)            ((context)->packet->pointer = ntohs(v))
+#define transmission_control_protocol_context_cwr_get(context)                  ((context)->packet->control.bit.cwr)
+#define transmission_control_protocol_context_cwr_on(context)                   ((context)->packet->control.bit.cwr = 1)
+#define transmission_control_protocol_context_cwr_off(context)                  ((context)->packet->control.bit.cwr = 0)
+#define transmission_control_protocol_context_ece_get(context)                  ((context)->packet->control.bit.ece)
+#define transmission_control_protocol_context_ece_on(context)                   ((context)->packet->control.bit.ece = 1)
+#define transmission_control_protocol_context_ece_off(context)                  ((context)->packet->control.bit.ece = 0)
+#define transmission_control_protocol_context_urg_get(context)                  ((context)->packet->control.bit.urg)
+#define transmission_control_protocol_context_urg_on(context)                   ((context)->packet->control.bit.urg = 1)
+#define transmission_control_protocol_context_urg_off(context)                  ((context)->packet->control.bit.urg = 0)
+#define transmission_control_protocol_context_ack_get(context)                  ((context)->packet->control.bit.ack)
+#define transmission_control_protocol_context_ack_on(context)                   ((context)->packet->control.bit.ack = 1)
+#define transmission_control_protocol_context_ack_off(context)                  ((context)->packet->control.bit.ack = 0)
+#define transmission_control_protocol_context_psh_get(context)                  ((context)->packet->control.bit.psh)
+#define transmission_control_protocol_context_psh_on(context)                   ((context)->packet->control.bit.psh = 1)
+#define transmission_control_protocol_context_psh_off(context)                  ((context)->packet->control.bit.psh = 0)
+#define transmission_control_protocol_context_rst_get(context)                  ((context)->packet->control.bit.rst)
+#define transmission_control_protocol_context_rst_on(context)                   ((context)->packet->control.bit.rst = 1)
+#define transmission_control_protocol_context_rst_off(context)                  ((context)->packet->control.bit.rst = 0)
+#define transmission_control_protocol_context_syn_get(context)                  ((context)->packet->control.bit.syn)
+#define transmission_control_protocol_context_syn_on(context)                   ((context)->packet->control.bit.syn = 1)
+#define transmission_control_protocol_context_syn_off(context)                  ((context)->packet->control.bit.syn = 0)
+#define transmission_control_protocol_context_fin_get(context)                  ((context)->packet->control.bit.fin)
+#define transmission_control_protocol_context_fin_on(context)                   ((context)->packet->control.bit.fin = 1)
+#define transmission_control_protocol_context_fin_off(context)                  ((context)->packet->control.bit.fin = 0)
+#define transmission_control_protocol_context_flags_get(context)                ((context)->packet->control.flags)
+#define transmission_control_protocol_context_flags_set(context, v)             ((context)->packet->control.flags = v)
+#define transmission_control_protocol_context_window_get(context)               (ntohs((context)->packet->window))
+#define transmission_control_protocol_context_window_set(context, v)            ((context)->packet->window = htons(v))
+#define transmission_control_protocol_context_checksum_get(context)             (ntohs((context)->packet->checksum))
+#define transmission_control_protocol_context_checksum_set(context, v)          ((context)->packet->checksum = htons(v))
+#define transmission_control_protocol_context_urgent_get(context)               (ntohs((context)->packet->pointer))
+#define transmission_control_protocol_context_urgent_set(context, v)            ((context)->packet->pointer = htons(v))
 #define transmission_control_protocol_context_option_get(context)               ((context)->option)
 #define transmission_control_protocol_context_option_set(context, v)            ((context)->option = v)
 #define transmission_control_protocol_context_data_get(context)                 ((context)->data)

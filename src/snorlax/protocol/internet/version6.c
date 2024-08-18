@@ -15,7 +15,7 @@ extern int32_t internet_protocol_version6_extension_check(uint32_t no) {
     }
 }
 
-extern const char * internet_protocol_version6_addr_to_str(char * destination, uint8_t * addr) {
+extern const char * internet_protocol_version6_address_to_string(char * destination, const uint8_t * addr) {
 #ifndef   RELEASE
     snorlaxdbg(destination == nil, false, "critical", "");
     snorlaxdbg(addr == nil, false, "critical", "");

@@ -82,7 +82,7 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
 
     transmission_control_protocol_module_debug(module, stdout, *context);
 
-    return success;
+    return transmission_control_protocol_context_valid(*context) ? success : fail;
 }
 
 static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen) {
@@ -92,10 +92,10 @@ static int32_t transmission_control_protocol_module_func_serialize(transmission_
 
 static void transmission_control_protocol_module_func_debug(transmission_control_protocol_module_t * module, FILE * stream, transmission_control_protocol_context_t * context) {
     fprintf(stream, "| transmission control protocol ");
-    fprintf(stream, "| %d ", transmission_control_protocol_context_source_get(context));
-    fprintf(stream, "| %d ", transmission_control_protocol_context_destination_get(context));
-    fprintf(stream, "| %d ", transmission_control_protocol_context_sequence_get(context));
-    fprintf(stream, "| %d ", transmission_control_protocol_context_acknowledgment_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_source_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_destination_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_sequence_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_acknowledgment_get(context));
     fprintf(stream, "| %d ", transmission_control_protocol_context_offset_get(context));
     fprintf(stream, "| cwr %c ", transmission_control_protocol_context_cwr_get(context) ? 'o' : 'x');
     fprintf(stream, "| ece %c ", transmission_control_protocol_context_ece_get(context) ? 'o' : 'x');
@@ -105,9 +105,9 @@ static void transmission_control_protocol_module_func_debug(transmission_control
     fprintf(stream, "| rst %c ", transmission_control_protocol_context_rst_get(context) ? 'o' : 'x');
     fprintf(stream, "| syn %c ", transmission_control_protocol_context_syn_get(context) ? 'o' : 'x');
     fprintf(stream, "| fin %c ", transmission_control_protocol_context_fin_get(context) ? 'o' : 'x');
-    fprintf(stream, "| %d ", transmission_control_protocol_context_window_get(context));
-    fprintf(stream, "| %d ", transmission_control_protocol_context_checksum_get(context));
-    fprintf(stream, "| %d ", transmission_control_protocol_context_urgent_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_window_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_checksum_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_urgent_get(context));
     fprintf(stream, "|\n");
 }
 
@@ -161,7 +161,32 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
 
         context->block = (transmission_control_block_t *) hashtable_get(module->block, address_of(context->key));
 
-        
+        // DIRECTION EXTERNAL > INTERNAL: VPN 에 잡히지 않는다. 어떻게 재현할 것인가?
+
+        // DIRECTION INTERNAL > EXTERNAL
+
+        if(transmission_control_protocol_context_is_connect_syn(context)) {
+            if(context->block == nil) {
+                hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key))));
+                transmission_control_block_state_set(context->block, transmission_control_state_syn_sent);
+                transmission_control_block_sequence_set(context->block, transmission_control_protocol_context_sequence_get(context));
+                transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
+
+                if(transmission_control_block_acknowledgment_get(context->block) != 0) {
+                    snorlaxdbg(false, true, "check", "");
+                }
+            } else {
+                snorlaxdbg(false, true, "implement", "");
+            }
+        } else if(transmssion_control_protocol_context_is_accept_syn(context)) {
+            snorlaxdbg(true, false, "implement", "");
+        } else {
+            snorlaxdbg(true, false, "implement", "");
+        }
+
+        // | Protocol                      | Source | Destination | Sequence    | Acknowledge |
+        // | ----------------------------- | ------ | ----------- | ----------- | ----------- | -- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | - |
+        // | transmission control protocol | 52168  | 2078        | -1934756659 | 0           | 10 | cwr x | ece x | urg x | ack x | psh x | rst x | syn o | fin x | 64240 | 48467 | 0 |
     }
 
     return success;

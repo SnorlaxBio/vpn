@@ -101,8 +101,8 @@ extern void internet_protocol_version6_module_func_debug(internet_protocol_versi
     fprintf(stream, "| %d ", internet_protocol_version6_context_payload_length_get(context));
     fprintf(stream, "| %d ", internet_protocol_version6_context_next_header_get(context));
     fprintf(stream, "| %d ", internet_protocol_version6_context_hop_limit_get(context));
-    fprintf(stream, "| %s ", internet_protocol_version6_addr_to_str(address, internet_protocol_version6_context_source_get(context)));
-    fprintf(stream, "| %s ", internet_protocol_version6_addr_to_str(address, internet_protocol_version6_context_destination_get(context)));
+    fprintf(stream, "| %s ", internet_protocol_version6_address_to_string(address, internet_protocol_version6_context_source_get(context)));
+    fprintf(stream, "| %s ", internet_protocol_version6_address_to_string(address, internet_protocol_version6_context_destination_get(context)));
     fprintf(stream, "|\n");
 }
 
@@ -179,5 +179,14 @@ static int32_t internet_protocol_version6_module_func_control_message_context_in
 }
 
 extern int32_t internet_protocol_version6_module_func_local_is(internet_protocol_version6_module_t * module, uint8_t * addr) {
-    snorlaxdbg(true, false, "implement", "");
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(addr == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(module->addr) {
+        return memcmp(module->addr, addr, 16) == 0;
+    }
+
+    return false;
 }

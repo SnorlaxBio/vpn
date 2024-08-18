@@ -46,3 +46,13 @@ extern uint32_t internet_protocol_version4_direction_cal(uint32_t source, uint32
 
     return internet_protocol_direction_none;
 }
+
+extern const char * internet_protocol_version4_address_to_string(char * s, uint32_t addr) {
+#ifndef   RELEASE
+    snorlaxdbg(s == nil, false, "critical", "");
+#endif // RELEASE
+
+    snprintf(s, 64, "%s", inet_ntoa((struct in_addr) { .s_addr = addr }));
+
+    return s;
+}
