@@ -14,6 +14,7 @@
 #include "app/tun.h"
 #include "app/netlink.h"
 #include "protocol/transmission/control.h"
+#include "../agent.h"
 
 static vpn_single_app_t * app = nil;
 
@@ -23,11 +24,13 @@ extern vpn_single_app_t * vpn_single_app_get(void) {
 
 int main(int argc, char ** argv) {
     app = vpn_single_app_gen();
+    vpn_agent_set((vpn_agent_t *) app);
     vpn_client_app_on(app);
 
     int32_t ret = vpn_client_app_run(app);
 
     app = vpn_client_app_rem(app);
+    vpn_agent_set(nil);
 
     return ret;
 }

@@ -26,6 +26,9 @@ struct vpn_single_app {
     sync_t * sync;
     event_engine_t * engine;
 
+    descriptor_event_subscription_t * tun;
+    socket_event_subscription_t * netlink;
+
     struct {
         internet_protocol_module_t * internet;
 
@@ -42,9 +45,6 @@ struct vpn_single_app {
     struct {
         protocol_module_map_t * transport;
     } protocolmap;
-
-    descriptor_event_subscription_t * tun;
-    socket_event_subscription_t * netlink;
 
     char ifname[16];
     struct {

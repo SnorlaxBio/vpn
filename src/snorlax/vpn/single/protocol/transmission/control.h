@@ -12,6 +12,7 @@
 
 #include <snorlax/protocol/internet/transmission/control.h>
 #include <snorlax/socket/client/event/subscription.h>
+#include <snorlax/vpn/client.h>
 
 struct transmission_control_block_agent_single;
 struct transmission_control_block_agent_single_func;
@@ -25,7 +26,7 @@ struct transmission_control_block_agent_single {
 
     ___reference transmission_control_block_t * block;
 
-    socket_client_t * client;
+    vpn_client_t * client;
     socket_client_event_subscription_t * subscription;
 };
 

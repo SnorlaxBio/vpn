@@ -21,25 +21,25 @@ extern socket_client_event_subscription_handler_t * transmission_control_protoco
 }
 
 static void onSubscription(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-
+    snorlaxdbg(false, true, "debug", "");
 }
 
 static void onOpen(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-
+    snorlaxdbg(false, true, "debug", "");
 }
 
 static void onRead(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-
+    snorlaxdbg(false, true, "debug", "");
 }
 
 static void onWrite(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-
+    snorlaxdbg(false, true, "debug", "");
 }
 
 static void onClose(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-
+    snorlaxdbg(false, true, "debug", "");
 }
 
 static void onException(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
-    
+    snorlaxdbg(false, true, "debug", "");
 }

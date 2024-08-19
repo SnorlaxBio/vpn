@@ -2,6 +2,9 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 
 #include <snorlax/network/tun.h>
 #include <snorlax/descriptor/event/subscription.h>
@@ -9,6 +12,7 @@
 
 #include "client.h"
 #include "client/app.h"
+#include "agent.h"
 
 typedef vpn_client_t * (*vpn_client_rem_t)(vpn_client_t *);
 
@@ -31,6 +35,26 @@ static vpn_client_func_t func = {
     (vpn_client_check_t) socket_func_check,
     (vpn_client_shutdown_t) socket_func_shutdown
 };
+
+extern vpn_client_t * vpn_client_tcp4_gen(uint32_t destination, uint16_t port) {
+    struct sockaddr_in addr;
+
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = destination;
+    addr.sin_port = htons(port);
+
+    return vpn_client_gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, address_of(addr), sizeof(struct sockaddr_in));
+}
+
+extern vpn_client_t * vpn_client_tcp6_gen(const uint8_t * destination, uint16_t port) {
+    struct sockaddr_in6 addr;
+
+    addr.sin6_family = AF_INET6;
+    memcpy(addr.sin6_addr.s6_addr, destination, 16);
+    addr.sin6_port = htons(port);
+    
+    return vpn_client_gen(AF_INET6, SOCK_STREAM, IPPROTO_TCP, address_of(addr), sizeof(struct sockaddr_in6));
+}
 
 extern vpn_client_t * vpn_client_gen(int32_t domain, int32_t type, int32_t protocol, void * addr, uint64_t addrlen) {
     vpn_client_t * descriptor = (vpn_client_t *) calloc(1, sizeof(vpn_client_t));
@@ -74,7 +98,7 @@ extern int32_t vpn_client_func_open(___notnull vpn_client_t * descriptor) {
             return fail;
         }
 
-        vpn_client_app_t * app = vpn_client_app_get();
+        vpn_agent_t * app = vpn_agent_get();
 
         network_tun_protect((network_tun_t *) app->tun->descriptor, (descriptor_t *) descriptor);
 

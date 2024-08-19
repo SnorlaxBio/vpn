@@ -46,6 +46,8 @@ struct vpn_client_func {
 };
 
 extern vpn_client_t * vpn_client_gen(int32_t domain, int32_t type, int32_t protocol, void * addr, uint64_t addrlen);
+extern vpn_client_t * vpn_client_tcp4_gen(uint32_t destination, uint16_t port);
+extern vpn_client_t * vpn_client_tcp6_gen(const uint8_t * destination, uint16_t port);
 
 #define vpn_client_rem(descriptor)               ((descriptor)->func->rem(descriptor))
 #define vpn_client_open(descriptor)              ((descriptor)->func->open(descriptor))

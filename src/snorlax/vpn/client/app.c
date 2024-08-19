@@ -19,16 +19,19 @@
 #include "app/netlink.h"
 #include "event/subscription/handler.h"
 #include "../client.h"
+#include "../agent.h"
 
 static vpn_client_app_t * app = nil;
 
 int main(int argc, char ** argv) {
     app = vpn_client_app_gen();
+    vpn_agent_set((vpn_agent_t *) app);
     vpn_client_app_on(app);
 
     int32_t ret = vpn_client_app_run(app);
 
     app = vpn_client_app_rem(app);
+    vpn_agent_set(nil);
 
     return ret;
 }
