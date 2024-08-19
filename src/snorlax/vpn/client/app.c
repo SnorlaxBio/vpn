@@ -100,8 +100,8 @@ extern vpn_client_app_t * vpn_client_app_gen(void) {
 
     application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_map_get);
 
-    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on);
-    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on);
+    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on, nil);
+    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on, nil);
 
     application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport, internet_protocol_module_func_on, version4, version6);
 
@@ -148,8 +148,8 @@ static int32_t vpn_client_app_func_on(vpn_client_app_t * application) {
 
         const vpn_client_app_config_t * config = vpn_client_app_config_get();
 
-        application->netlink = event_engine_socket_sub(application->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), vpn_client_app_netlink_event_subscription_handler_get());
-        application->tun = event_engine_descriptor_sub(application->engine, (descriptor_t *) network_tun_gen(), vpn_client_app_tun_event_subscription_handler_get());
+        application->netlink = event_engine_socket_sub(application->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), vpn_client_app_netlink_event_subscription_handler_get(), nil);
+        application->tun = event_engine_descriptor_sub(application->engine, (descriptor_t *) network_tun_gen(), vpn_client_app_tun_event_subscription_handler_get(), nil);
         // application->pool = socket_client_event_subscription_pool_gen(vpn_client_subscription_handler_get());
         // for(int32_t i = 0; i < config->client_pool_size; i++) {
         //     // socket_client_event_subscription_t * subscription = event_engine_socket_client_sub()
@@ -215,5 +215,5 @@ extern void vpn_client_app_network_on(struct nlmsghdr * request, uint32_t state,
 
     // network_tun_protect((network_tun_t *) app->tun->descriptor, (descriptor_t *) descriptor);
 
-    event_engine_socket_client_sub(app->engine, (socket_client_t *) vpn_client_gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, &addr, sizeof(struct sockaddr_in)), vpn_client_event_subscription_handler_get(), app->pool);
+    event_engine_socket_client_sub(app->engine, (socket_client_t *) vpn_client_gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, &addr, sizeof(struct sockaddr_in)), vpn_client_event_subscription_handler_get(), app->pool, nil);
 }

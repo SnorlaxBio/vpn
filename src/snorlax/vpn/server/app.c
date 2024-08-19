@@ -71,7 +71,7 @@ static int32_t vpn_server_app_func_on(vpn_server_app_t * application) {
         addr.sin_addr.s_addr = 0;
         uint64_t addrlen = sizeof(struct sockaddr_in);
 
-        application->server = event_engine_socket_server_sub(application->engine, socket_server_gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, &addr, addrlen), vpn_session_event_subscription_handler_get(), vpn_server_event_subscription_handler_get());
+        application->server = event_engine_socket_server_sub(application->engine, socket_server_gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, &addr, addrlen), vpn_session_event_subscription_handler_get(), vpn_server_event_subscription_handler_get(), nil);
     }
 
     return success;

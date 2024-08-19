@@ -29,11 +29,22 @@ extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmiss
             snorlaxdbg(agent == nil, false, "critical", "");
 
             vpn_single_app_t * app = vpn_single_app_get();
+            event_engine_t * engine = app->engine;
+
+            uint8_t * addr = internet_protocol_context_destination_get(context->parent);
+            uint16_t port = transmission_control_protocol_context_destination_get(context);
+            agent->client = (version == 4 ? socket_client_tcp4_gen(ntohs(*((uint32_t *) addr)), port) : socket_client_tcp6_gen(addr, port));
+            agent->subscription = event_engine_socket_client_sub(engine, agent->client, transmission_control_protocol_client_handler_get(), nil, nil);
+
+            // agent->client = version == 4 ? socket_
+
+            // agent->client = 
+
+            // socket_client_t * client = socket_client_tcp4_gen(domain, socktype, protocol, address_of())
 
             snorlaxdbg(app == nil, false, "critical", "");
 
 //            agent->client = socket_client_tcp_version6_gen();
-
             // agent->client = socket_client_gen(A)
         }
     } else {

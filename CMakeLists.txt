@@ -111,7 +111,8 @@ set(SNORLAX_VPN_SINGLE_SOURCE   src/snorlax/vpn/single/app.c
                                 src/snorlax/vpn/single/app/tun.c
                                 src/snorlax/vpn/single/app/netlink.c
                                 src/snorlax/vpn/single/protocol/transmission/control.c
-                                src/snorlax/vpn/single/protocol/transmission/control/block/agent.c)
+                                src/snorlax/vpn/single/protocol/transmission/control/block/agent.c
+                                src/snorlax/vpn/single/protocol/transmission/control/handler.c)
 set(SNORLAX_VPN_SINGLE_HEADER   src/snorlax/vpn/single/app.h
                                 src/snorlax/vpn/single/app/config.h
                                 src/snorlax/vpn/single/app/tun.h

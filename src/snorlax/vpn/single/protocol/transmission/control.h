@@ -11,6 +11,7 @@
 #define   __SNORLAX__VPN_SINGLE_PROTOCOL_TRANSMISSION_CONTROL__H__
 
 #include <snorlax/protocol/internet/transmission/control.h>
+#include <snorlax/socket/client/event/subscription.h>
 
 struct transmission_control_block_agent_single;
 struct transmission_control_block_agent_single_func;
@@ -23,6 +24,9 @@ struct transmission_control_block_agent_single {
     sync_t * sync;
 
     ___reference transmission_control_block_t * block;
+
+    socket_client_t * client;
+    socket_client_event_subscription_t * subscription;
 };
 
 struct transmission_control_block_agent_single_func {
@@ -44,5 +48,7 @@ extern transmission_control_block_agent_single_t * transmission_control_block_ag
 #define transmission_control_block_agent_single_close(agent)            ((agent)->func->close(agent))
 
 extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
+extern socket_client_event_subscription_handler_t * transmission_control_protocol_client_handler_get(void);
 
 #endif // __SNORLAX__VPN_SINGLE_PROTOCOL_TRANSMISSION_CONTROL__H__

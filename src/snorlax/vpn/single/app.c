@@ -142,8 +142,8 @@ static int32_t vpn_single_app_func_on(vpn_single_app_t * application) {
 
         const vpn_single_app_config_t * config = vpn_single_app_config_get();
 
-        application->netlink = event_engine_socket_sub(application->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), vpn_single_app_netlink_event_subscription_handler_get());
-        application->tun = event_engine_descriptor_sub(application->engine, (descriptor_t *) network_tun_gen(), vpn_single_app_tun_event_subscription_handler_get());
+        application->netlink = event_engine_socket_sub(application->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), vpn_single_app_netlink_event_subscription_handler_get(), nil);
+        application->tun = event_engine_descriptor_sub(application->engine, (descriptor_t *) network_tun_gen(), vpn_single_app_tun_event_subscription_handler_get(), nil);
         // application->pool = socket_client_event_subscription_pool_gen(vpn_client_subscription_handler_get());
         // for(int32_t i = 0; i < config->client_pool_size; i++) {
         //     // socket_client_event_subscription_t * subscription = event_engine_socket_client_sub()
