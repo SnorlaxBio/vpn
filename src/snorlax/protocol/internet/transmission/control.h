@@ -138,7 +138,7 @@ struct transmission_control_block_agent_func {
 };
 
 #define transmission_control_block_agent_rem(agent)             ((agent)->func->rem(agent))
-#define transmission_control_blcok_agent_open(agent)            ((agent)->func->open(agent))
+#define transmission_control_block_agent_open(agent)            ((agent)->func->open(agent))
 #define transmission_control_block_agent_send(agent)            ((agent)->func->send(agent))
 #define transmission_control_block_agent_recv(agent)            ((agent)->func->recv(agent))
 #define transmission_control_block_agent_close(agent)           ((agent)->func->close(agent))
@@ -154,6 +154,8 @@ struct transmission_control_block {
     hashtable_node_t * next;
     hashtable_node_key_t key;
 
+    protocol_module_path_t modulepath;
+
     uint32_t state;
     uint32_t sequence;
     uint32_t acknowledgment;
@@ -161,6 +163,11 @@ struct transmission_control_block {
 
     transmission_control_block_agent_t * agent;
 };
+
+// struct transmission_control_module_node {
+//     interent_protocol_module_node_t * parent;
+//     transmission_control_protocol_module_t * module;
+// };
 
 struct transmission_control_block_func {
     transmission_control_block_t * (*rem)(transmission_control_block_t *);
@@ -261,6 +268,8 @@ struct transmission_control_protocol_context {
     int32_t error;
     transmission_control_protocol_packet_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
+
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
 
@@ -282,6 +291,7 @@ struct transmission_control_protocol_context_func {
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen_reversal(transmission_control_protocol_context_t * original, protocol_packet_t * packet, uint64_t bufferlen);
 
 extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context);
 extern uint32_t transmission_control_protocol_direction_cal(transmission_control_protocol_context_t * context);

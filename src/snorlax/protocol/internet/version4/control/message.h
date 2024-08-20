@@ -210,6 +210,7 @@ struct internet_control_message_protocol_version4_context {
     int32_t error;
     internet_control_message_protocol_version4_packet_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_func {
@@ -238,6 +239,7 @@ struct internet_control_message_protocol_version4_context_destination_unreachabl
     int32_t error;
     internet_control_message_protocol_version4_destination_unreachable_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_destination_unreachable_func {
@@ -264,6 +266,7 @@ struct internet_control_message_protocol_version4_context_time_exceeded {
     int32_t error;
     internet_control_message_protocol_version4_time_exceeded_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_time_exceeded_func {
@@ -290,6 +293,7 @@ struct internet_control_message_protocol_version4_context_parameter_problem {
     int32_t error;
     internet_control_message_protocol_version4_parameter_problem_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_parameter_problem_func {
@@ -316,6 +320,7 @@ struct internet_control_message_protocol_version4_context_source_quench {
     int32_t error;
     internet_control_message_protocol_version4_source_quench_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_source_quench_func {
@@ -342,6 +347,7 @@ struct internet_control_message_protocol_version4_context_redirect {
     int32_t error;
     internet_control_message_protocol_version4_redirect_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_redirect_func {
@@ -368,6 +374,7 @@ struct internet_control_message_protocol_version4_context_echo {
     int32_t error;
     internet_control_message_protocol_version4_echo_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_echo_func {
@@ -394,6 +401,7 @@ struct internet_control_message_protocol_version4_context_timestamp {
     int32_t error;
     internet_control_message_protocol_version4_timestamp_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_timestamp_func {
@@ -420,6 +428,7 @@ struct internet_control_message_protocol_version4_context_information {
     int32_t error;
     internet_control_message_protocol_version4_information_t * message;
     uint64_t messagelen;
+    uint64_t bufferlen;
 };
 
 struct internet_control_message_protocol_version4_context_information_func {

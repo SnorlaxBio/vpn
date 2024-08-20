@@ -78,6 +78,7 @@ struct user_datagram_protocol_context {
     int32_t error;
     user_datagram_protocol_packet_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
 
     uint16_t source;
     uint16_t destination;

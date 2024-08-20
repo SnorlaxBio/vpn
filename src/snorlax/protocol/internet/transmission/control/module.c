@@ -168,9 +168,16 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
         if(transmission_control_protocol_context_is_connect_syn(context)) {
             if(context->block == nil) {
                 hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key))));
+
                 transmission_control_block_state_set(context->block, transmission_control_state_syn_sent);
                 transmission_control_block_sequence_set(context->block, transmission_control_protocol_context_sequence_get(context));
                 transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
+
+                // context->block->modulepath = nil;
+
+                /**
+                 * SET PATH
+                 */
 
                 if(transmission_control_block_acknowledgment_get(context->block) != 0) {
                     snorlaxdbg(false, true, "check", "");
@@ -178,6 +185,7 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
             } else {
                 snorlaxdbg(false, true, "implement", "");
             }
+
         } else if(transmssion_control_protocol_context_is_accept_syn(context)) {
             snorlaxdbg(true, false, "implement", "");
         } else {

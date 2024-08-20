@@ -67,6 +67,8 @@ typedef int32_t (*internet_protocol_context_handler_t)(internet_protocol_module_
 extern uint32_t internet_protocol_checksum_sum(protocol_packet_t * packet, uint64_t packetlen);
 extern const char * internet_protocol_address_to_string(uint8_t version, char * s, const uint8_t * addr);
 
+extern internet_protocol_packet_t * internet_protocol_packet_build(internet_protocol_packet_t * datagram, uint64_t n, uint8_t version, const internet_protocol_address_t * source, const internet_protocol_address_t * destination);
+
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
     sync_t * sync;
@@ -109,6 +111,7 @@ struct internet_protocol_context {
     int32_t error;
     internet_protocol_packet_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
     uint32_t direction;
@@ -122,6 +125,8 @@ struct internet_protocol_context_func {
 extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
 extern uint8_t * internet_protocol_context_source_get(internet_protocol_context_t * context);
 extern uint8_t * internet_protocol_context_destination_get(internet_protocol_context_t * context);
+
+// extern internet_protocol_context_t * internet_protocol_context_build(internet_protocol_module_t * module)
 
 #define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
 #define internet_protocol_context_valid(context)                ((context)->func->valid(context))

@@ -345,6 +345,7 @@ struct internet_protocol_version6_context {
     int32_t error;
     internet_protocol_version6_packet_t * datagram;
     uint64_t datagramlen;
+    uint64_t bufferlen;
     internet_protocol_version6_pseudo_t * pseudo;
     uint64_t pseudolen;
     uint32_t direction;
@@ -433,6 +434,7 @@ struct internet_protocol_version6_extension_context {
     int32_t error;
     internet_protocol_version6_extension_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
 };
 
 struct internet_protocol_version6_extension_context_func {
@@ -488,6 +490,7 @@ struct internet_protocol_version6_extension_hopbyhop_context {
     int32_t error;
     internet_protocol_version6_extension_hopbyhop_t * extension;
     uint64_t extensionlen;
+    uint64_t bufferlen;
 
     internet_protocol_version6_option_t ** option;
     uint64_t optionlen;
@@ -550,6 +553,7 @@ struct internet_protocol_version6_extension_routing_context {
     int32_t error;
     internet_protocol_version6_extension_routing_t * extension;
     uint64_t extensionlen;
+    uint64_t bufferlen;
 };
 
 struct internet_protocol_version6_extension_routing_context_func {
@@ -606,6 +610,7 @@ struct internet_protocol_version6_extension_fragment_context {
     int32_t error;
     internet_protocol_version6_extension_fragment_t * extension;
     uint64_t extensionlen;
+    uint64_t bufferlen;
 };
 
 struct internet_protocol_version6_extension_fragment_context_func {
@@ -662,6 +667,7 @@ struct internet_protocol_version6_extension_destination_context {
     int32_t error;
     internet_protocol_version6_extension_destination_t * extension;
     uint64_t extensionlen;
+    uint64_t bufferlen;
 };
 
 struct internet_protocol_version6_extension_destination_context_func {

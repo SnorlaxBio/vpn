@@ -99,6 +99,8 @@ struct internet_protocol_version4_packet {
     uint32_t destination;
 };
 
+extern internet_protocol_version4_packet_t * internet_protocol_version4_packet_build(internet_protocol_packet_t * buffer, uint64_t n, const internet_protocol_address_t * source, const internet_protocol_address_t * destination);
+
 #define internet_protocol_version4_address_uint32_to_str(addr)          (inet_ntoa((struct in_addr) { .s_addr = addr }))
 
 struct internet_protocol_version4_pseudo {
@@ -171,6 +173,7 @@ struct internet_protocol_version4_context {
     int32_t error;
     internet_protocol_version4_packet_t * datagram;
     uint64_t datagramlen;
+    uint64_t bufferlen;
     internet_protocol_version4_pseudo_t * pseudo;
     uint64_t pseudolen;
     uint32_t direction;

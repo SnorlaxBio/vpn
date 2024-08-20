@@ -25,6 +25,25 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
     return context;
 }
 
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen_reversal(transmission_control_protocol_context_t * original, protocol_packet_t * packet, uint64_t bufferlen) {
+    transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
+
+    context->func = address_of(func);
+    context->module = context->module;
+    context->children = protocol_context_array_gen();
+    
+    // context->packet = packet;
+    snorlaxdbg(false, true, "implement", "context->packet = packet");
+    context->packetlen = 0;
+    context->bufferlen = bufferlen;
+
+    if(original->parent) {
+        context->parent = original->parent;
+    }
+
+    return context;
+}
+
 static transmission_control_protocol_context_t * transmission_control_protocol_context_func_rem(transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");

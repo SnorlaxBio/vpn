@@ -18,8 +18,12 @@
 
 #define protocol_event_complete_in          4
 
+#define protocol_packet_max                 65536
+
 struct protocol_module;
 struct protocol_module_func;
+struct protocol_module_path;
+struct protocol_module_path_func;
 struct protocol_context;
 struct protocol_context_func;
 struct protocol_module_map;
@@ -30,14 +34,16 @@ struct protocol_context_array_func;
 typedef uint8_t protocol_packet_t;
 typedef uint8_t protocol_address_t;            // REFACTOR
 
-typedef struct protocol_module protocol_module_t;
-typedef struct protocol_module_func protocol_module_func_t;
-typedef struct protocol_context protocol_context_t;
-typedef struct protocol_context_func protocol_context_func_t;
-typedef struct protocol_module_map protocol_module_map_t;
-typedef struct protocol_module_map_func protocol_module_map_func_t;
-typedef struct protocol_context_array protocol_context_array_t;
-typedef struct protocol_context_array_func protocol_context_array_func_t;
+typedef struct protocol_module              protocol_module_t;
+typedef struct protocol_module_func         protocol_module_func_t;
+typedef struct protocol_module_path         protocol_module_path_t;
+typedef struct protocol_module_path_func    protocol_module_path_func_t;
+typedef struct protocol_context             protocol_context_t;
+typedef struct protocol_context_func        protocol_context_func_t;
+typedef struct protocol_module_map          protocol_module_map_t;
+typedef struct protocol_module_map_func     protocol_module_map_func_t;
+typedef struct protocol_context_array       protocol_context_array_t;
+typedef struct protocol_context_array_func  protocol_context_array_func_t;
 
 typedef protocol_module_t * (*protocol_module_map_get_t)(protocol_module_map_t *, uint64_t);
 
@@ -79,6 +85,7 @@ struct protocol_context {
     int32_t error;
     protocol_packet_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
 };
 
 struct protocol_context_func {
@@ -128,5 +135,21 @@ extern protocol_context_array_t * protocol_context_array_gen(void);
 #define protocol_context_array_rem(collection)                      ((collection)->func->rem(collection))
 #define protocol_context_array_get(collection, index)               ((collection)->func->get(collection, index))
 #define protocol_context_array_pop(collection)                      ((collection)->func->pop(collection))
+
+struct protocol_module_path {
+    protocol_module_path_func_t * func;
+    sync_t * sync;
+    uint64_t size;
+    protocol_module_t ** container;
+};
+
+struct protocol_module_path_func {
+    protocol_module_path_t * (*rem)(protocol_module_path_t *);
+};
+
+extern protocol_module_path_t * protocol_module_path_gen(protocol_context_t * context, uint64_t hint);
+extern protocol_module_path_t * protocol_module_path_func_rem(protocol_module_path_t * path);
+
+#define protocol_module_path_rem(path)                              ((path)->func->rem(path))
 
 #endif // __SNORLAX__PROTOCOL__H__

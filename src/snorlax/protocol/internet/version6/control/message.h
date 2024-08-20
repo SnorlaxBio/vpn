@@ -352,6 +352,7 @@ struct internet_control_message_protocol_version6_context {
     int32_t error;
     internet_control_message_protocol_version6_packet_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -383,6 +384,7 @@ struct internet_control_message_protocol_version6_context_destination_unreachabl
     int32_t error;
     internet_control_message_protocol_version6_destination_unreachable_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -402,6 +404,7 @@ struct internet_control_message_protocol_version6_context_packet_too_big {
     int32_t error;
     internet_control_message_protocol_version6_packet_too_big_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -424,6 +427,7 @@ struct internet_control_message_protocol_version6_context_time_exceeded {
     int32_t error;
     internet_control_message_protocol_version6_time_exceeded_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -443,6 +447,7 @@ struct internet_control_message_protocol_version6_context_parameter_problem {
     int32_t error;
     internet_control_message_protocol_version6_parameter_problem_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -465,6 +470,7 @@ struct internet_control_message_protocol_version6_context_echo {
     int32_t error;
     internet_control_message_protocol_version6_echo_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -489,6 +495,7 @@ struct internet_control_message_protocol_version6_context_router_solicitation {
     int32_t error;
     internet_control_message_protocol_version6_router_solicitation_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -512,6 +519,7 @@ struct internet_control_message_protocol_version6_context_router_advertisement {
     int32_t error;
     internet_control_message_protocol_version6_router_advertisement_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -538,6 +546,7 @@ struct internet_control_message_protocol_version6_context_neighbor_solicitation 
     int32_t error;
     internet_control_message_protocol_version6_neighbor_solicitation_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -557,6 +566,7 @@ struct internet_control_message_protocol_version6_context_neighbor_advertisement
     int32_t error;
     internet_control_message_protocol_version6_neighbor_advertisement_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
@@ -576,6 +586,7 @@ struct internet_control_message_protocol_version6_context_redirect {
     int32_t error;
     internet_control_message_protocol_version6_redirect_t * packet;
     uint64_t packetlen;
+    uint64_t bufferlen;
     uint16_t checksum;
 };
 
