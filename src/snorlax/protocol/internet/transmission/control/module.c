@@ -175,6 +175,7 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
                 transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
 
                 context->block->modulepath = protocol_module_path_gen((protocol_context_t *) context, 4);
+                context->block->source = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_source, 32);
                 // context->block->source = protocol_address_path_get(context, 4);
                 // context->block->destination = protocol_address_path_get(context, 4);
 

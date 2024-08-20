@@ -23,10 +23,20 @@ extern protocol_address_path_t * protocol_address_path_gen(protocol_context_t * 
     protocol_address_node_set(path->container, protocol_context_addrptr(original, type), protocol_module_addrlen_get(original->module));
 
     protocol_context_t * context = original->parent;
+    uint64_t total = path->container->len + sizeof(uint16_t);
+
     protocol_address_node_t * next = protocol_address_node_next(path->container);
 
     while(context) {
-        protocol_address_node_set(next, protocol_context_addrptr(context, type), protocol_module_addrlen_get(context->module));
+        uint16_t len = protocol_module_addrlen_get(context->module);
+        if(path->size < total + len + sizeof(uint16_t)) {
+            path->size = total + len + sizeof(uint16_t);
+            path->container = (protocol_address_node_t *) memory_gen(path->container, path->size);
+            next = (protocol_address_node_t *) (&(((uint8_t *) path->container)[total]));
+        }
+        protocol_address_node_set(next, protocol_context_addrptr(context, type), len);
+        total = total + next->len + sizeof(uint16_t);
+        next = protocol_address_node_next(path->container);
         context = context->parent;
     }
 
