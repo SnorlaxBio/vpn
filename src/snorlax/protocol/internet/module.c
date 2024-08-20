@@ -25,6 +25,7 @@ extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module
     module->func = address_of(func);
     module->map = map;
     module->on = on;
+    module->addrlen = 0;
 
     module->version4 = version4;
     module->version6 = version6;

@@ -154,7 +154,9 @@ struct transmission_control_block {
     hashtable_node_t * next;
     hashtable_node_key_t key;
 
-    protocol_module_path_t modulepath;
+    protocol_module_path_t * modulepath;
+    protocol_address_path_t * source;
+    protocol_address_path_t * destination;
 
     uint32_t state;
     uint32_t sequence;
@@ -226,6 +228,7 @@ typedef int32_t (*transmission_control_protocol_context_handler_t)(transmission_
 struct transmission_control_protocol_module {
     transmission_control_protocol_module_func_t * func;
     sync_t * sync;
+    uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
     transmission_control_protocol_context_handler_t on;
@@ -247,6 +250,8 @@ struct transmission_control_protocol_module_func {
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on);
 extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
+#define transmission_control_protocol_module_addrlen_get(module)                                                ((module)->addrlen)
 
 #define transmission_control_protocol_module_rem(module)                                                        ((module)->func->rem(module))
 #define transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context)            ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -288,6 +293,7 @@ struct transmission_control_protocol_context {
 struct transmission_control_protocol_context_func {
     transmission_control_protocol_context_t * (*rem)(transmission_control_protocol_context_t *);
     int32_t (*valid)(transmission_control_protocol_context_t *);
+    uint8_t * (*addrptr)(transmission_control_protocol_context_t *, uint32_t);
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen);
@@ -301,6 +307,7 @@ extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_c
 
 #define transmission_control_protocol_context_rem(context)                      ((context)->func->rem(context))
 #define transmission_control_protocol_context_valid(context)                    ((context)->func->valid(context))
+#define transmission_control_protocol_context_addrptr(context, type)            ((context)->func->addrptr(context, type))
 
 #define transmission_control_protocol_context_error_get(context)                ((context)->error)
 #define transmission_control_protocol_context_error_set(context, v)             ((context)->error = v)

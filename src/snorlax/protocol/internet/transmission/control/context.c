@@ -6,10 +6,12 @@
 
 static transmission_control_protocol_context_t * transmission_control_protocol_context_func_rem(transmission_control_protocol_context_t * context);
 static int32_t transmission_control_protocol_context_func_valid(transmission_control_protocol_context_t * context);
+static uint8_t * transmission_control_protocol_context_func_addrptr(transmission_control_protocol_context_t * context, uint32_t type);
 
 static transmission_control_protocol_context_func_t func = {
     transmission_control_protocol_context_func_rem,
-    transmission_control_protocol_context_func_valid
+    transmission_control_protocol_context_func_valid,
+    transmission_control_protocol_context_func_addrptr
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen) {
@@ -129,4 +131,18 @@ extern int32_t transmission_control_protocol_context_is_connect_syn(transmission
 
 extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context) {
     snorlaxdbg(true, false, "implement", "");
+}
+
+static uint8_t * transmission_control_protocol_context_func_addrptr(transmission_control_protocol_context_t * context, uint32_t type) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(type == protocol_address_type_source) {
+        return (uint8_t *) address_of(context->packet->source);
+    } else if(type == protocol_address_type_destination) {
+        return (uint8_t *) address_of(context->packet->destination);
+    }
+
+    return nil;
 }

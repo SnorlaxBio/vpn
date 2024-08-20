@@ -8,9 +8,12 @@
 static internet_protocol_context_t * internet_protocol_context_func_rem(internet_protocol_context_t * context);
 static int32_t internet_protocol_context_func_valid(internet_protocol_context_t * context);
 
+typedef uint8_t * (*internet_protocol_context_func_addrptr_t)(internet_protocol_context_t *, uint32_t);
+
 static internet_protocol_context_func_t func = {
     internet_protocol_context_func_rem,
-    internet_protocol_context_func_valid
+    internet_protocol_context_func_valid,
+    (internet_protocol_context_func_addrptr_t) protocol_context_func_addrptr
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen) {

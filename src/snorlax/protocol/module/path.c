@@ -27,11 +27,16 @@ extern protocol_module_path_t * protocol_module_path_gen(protocol_context_t * co
         index = index + 1;
         if(path->size <= index) {
             path->size = index + 1;
-            path->container = (protocol_module_path_t *) memory_gen(path->container, (path->size) * sizeof(protocol_module_t *));
+            path->container = (protocol_module_t **) memory_gen(path->container, (path->size) * sizeof(protocol_module_t *));
         }
         path->container[index] = o->module;
 
         o = o->parent;
+    }
+
+    if(path->size != index + 1) {
+        path->size = index + 1;
+        path->container = (protocol_module_t **) memory_gen(path->container, path->size * sizeof(protocol_module_t *));
     }
 
     return path;

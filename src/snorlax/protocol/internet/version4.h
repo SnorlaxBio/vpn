@@ -99,7 +99,7 @@ struct internet_protocol_version4_packet {
     uint32_t destination;
 };
 
-extern internet_protocol_version4_packet_t * internet_protocol_version4_packet_build(internet_protocol_packet_t * buffer, uint64_t n, const internet_protocol_address_t * source, const internet_protocol_address_t * destination);
+// extern internet_protocol_version4_packet_t * internet_protocol_version4_packet_build(internet_protocol_packet_t * buffer, uint64_t n, const internet_protocol_address_t * source, const internet_protocol_address_t * destination);
 
 #define internet_protocol_version4_address_uint32_to_str(addr)          (inet_ntoa((struct in_addr) { .s_addr = addr }))
 
@@ -125,6 +125,7 @@ typedef int32_t (*internet_protocol_version4_context_handler_t)(internet_protoco
 struct internet_protocol_version4_module {
     internet_protocol_version4_module_func_t * func;
     sync_t * sync;
+    uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version4_context_handler_t on;
@@ -149,6 +150,8 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
 extern int32_t internet_protocol_version4_module_func_local_is(internet_protocol_version4_module_t * module, uint32_t addr);
 
 extern int32_t internet_protocol_version4_module_func_on(internet_protocol_version4_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_version4_context_t * context);
+
+#define internet_protocol_version4_module_addrlen_get(module)                                       ((module)->addrlen)
 
 #define internet_protocol_version4_module_rem(module)                                               ((module)->func->rem(module))
 #define internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context)   ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -187,12 +190,14 @@ struct internet_protocol_version4_context {
 struct internet_protocol_version4_context_func {
     internet_protocol_version4_context_t * (*rem)(internet_protocol_version4_context_t *);
     int32_t (*valid)(internet_protocol_version4_context_t *);
+    uint8_t * (*addrptr)(internet_protocol_version4_context_t *, uint32_t);
 };
 
 extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
 
 #define internet_protocol_version4_context_rem(context)                     ((context)->func->rem(context))
 #define internet_protocol_version4_context_valid(context)                   ((context)->func->valid(context))
+#define internet_protocol_version4_context_addrptr(context, type)           ((context)->func->addrptr(context, type))
 
 #define internet_protocol_version4_context_error_set(context, v)            ((context)->error = v)
 #define internet_protocol_version4_context_error_get(context)               ((context)->error)

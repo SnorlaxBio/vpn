@@ -5,9 +5,12 @@
 static internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_func_rem(internet_protocol_version6_extension_routing_context_t * context);
 static int32_t internet_protocol_version6_extension_routing_context_func_valid(internet_protocol_version6_extension_routing_context_t * context);
 
+typedef uint8_t * (*internet_protocol_version6_extension_routing_context_func_addrptr_t)(internet_protocol_version6_extension_routing_context_t *, uint32_t);
+
 static internet_protocol_version6_extension_routing_context_func_t func = {
     internet_protocol_version6_extension_routing_context_func_rem,
-    internet_protocol_version6_extension_routing_context_func_valid
+    internet_protocol_version6_extension_routing_context_func_valid,
+    (internet_protocol_version6_extension_routing_context_func_addrptr_t) protocol_context_func_addrptr
 };
 
 extern internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_gen(internet_protocol_version6_extension_routing_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen) {

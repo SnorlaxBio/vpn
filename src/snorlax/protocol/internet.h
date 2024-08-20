@@ -72,6 +72,7 @@ extern internet_protocol_packet_t * internet_protocol_packet_build(internet_prot
 struct internet_protocol_module {
     internet_protocol_module_func_t * func;
     sync_t * sync;
+    uint16_t addrlen;
     ___reference protocol_module_map_t * map;
     internet_protocol_context_handler_t on;
     
@@ -120,6 +121,7 @@ struct internet_protocol_context {
 struct internet_protocol_context_func {
     internet_protocol_context_t * (*rem)(internet_protocol_context_t *);
     int32_t (*valid)(internet_protocol_context_t *);
+    uint8_t * (*addrptr)(internet_protocol_context_t *, uint32_t);
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
@@ -130,6 +132,7 @@ extern uint8_t * internet_protocol_context_destination_get(internet_protocol_con
 
 #define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
 #define internet_protocol_context_valid(context)                ((context)->func->valid(context))
+#define internet_protocol_context_addrptr(context, type)        ((context)->func->addrptr(context, type))
 
 #define internet_protocol_context_error_get(context)            ((context)->error)
 #define internet_protocol_context_error_set(context, v)         ((context)->error = v)

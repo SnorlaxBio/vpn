@@ -41,6 +41,7 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
     module->map = map;
     module->on = on;
     module->addr = addr;
+    module->addrlen = sizeof(uint32_t);
 
     return module;
 }

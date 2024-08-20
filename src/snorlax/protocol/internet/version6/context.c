@@ -2,10 +2,12 @@
 
 static internet_protocol_version6_context_t * internet_protocol_version6_context_func_rem(internet_protocol_version6_context_t * context);
 static int32_t internet_protocol_version6_context_func_valid(internet_protocol_version6_context_t * context);
+static uint8_t * internet_protocol_version6_context_func_addrptr(internet_protocol_version6_context_t * context, uint32_t tyep);
 
 static internet_protocol_version6_context_func_t func = {
     internet_protocol_version6_context_func_rem,
-    internet_protocol_version6_context_func_valid
+    internet_protocol_version6_context_func_valid,
+    internet_protocol_version6_context_func_addrptr
 };
 
 extern internet_protocol_version6_context_t * internet_protocol_version6_context_gen(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_packet_t * datagram, uint64_t datagramlen) {
@@ -45,4 +47,18 @@ static int32_t internet_protocol_version6_context_func_valid(internet_protocol_v
     snorlaxdbg(false, true, "implement", "");
 
     return true;
+}
+
+static uint8_t * internet_protocol_version6_context_func_addrptr(internet_protocol_version6_context_t * context, uint32_t type) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(type == protocol_address_type_source) {
+        return (uint8_t *) address_of(context->datagram->source);
+    } else if(type == protocol_address_type_destination) {
+        return (uint8_t *) address_of(context->datagram->destination);
+    }
+
+    return nil;
 }

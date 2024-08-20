@@ -44,6 +44,7 @@ typedef int32_t (*user_datagram_protocol_context_handler_t)(user_datagram_protoc
 struct user_datagram_protocol_module {
     user_datagram_protocol_module_func_t * func;
     sync_t * sync;
+    uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
     user_datagram_protocol_context_handler_t on;
@@ -60,6 +61,8 @@ struct user_datagram_protocol_module_func {
 
 extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map, user_datagram_protocol_context_handler_t on);
 extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context);
+
+#define user_datagram_protocol_module_addrlen_get(module)                                               ((module)->addrlen)
 
 #define user_datagram_protocol_module_rem(module)                                                       ((module)->func->rem(module))
 #define user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context)           ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -89,12 +92,14 @@ struct user_datagram_protocol_context {
 struct user_datagram_protocol_context_func {
     user_datagram_protocol_context_t * (*rem)(user_datagram_protocol_context_t *);
     int32_t (*valid)(user_datagram_protocol_context_t *);
+    uint8_t * (*addrptr)(user_datagram_protocol_context_t *, uint32_t);
 };
 
 extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen);
 
 #define user_datagram_protocol_context_rem(context)                 ((context)->func->rem(context))
 #define user_datagram_protocol_context_valid(context)               ((context)->func->valid(context))
+#define user_datagram_protocol_context_addrptr(context, type)       ((context)->func->addrptr(context, type))
 
 #define user_datagram_protocol_context_error_get(context)           ((context)->error)
 #define user_datagram_protocol_context_error_set(context, v)        ((context)->error = v)

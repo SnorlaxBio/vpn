@@ -3,9 +3,12 @@
 static internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_func_rem(internet_control_message_protocol_version6_context_t * context);
 static int32_t internet_control_message_protocol_version6_context_func_valid(internet_control_message_protocol_version6_context_t * context);
 
+typedef uint8_t * (*internet_control_message_protocol_version6_context_func_addrptr_t)(internet_control_message_protocol_version6_context_t *, uint32_t);
+
 static internet_control_message_protocol_version6_context_func_t func = {
     internet_control_message_protocol_version6_context_func_rem,
-    internet_control_message_protocol_version6_context_func_valid
+    internet_control_message_protocol_version6_context_func_valid,
+    (internet_control_message_protocol_version6_context_func_addrptr_t) protocol_context_func_addrptr
 };
 
 extern internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_t * packet, uint64_t packetlen) {

@@ -28,6 +28,7 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
     module->map = map;
     module->on = on;
     module->block = hashtable_gen(transmission_control_block_func_hash);
+    module->addrlen = sizeof(uint16_t);
 
     return module;
 }
@@ -173,11 +174,9 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
                 transmission_control_block_sequence_set(context->block, transmission_control_protocol_context_sequence_get(context));
                 transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
 
-                // context->block->modulepath = nil;
-
-                /**
-                 * SET PATH
-                 */
+                context->block->modulepath = protocol_module_path_gen((protocol_context_t *) context, 4);
+                // context->block->source = protocol_address_path_get(context, 4);
+                // context->block->destination = protocol_address_path_get(context, 4);
 
                 if(transmission_control_block_acknowledgment_get(context->block) != 0) {
                     snorlaxdbg(false, true, "check", "");
