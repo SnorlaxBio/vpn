@@ -40,6 +40,11 @@ extern protocol_address_path_t * protocol_address_path_gen(protocol_context_t * 
         context = context->parent;
     }
 
+    if(path->size != total) {
+        path->size = total;
+        path->container = (protocol_address_node_t *) memory_gen(path->container, path->size);
+    }
+
     return path;
 }
 
