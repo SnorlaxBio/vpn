@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #include "../version4.h"
 
@@ -47,6 +48,8 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
     module->on = on;
     module->addr = addr;
     module->addrlen = sizeof(uint32_t);
+    module->identification = time(nil);
+    module->default_ttl = 64;
 
     return module;
 }
@@ -289,11 +292,28 @@ static internet_protocol_version4_context_t * internet_protocol_version4_module_
     snorlaxdbg(node == nil, false, "critical", "");
     snorlaxdbg(child == nil, false, "critical", "");
 #endif // RELEASE
-    internet_protocol_version4_context_t * context = internet_protocol_version4_context_gen(module, nil, child->packet, child->packetlen, child->bufferlen);
-    
-    // (internet_protocol_version4_context_t *) calloc(1, sizeof(internet_protocol_version4_context_t));
+    internet_protocol_version4_context_t * context = internet_protocol_version4_context_gen(module, nil, (internet_protocol_version4_packet_t *) child->packet, child->packetlen, child->bufferlen);
 
-    context->func = address_of(func);
+    snorlaxdbg(false, true, "debug", "option");
+
+    internet_protocol_version4_context_buffer_reserve(context, internet_protocol_version4_packet_header_length_min);
+
+    internet_protocol_version4_context_version_set(context, 4);
+    internet_protocol_version4_context_length_set(context, internet_protocol_version4_packet_header_length_min / 4);
+    internet_protocol_version4_context_total_set(context, internet_protocol_version4_context_packetlen_get(context));
+    internet_protocol_version4_context_identification_set(context, internet_protocol_version4_module_identification_gen(module));
+    internet_protocol_version4_context_fragment_set(context, internet_protocol_version4_fragment_field_gen(0, 0, 0));
+    internet_protocol_version4_context_ttl_set(context, internet_protocol_version4_module_default_ttl_get(module));
+    internet_protocol_version4_context_protocol_set(context, protocol_module_number_get(child->module));
+    internet_protocol_version4_context_checksum_set(context, internet_protocol_version4_context_checksum_cal(context));
+    internet_protocol_version4_context_source_set(context, internet_protocol_version4_to_addr(protocol_path_node_destination_get(node)));
+    internet_protocol_version4_context_destination_set(context, internet_protocol_version4_to_addr(protocol_path_node_source_get(node)));
+
+    context->pseudo = internet_protocol_version4_pseudo_gen(internet_protocol_version4_context_datagram_get(context));
+    context->pseudolen = sizeof(internet_protocol_version4_pseudo_t);
+
+    protocol_context_checksum_build(child, (uint8_t *) context->pseudo, context->pseudolen);
+    internet_protocol_version4_context_checksum_set(context, internet_protocol_version4_context_checksum_cal(context));
 
     return context;
 }

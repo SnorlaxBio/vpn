@@ -129,23 +129,25 @@ struct internet_protocol_context_func {
     internet_protocol_context_t * (*rem)(internet_protocol_context_t *);
     int32_t (*valid)(internet_protocol_context_t *);
     uint8_t * (*addrptr)(internet_protocol_context_t *, uint32_t);
+    void (*checksum_build)(internet_protocol_context_t *, const uint8_t *, uint64_t);
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
 extern uint8_t * internet_protocol_context_source_get(internet_protocol_context_t * context);
 extern uint8_t * internet_protocol_context_destination_get(internet_protocol_context_t * context);
 
-#define internet_protocol_context_rem(context)                  ((context)->func->rem(context))
-#define internet_protocol_context_valid(context)                ((context)->func->valid(context))
-#define internet_protocol_context_addrptr(context, type)        ((context)->func->addrptr(context, type))
+#define internet_protocol_context_rem(context)                                      ((context)->func->rem(context))
+#define internet_protocol_context_valid(context)                                    ((context)->func->valid(context))
+#define internet_protocol_context_addrptr(context, type)                            ((context)->func->addrptr(context, type))
+#define internet_protocol_context_checksum_build(context, pseudo, pseudolen)        ((context)->func->checksum_build(context, pseudo, pseudolen))
 
-#define internet_protocol_context_error_get(context)            ((context)->error)
-#define internet_protocol_context_error_set(context, v)         ((context)->error = v)
-#define internet_protocol_context_pseudo_get(context)           ((context)->pseudo)
-#define internet_protocol_context_pseudolen_get(context)        ((context)->pseudolen)
-#define internet_protocol_context_pseudo_set(context, v, len)   (((context)->pseudolen = len), ((context)->pseudo = v))
-#define internet_protocol_context_packetlen_get(context)        ((context)->packetlen)
+#define internet_protocol_context_error_get(context)                                ((context)->error)
+#define internet_protocol_context_error_set(context, v)                             ((context)->error = v)
+#define internet_protocol_context_pseudo_get(context)                               ((context)->pseudo)
+#define internet_protocol_context_pseudolen_get(context)                            ((context)->pseudolen)
+#define internet_protocol_context_pseudo_set(context, v, len)                       (((context)->pseudolen = len), ((context)->pseudo = v))
+#define internet_protocol_context_packetlen_get(context)                            ((context)->packetlen)
 
-#define internet_protocol_context_version_get(context)          (internet_protocol_version_get((context)->packet))
+#define internet_protocol_context_version_get(context)                              (internet_protocol_version_get((context)->packet))
 
 #endif // __SNORLAX__PROTOCOL_INTERNET__H__

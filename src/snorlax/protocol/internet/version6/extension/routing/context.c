@@ -6,11 +6,13 @@ static internet_protocol_version6_extension_routing_context_t * internet_protoco
 static int32_t internet_protocol_version6_extension_routing_context_func_valid(internet_protocol_version6_extension_routing_context_t * context);
 
 typedef uint8_t * (*internet_protocol_version6_extension_routing_context_func_addrptr_t)(internet_protocol_version6_extension_routing_context_t *, uint32_t);
+typedef void (*internet_protocol_version6_extension_routing_context_func_checksum_build_t)(internet_protocol_version6_extension_routing_context_t *, const uint8_t *, uint64_t);
 
 static internet_protocol_version6_extension_routing_context_func_t func = {
     internet_protocol_version6_extension_routing_context_func_rem,
     internet_protocol_version6_extension_routing_context_func_valid,
-    (internet_protocol_version6_extension_routing_context_func_addrptr_t) protocol_context_func_addrptr
+    (internet_protocol_version6_extension_routing_context_func_addrptr_t) protocol_context_func_addrptr,
+    (internet_protocol_version6_extension_routing_context_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
 extern internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_gen(internet_protocol_version6_extension_routing_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen) {

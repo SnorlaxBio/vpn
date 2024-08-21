@@ -8,11 +8,13 @@
 static transmission_control_protocol_context_t * transmission_control_protocol_context_func_rem(transmission_control_protocol_context_t * context);
 static int32_t transmission_control_protocol_context_func_valid(transmission_control_protocol_context_t * context);
 static uint8_t * transmission_control_protocol_context_func_addrptr(transmission_control_protocol_context_t * context, uint32_t type);
+typedef void (*transmission_control_protocol_context_func_checksum_build_t)(transmission_control_protocol_context_t *, const uint8_t *, uint64_t);
 
 static transmission_control_protocol_context_func_t func = {
     transmission_control_protocol_context_func_rem,
     transmission_control_protocol_context_func_valid,
-    transmission_control_protocol_context_func_addrptr
+    transmission_control_protocol_context_func_addrptr,
+    (transmission_control_protocol_context_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
 extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen, uint64_t bufferlen) {

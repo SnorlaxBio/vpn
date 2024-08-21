@@ -28,3 +28,7 @@ extern void protocol_context_buffer_reserve_reversal(protocol_context_t * contex
         memset(context->packet, 0, n);
     }
 }
+
+extern void protocol_context_func_checksum_build(protocol_context_t * context, const uint8_t * pseudo, uint64_t pseudolen) {
+    
+}

@@ -92,6 +92,7 @@ extern protocol_context_t * protocol_module_func_reply_gen(protocol_module_t * m
 extern int32_t protocol_module_func_on(protocol_module_t * module, uint32_t type, protocol_context_t * parent, protocol_context_t * context);
 
 #define protocol_module_addrlen_get(module)                                             ((module)->addrlen)
+#define protocol_module_number_get(module)                                              ((module)->type)
 
 #define protocol_module_rem(module)                                                     ((module)->func->rem(module))
 #define protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -120,13 +121,16 @@ struct protocol_context_func {
     protocol_context_t * (*rem)(protocol_context_t *);
     int32_t (*valid)(protocol_context_t *);
     uint8_t * (*addrptr)(protocol_context_t *, uint32_t);
+    void (*checksum_build)(protocol_context_t *, const uint8_t *, uint64_t);
 };
 
 extern uint8_t * protocol_context_func_addrptr(protocol_context_t * context, uint32_t type);
+extern void protocol_context_func_checksum_build(protocol_context_t * context, const uint8_t * pseudo, uint64_t pseudolen);
 
 #define protocol_context_rem(context)                                                   ((context)->func->rem(context))
 #define protocol_context_valid(context)                                                 ((context)->func->valid(context))
 #define protocol_context_addrptr(context, type)                                         ((context)->func->addrptr(context, type))
+#define protocol_context_checksum_build(context, pseudo, pseudolen)                     ((context)->func->checksum_build(context, pseudo, pseudolen))
 
 #define protocol_context_type_get(context)                                              ((context)->module->type)
 
@@ -136,6 +140,8 @@ extern uint8_t * protocol_context_func_addrptr(protocol_context_t * context, uin
 #define protocol_context_source_node_set(context, v)                                    ((context)->source = v)
 #define protocol_context_destination_node_get(context)                                  ((context)->destination)
 #define protocol_context_destination_node_set(context, v)                               ((context)->destination = v)
+
+
 
 struct protocol_module_map {
     protocol_module_map_func_t * func;

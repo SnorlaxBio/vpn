@@ -66,6 +66,7 @@ extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(proto
 extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, user_datagram_protocol_context_t * context);
 
 #define user_datagram_protocol_module_addrlen_get(module)                                               ((module)->addrlen)
+#define user_datagram_protocol_module_number_get(module)                                                ((module)->type)
 
 #define user_datagram_protocol_module_rem(module)                                                       ((module)->func->rem(module))
 #define user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context)           ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -99,25 +100,27 @@ struct user_datagram_protocol_context_func {
     user_datagram_protocol_context_t * (*rem)(user_datagram_protocol_context_t *);
     int32_t (*valid)(user_datagram_protocol_context_t *);
     uint8_t * (*addrptr)(user_datagram_protocol_context_t *, uint32_t);
+    void (*checksum_build)(user_datagram_protocol_context_t *, const uint8_t *, uint64_t);
 };
 
 extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen);
 
-#define user_datagram_protocol_context_buffer_reserve(context, n)   ((context)->func->buffer_reserve(context, n))
+#define user_datagram_protocol_context_buffer_reserve(context, n)                       ((context)->func->buffer_reserve(context, n))
 
-#define user_datagram_protocol_context_rem(context)                 ((context)->func->rem(context))
-#define user_datagram_protocol_context_valid(context)               ((context)->func->valid(context))
-#define user_datagram_protocol_context_addrptr(context, type)       ((context)->func->addrptr(context, type))
+#define user_datagram_protocol_context_rem(context)                                     ((context)->func->rem(context))
+#define user_datagram_protocol_context_valid(context)                                   ((context)->func->valid(context))
+#define user_datagram_protocol_context_addrptr(context, type)                           ((context)->func->addrptr(context, type))
+#define user_datagram_protocol_context_checksum_build(context, pseudo, pseudolen)       ((context)->func->checksum_build(context, pseudo, pseudolen))
 
-#define user_datagram_protocol_context_error_get(context)           ((context)->error)
-#define user_datagram_protocol_context_error_set(context, v)        ((context)->error = v)
-#define user_datagram_protocol_context_source_get(context)          ((context)->source)
-#define user_datagram_protocol_context_source_set(context, v)       ((context)->source = v)
-#define user_datagram_protocol_context_destination_get(context)     ((context)->destination)
-#define user_datagram_protocol_context_destination_set(context, v)  ((context)->destination = v)
-#define user_datagram_protocol_context_length_get(context)          ((context)->length)
-#define user_datagram_protocol_context_length_set(context, v)       ((context)->length = v)
-#define user_datagram_protocol_context_checksum_get(context)        ((context)->checksum)
-#define user_datagram_protocol_context_checksum_set(context, v)     ((context)->checksum = v)
+#define user_datagram_protocol_context_error_get(context)                               ((context)->error)
+#define user_datagram_protocol_context_error_set(context, v)                            ((context)->error = v)
+#define user_datagram_protocol_context_source_get(context)                              ((context)->source)
+#define user_datagram_protocol_context_source_set(context, v)                           ((context)->source = v)
+#define user_datagram_protocol_context_destination_get(context)                         ((context)->destination)
+#define user_datagram_protocol_context_destination_set(context, v)                      ((context)->destination = v)
+#define user_datagram_protocol_context_length_get(context)                              ((context)->length)
+#define user_datagram_protocol_context_length_set(context, v)                           ((context)->length = v)
+#define user_datagram_protocol_context_checksum_get(context)                            ((context)->checksum)
+#define user_datagram_protocol_context_checksum_set(context, v)                         ((context)->checksum = v)
 
 #endif // __SNORLAX__PROTOCOL_USER_DATAGRAM__H__

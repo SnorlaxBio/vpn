@@ -9,11 +9,13 @@ static internet_protocol_context_t * internet_protocol_context_func_rem(internet
 static int32_t internet_protocol_context_func_valid(internet_protocol_context_t * context);
 
 typedef uint8_t * (*internet_protocol_context_func_addrptr_t)(internet_protocol_context_t *, uint32_t);
+typedef void (*internet_protocol_context_func_checksum_build_t)(internet_protocol_context_t *, const uint8_t *, uint64_t);
 
 static internet_protocol_context_func_t func = {
     internet_protocol_context_func_rem,
     internet_protocol_context_func_valid,
-    (internet_protocol_context_func_addrptr_t) protocol_context_func_addrptr
+    (internet_protocol_context_func_addrptr_t) protocol_context_func_addrptr,
+    (internet_protocol_context_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
 extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen) {
