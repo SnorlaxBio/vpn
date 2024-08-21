@@ -90,22 +90,23 @@ struct internet_protocol_module_func {
     int32_t (*serialize)(internet_protocol_module_t *, protocol_context_t *, internet_protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_module_t *, FILE *, internet_protocol_context_t *);
     int32_t (*in)(internet_protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_context_t **);
-    int32_t (*out)(internet_protocol_module_t *, internet_protocol_context_t *, protocol_path_node_t *);
-    protocol_context_t * (*context_gen)(internet_protocol_module_t *, protocol_context_t *);
+    int32_t (*out)(internet_protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+    internet_protocol_context_t * (*context_gen)(internet_protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+    internet_protocol_context_t * (*reply_gen)(internet_protocol_module_t *, internet_protocol_context_t *);
 };
 
 extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_map_t * map, internet_protocol_context_handler_t on, internet_protocol_version4_module_t * version4, internet_protocol_version6_module_t * version6);
 extern int32_t internet_protocol_module_func_on(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context);
-extern int32_t internet_protocol_module_func_out(internet_protocol_module_t * module, internet_protocol_context_t * context, protocol_path_node_t * node);
-extern protocol_context_t * internet_protocol_module_func_context_gen(internet_protocol_module_t * module, protocol_context_t * child);
+
 
 #define internet_protocol_module_rem(module)                                                    ((module)->func->rem(module))
 #define internet_protocol_module_deserialize(module, packet, packetlen, parent, context)        ((module)->func->deserialize(module, packet, packetlen, parent, context))
 #define internet_protocol_module_serialize(module, parent, context, packet, len)                ((module)->func->serialize(module, parent, context, packet, len))
 #define internet_protocol_module_debug(module, stream, context)                                 ((module)->func->debug(module, stream, context))
 #define internet_protocol_module_in(module, packet, packetlen, parent, context)                 ((module)->func->in(module, packet, packetlen, parent, context))
-#define internet_protocol_module_out(module, context, node)                                     ((module)->func->out(module, context, node))
-#define internet_protocol_module_context_gen(module, child)                                     ((module)->func->context_gen(module, child))
+#define internet_protocol_module_out(module, node, context)                                     ((module)->func->out(module, node, context))
+#define internet_protocol_module_context_gen(module, node, child)                               ((module)->func->context_gen(module, node, child))
+#define internet_protocol_module_reply_gen(module, request)                                     ((module)->func->reply_gen(module, request))
 
 #define internet_protocol_module_on(module, type, parent, context)                              ((module)->on(module, type, parent, context))
 

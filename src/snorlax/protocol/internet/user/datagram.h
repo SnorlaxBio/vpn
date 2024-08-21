@@ -57,8 +57,9 @@ struct user_datagram_protocol_module_func {
     int32_t (*serialize)(user_datagram_protocol_module_t *, internet_protocol_context_t *, user_datagram_protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(user_datagram_protocol_module_t *, FILE *, user_datagram_protocol_context_t *);
     int32_t (*in)(user_datagram_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, user_datagram_protocol_context_t **);
-    int32_t (*out)(user_datagram_protocol_module_t *, user_datagram_protocol_context_t *, protocol_path_node_t *);
-
+    int32_t (*out)(user_datagram_protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+    user_datagram_protocol_context_t * (*context_gen)(user_datagram_protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+    user_datagram_protocol_context_t * (*reply_gen)(user_datagram_protocol_module_t *, user_datagram_protocol_context_t *);
 };
 
 extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map, user_datagram_protocol_context_handler_t on);
@@ -71,7 +72,9 @@ extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_modu
 #define user_datagram_protocol_module_serialize(module, parent, context, packet, len)                   ((module)->func->serialize(module, parent, context, packet, len))
 #define user_datagram_protocol_module_debug(module, stream, context)                                    ((module)->func->debug(module, stream, context))
 #define user_datagram_protocol_module_in(module, packet, packetlen, parent, context)                    ((module)->func->in(module, packet, packetlen, parent, context))
-#define user_datagram_protocol_module_out(module, context, node)                                        ((module)->func->out(module, context, node))
+#define user_datagram_protocol_module_out(module, node, child)                                          ((module)->func->out(module, node, child))
+#define user_datagram_protocol_module_context_gen(module, node, child)                                  ((module)->func->context_gen(module, node, child))
+#define user_datagram_protocol_module_reply_gen(module, request)                                        ((module)->func->reply_gen(module, request))
 
 #define user_datagram_protocol_module_on(module, type, parent, context)                                 ((module)->on(module, type, parent, context))
 
@@ -99,6 +102,8 @@ struct user_datagram_protocol_context_func {
 };
 
 extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen);
+
+#define user_datagram_protocol_context_buffer_reserve(context, n)   ((context)->func->buffer_reserve(context, n))
 
 #define user_datagram_protocol_context_rem(context)                 ((context)->func->rem(context))
 #define user_datagram_protocol_context_valid(context)               ((context)->func->valid(context))

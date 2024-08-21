@@ -9,7 +9,7 @@ static int32_t internet_protocol_version6_extension_hopbyhop_module_func_seriali
 static void internet_protocol_version6_extension_hopbyhop_module_func_debug(internet_protocol_version6_extension_hopbyhop_module_t * module, FILE * stream, internet_protocol_version6_extension_hopbyhop_context_t * context);
 static int32_t internet_protocol_version6_extension_hopbyhop_module_func_in(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context);
 
-typedef int32_t (*internet_protocol_version6_extension_hopbyhop_module_func_out_t)(internet_protocol_version6_extension_hopbyhop_module_t *, internet_protocol_version6_extension_hopbyhop_context_t *, protocol_path_node_t *);
+typedef int32_t (*internet_protocol_version6_extension_hopbyhop_module_func_out_t)(internet_protocol_version6_extension_hopbyhop_module_t *, protocol_path_node_t *, protocol_context_t *);
 
 static internet_protocol_version6_extension_hopbyhop_module_func_t func = {
     internet_protocol_version6_extension_hopbyhop_module_func_rem,
@@ -17,7 +17,7 @@ static internet_protocol_version6_extension_hopbyhop_module_func_t func = {
     internet_protocol_version6_extension_hopbyhop_module_func_serialize,
     internet_protocol_version6_extension_hopbyhop_module_func_debug,
     internet_protocol_version6_extension_hopbyhop_module_func_in,
-    (internet_protocol_version6_extension_hopbyhop_module_func_out_t) internet_protocol_version6_extension_module_func_out
+    (internet_protocol_version6_extension_hopbyhop_module_func_out_t) protocol_module_func_out
 };
 
 extern internet_protocol_version6_extension_hopbyhop_module_t * internet_protocol_version6_extension_hopbyhop_module_gen(internet_protocol_version6_extension_hopbyhop_context_handler_t on) {

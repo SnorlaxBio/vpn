@@ -13,7 +13,7 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
 static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void transmission_control_protocol_module_func_debug(transmission_control_protocol_module_t * module, FILE * stream, transmission_control_protocol_context_t * context);
 static int32_t transmission_control_protocol_module_func_in(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
-static int32_t transmission_control_protocol_module_func_out(transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context, protocol_path_node_t * node);
+static int32_t transmission_control_protocol_module_func_out(transmission_control_protocol_module_t * module, protocol_path_node_t * node, protocol_context_t * context);
 
 static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_rem,
@@ -22,7 +22,8 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_debug,
     transmission_control_protocol_module_func_in,
     transmission_control_protocol_module_func_out,
-
+    nil,
+    nil,
     transmission_control_protocol_module_func_blockon,
     transmission_control_protocol_module_func_sequence_gen
 };
@@ -63,7 +64,7 @@ static int32_t transmission_control_protocol_module_func_deserialize(transmissio
 
     transmission_control_protocol_packet_t * segment = (transmission_control_protocol_packet_t *) packet;
 
-    if(*context == nil) *context = transmission_control_protocol_context_gen(module, parent, segment, packetlen);
+    if(*context == nil) *context = transmission_control_protocol_context_gen(module, parent, segment, packetlen, 0);
 
     if(packetlen < transmission_control_protocol_packet_length_min) {
         transmission_control_protocol_context_error_set(*context, EAGAIN);
@@ -132,7 +133,7 @@ static int32_t transmission_control_protocol_module_func_in(transmission_control
 
     transmission_control_protocol_packet_t * segment = (transmission_control_protocol_packet_t *) packet;
 
-    if(*context == nil) *context = transmission_control_protocol_context_gen(module, parent, segment, packetlen);
+    if(*context == nil) *context = transmission_control_protocol_context_gen(module, parent, segment, packetlen, 0);
 
     if(transmission_control_protocol_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
@@ -178,7 +179,7 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
                 hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key))));
 
                 transmission_control_block_state_set(context->block, transmission_control_state_syn_rcvd);
-                transmission_control_block_acknowledge_set(context->block, transmission_control_protocol_context_sequence_get(context));
+                transmission_control_block_acknowledge_set(context->block, transmission_control_protocol_context_sequence_get(context) + 1);
                 transmission_control_block_sequence_set(context->block, transmission_control_protocol_module_seqeuence_gen(context->module, parent, context));
                 transmission_control_block_version_set(context->block, internet_protocol_context_version_get(parent));
 
@@ -207,10 +208,27 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
         } else {
             snorlaxdbg(true, false, "implement", "");
         }
+    } else if(type == protocol_event_complete_in) {
+        snorlaxdbg(context->block == nil, false, "critical", "");
 
-        // | Protocol                      | Source | Destination | Sequence    | Acknowledge |
-        // | ----------------------------- | ------ | ----------- | ----------- | ----------- | -- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | - |
-        // | transmission control protocol | 52168  | 2078        | -1934756659 | 0           | 10 | cwr x | ece x | urg x | ack x | psh x | rst x | syn o | fin x | 64240 | 48467 | 0 |
+        if(transmission_control_block_state_get(context->block) == transmission_control_state_syn_rcvd) {
+            char buffer[protocol_packet_max];
+            transmission_control_protocol_context_t * response = transmission_control_block_context_gen_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max);
+
+            if(response) {
+                snorlaxdbg(false, true, "implement", "calculate checksum");
+
+                protocol_path_node_t * parent = protocol_path_node_next(protocol_path_begin(context->block->path));
+
+                snorlaxdbg(parent == nil, false, "critica", "");
+
+                if(protocol_module_out(parent->module, parent, (protocol_context_t *) response) == fail) {
+                    snorlaxdbg(false, true, "debug", "fail to protocol_module_out(...)");
+                }
+            }
+        } else {
+            snorlaxdbg(true, false, "implement", "");
+        }
     }
 
     return success;
@@ -249,6 +267,16 @@ extern uint32_t transmission_control_protocol_module_func_sequence_gen(transmiss
     return seq;
 }
 
-static int32_t transmission_control_protocol_module_func_out(transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context, protocol_path_node_t * node) {
+static int32_t transmission_control_protocol_module_func_out(transmission_control_protocol_module_t * module, protocol_path_node_t * node, protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    /**
+     * TCP 의 경우 CONTROL BLOCK BUFFER 에 데이터를 삽입하고, 끝낸다.
+     */
     snorlaxdbg(true, false, "critical", "");
+
+    return fail;
 }

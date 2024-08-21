@@ -130,6 +130,7 @@ struct internet_protocol_version4_module {
     ___reference protocol_module_map_t * map;
 
     internet_protocol_version4_context_handler_t on;
+
     
     ___reference uint32_t * addr;
 };
@@ -140,7 +141,9 @@ struct internet_protocol_version4_module_func {
     int32_t (*serialize)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_version4_module_t *, FILE *, internet_protocol_version4_context_t *);
     int32_t (*in)(internet_protocol_version4_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version4_context_t **);
-    int32_t (*out)(internet_protocol_version4_module_t *, internet_protocol_version4_context_t *, protocol_path_node_t *);
+    int32_t (*out)(internet_protocol_version4_module_t *, protocol_path_node_t *, protocol_context_t *);
+    internet_protocol_version4_context_t * (*context_gen)(internet_protocol_version4_module_t *, protocol_path_node_t *, protocol_context_t *);
+    internet_protocol_version4_context_t * (*reply_gen)(internet_protocol_version4_module_t *, internet_protocol_version4_context_t *);
 
     int32_t (*local_is)(internet_protocol_version4_module_t *, uint32_t);
 
@@ -159,7 +162,9 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
 #define internet_protocol_version4_module_serialize(module, parent, context, packet, packetlen)     ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version4_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
 #define internet_protocol_version4_module_in(module, packet, packetlen, parent, context)            ((module)->func->in(module, packet, packetlen, parent, context))
-#define internet_protocol_version4_module_out(module, context, node)                                ((module)->func->out(module, context, node))
+#define internet_protocol_version4_module_out(module, node, child)                                  ((module)->func->out(module, node, child))
+#define internet_protocol_version4_module_context_gen(module, node, child)                          ((module)->func->context_gen(module, node, child))
+#define internet_protocol_version4_module_reply_gen(module, request)                                ((module)->func->reply_gen(module, request))
 
 #define internet_protocol_version4_module_local_is(module, addr)                                    ((module)->func->local_is(module, addr))
 

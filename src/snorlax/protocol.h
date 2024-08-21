@@ -14,15 +14,21 @@
 
 #define protocol_event_in                   1
 #define protocol_event_out                  2
-#define protocol_event_exception            3
-
-#define protocol_event_complete_in          4
+// #define protocol_event_exception            3
+#define protocol_event_exception            4
+#define protocol_event_exception_out        5
+#define protocol_event_complete             6
+#define protocol_event_complete_in          7
+#define protocol_event_complete_out         8
 
 #define protocol_packet_max                 65536
 
 #define protocol_address_type_none          0
 #define protocol_address_type_source        1
 #define protocol_address_type_destination   2
+
+#define protocol_direction_normal           1
+#define protocol_direction_reversal         2
 
 struct protocol_module;
 struct protocol_module_func;
@@ -58,6 +64,8 @@ typedef int32_t (*protocol_context_handler_t)(protocol_module_t *, uint32_t, pro
 
 extern char * protocol_address_to_hexadecimalstr(char * s, const protocol_address_t * addr, uint16_t len);
 
+extern void protocol_context_buffer_reserve_reversal(protocol_context_t * context, uint64_t n);
+
 struct protocol_module {
     protocol_module_func_t * func;
     sync_t * sync;
@@ -73,13 +81,14 @@ struct protocol_module_func {
     int32_t (*serialize)(protocol_module_t *, protocol_context_t *, protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(protocol_module_t *, FILE *, protocol_context_t *);
     int32_t (*in)(protocol_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, protocol_context_t **);
-    int32_t (*out)(protocol_module_t *, protocol_context_t *, protocol_path_node_t *);
-    protocol_context_t * (*context_gen)(protocol_module_t *, protocol_context_t *);
+    int32_t (*out)(protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+    protocol_context_t * (*context_gen)(protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+    protocol_context_t * (*reply_gen)(protocol_module_t *, protocol_context_t *);
 };
 
 extern int32_t protocol_module_func_serialize(protocol_module_t * module, protocol_context_t * parent, protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
-extern int32_t protocol_module_func_out(protocol_module_t * module, protocol_context_t * context, protocol_path_node_t * node);
-
+extern int32_t protocol_module_func_out(protocol_module_t * module, protocol_path_node_t * node, protocol_context_t * child);
+extern protocol_context_t * protocol_module_func_reply_gen(protocol_module_t * module, protocol_context_t * request);
 extern int32_t protocol_module_func_on(protocol_module_t * module, uint32_t type, protocol_context_t * parent, protocol_context_t * context);
 
 #define protocol_module_addrlen_get(module)                                             ((module)->addrlen)
@@ -89,8 +98,9 @@ extern int32_t protocol_module_func_on(protocol_module_t * module, uint32_t type
 #define protocol_module_serialize(module, parent, context, packet, len)                 ((module)->func->serialize(module, parent, context, packet, len))
 #define protocol_module_debug(module, stream, context)                                  ((module)->func->debug(module, stream, context))
 #define protocol_module_in(module, packet, packetlen, parent, context)                  ((module)->func->in(module, packet, packetlen, parent, context))
-#define protocol_module_out(module, context, node)                                      ((module)->func->out(module, context, node))
-#define protocol_module_context_gen(module, child)                                      ((module)->func->context_gen(module, child))
+#define protocol_module_out(module, node, child)                                        ((module)->func->out(module, node, child))
+#define protocol_module_context_gen(module, node, child)                                ((module)->func->context_gen(module, node, child))
+#define protocol_module_reply_gen(module, request)                                      ((module)->func0>reply_gen(module, request))
 
 #define protocol_module_on(module, type, parent, context)                               ((module)->on(module, type, parent, context))
 
@@ -164,6 +174,8 @@ extern protocol_context_array_t * protocol_context_array_gen(void);
 #define protocol_context_array_get(collection, index)               ((collection)->func->get(collection, index))
 #define protocol_context_array_pop(collection)                      ((collection)->func->pop(collection))
 
+#define protocol_context_array_size(collection)                     ((collection)->size)
+
 struct protocol_path_node {
     ___reference protocol_path_t * path;
     ___reference protocol_module_t * module;
@@ -173,8 +185,6 @@ struct protocol_path_node {
 #define protocol_path_node_next(node)                               ((protocol_path_node_t *) (&((uint8_t *) (node))[sizeof(protocol_path_node_t) + ((node)->length * 2)]))
 #define protocol_path_node_source_get(node)                         ((uint8_t *) (&((uint8_t *) (node))[sizeof(protocol_path_node_t)]))
 #define protocol_path_node_destination_get(node)                    ((uint8_t *) (&((uint8_t *) (node))[sizeof(protocol_path_node_t) + (node)->length]))
-
-
 
 struct protocol_path {
     protocol_path_func_t * func;

@@ -10,13 +10,17 @@
 
 static int32_t internet_protocol_version6_module_func_control_message_context_in_discard(internet_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context);
 
+typedef int32_t (*internet_protocol_version6_module_func_out_t)(internet_protocol_version6_module_t *, protocol_path_node_t *, protocol_context_t *);
+
 static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_rem,
     internet_protocol_version6_module_func_deserialize,
     internet_protocol_version6_module_func_serialize,
     internet_protocol_version6_module_func_debug,
     internet_protocol_version6_module_func_in,
-    internet_protocol_version6_module_func_out,
+    (internet_protocol_version6_module_func_out_t) protocol_module_func_out,
+    nil,
+    nil,
 
     internet_protocol_version6_module_func_local_is,
 
@@ -191,8 +195,4 @@ extern int32_t internet_protocol_version6_module_func_local_is(internet_protocol
     }
 
     return false;
-}
-
-extern int32_t internet_protocol_version6_module_func_out(internet_protocol_version6_module_t * module, internet_protocol_version6_context_t * context, protocol_path_node_t * node) {
-    snorlaxdbg(true, false, "implement", "");
 }

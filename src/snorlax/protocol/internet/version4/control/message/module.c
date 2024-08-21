@@ -13,13 +13,15 @@ static void internet_control_message_protocol_version4_module_func_debug(interne
 static int32_t internet_control_message_protocol_version4_module_func_in(internet_control_message_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t ** context);
 static int32_t internet_control_message_protocol_version4_module_func_out(internet_control_message_protocol_version4_module_t * module, internet_control_message_protocol_version4_context_t * context, protocol_path_node_t * node);
 
+typedef int32_t (*internet_control_message_protocol_version4_module_func_out_t)(internet_control_message_protocol_version4_module_t *, protocol_path_node_t *, protocol_context_t *);
+
 static internet_control_message_protocol_version4_module_func_t func = {
     internet_control_message_protocol_version4_module_func_rem,
     internet_control_message_protocol_version4_module_func_deserialize,
     internet_control_message_protocol_version4_module_func_serialize,
     internet_control_message_protocol_version4_module_func_debug,
     internet_control_message_protocol_version4_module_func_in,
-    internet_control_message_protocol_version4_module_func_out
+    (internet_control_message_protocol_version4_module_func_out_t) protocol_module_func_out
 };
 
 extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(internet_control_message_protocol_version4_context_handler_t on) {
@@ -116,6 +118,3 @@ extern int32_t internet_control_message_protocol_version4_module_func_on(interne
     return success;
 }
 
-static int32_t internet_control_message_protocol_version4_module_func_out(internet_control_message_protocol_version4_module_t * module, internet_control_message_protocol_version4_context_t * context, protocol_path_node_t * node) {
-    snorlaxdbg(true, false, "critical", "");
-}

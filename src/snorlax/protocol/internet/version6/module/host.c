@@ -6,7 +6,7 @@ typedef int32_t (*internet_protocol_version6_module_host_func_deserialize_t)(int
 typedef int32_t (*internet_protocol_version6_module_host_func_serialize_t)(internet_protocol_version6_module_host_t *, protocol_context_t *, internet_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
 typedef void (*internet_protocol_version6_module_host_func_debug_t)(internet_protocol_version6_module_host_t *, FILE *, internet_protocol_version6_context_t *);
 typedef int32_t (*internet_protocol_version6_module_host_func_in_t)(internet_protocol_version6_module_host_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version6_context_t **);
-typedef int32_t (*internet_protocol_version6_module_host_func_out_t)(internet_protocol_version6_module_host_t *, internet_protocol_version6_context_t *, protocol_path_node_t *);
+typedef int32_t (*internet_protocol_version6_module_host_func_out_t)(internet_protocol_version6_module_host_t *, protocol_path_node_t *, protocol_context_t *);
 
 static int32_t internet_protocol_version6_module_host_func_control_message_context_in_discard(internet_protocol_version6_module_host_t * module, internet_control_message_protocol_version6_context_t * context);
 static int32_t internet_protocol_version6_module_host_func_control_message_context_in_router_advertisement(internet_protocol_version6_module_host_t * module, internet_control_message_protocol_version6_context_router_advertisement_t * context);
@@ -17,7 +17,9 @@ static internet_protocol_version6_module_host_func_t func = {
     (internet_protocol_version6_module_host_func_serialize_t) internet_protocol_version6_module_func_serialize,
     (internet_protocol_version6_module_host_func_debug_t) internet_protocol_version6_module_func_debug,
     (internet_protocol_version6_module_host_func_in_t) internet_protocol_version6_module_func_in,
-    (internet_protocol_version6_module_host_func_out_t) internet_protocol_version6_module_func_out,
+    (internet_protocol_version6_module_host_func_out_t) protocol_module_func_out,
+    nil,
+    nil,
     internet_protocol_version6_module_host_func_control_message_context_in
 };
 

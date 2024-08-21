@@ -11,7 +11,8 @@ static int32_t internet_control_message_protocol_version6_module_func_deserializ
 static int32_t internet_control_message_protocol_version6_module_func_serialize(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_control_message_protocol_version6_module_func_debug(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_t * context);
 static int32_t internet_control_message_protocol_version6_module_func_in(internet_control_message_protocol_version6_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_context_t ** context);
-static int32_t internet_control_message_protocol_version6_module_func_out(internet_control_message_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context, protocol_path_node_t * node);
+
+typedef int32_t (*internet_control_message_protocol_version6_module_func_out_t)(internet_control_message_protocol_version6_module_t *, protocol_path_node_t *, protocol_context_t *);
 
 static void internet_control_message_protocol_version6_module_func_debug_destination_unreachable_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_destination_unreachable_t * context);
 static void internet_control_message_protocol_version6_module_func_debug_packet_too_big_message(internet_control_message_protocol_version6_module_t * module, FILE * stream, internet_control_message_protocol_version6_context_packet_too_big_t * context);
@@ -28,7 +29,7 @@ static internet_control_message_protocol_version6_module_func_t func = {
     internet_control_message_protocol_version6_module_func_serialize,
     internet_control_message_protocol_version6_module_func_debug,
     internet_control_message_protocol_version6_module_func_in,
-    internet_control_message_protocol_version6_module_func_out
+    (internet_control_message_protocol_version6_module_func_out_t) protocol_module_func_out
 };
 
 extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(internet_control_message_protocol_version6_context_handler_t on) {
@@ -258,6 +259,3 @@ extern int32_t internet_control_message_protocol_version6_module_func_on(interne
     return success;
 }
 
-static int32_t internet_control_message_protocol_version6_module_func_out(internet_control_message_protocol_version6_module_t * module, internet_control_message_protocol_version6_context_t * context, protocol_path_node_t * node) {
-    snorlaxdbg(true, false, "implement", "");
-}

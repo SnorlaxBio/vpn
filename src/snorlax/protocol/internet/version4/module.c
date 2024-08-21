@@ -11,7 +11,7 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
 static int32_t internet_protocol_version4_module_func_serialize(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_protocol_version4_module_func_debug(internet_protocol_version4_module_t * module, FILE * stream, internet_protocol_version4_context_t * context);
 static int32_t internet_protocol_version4_module_func_in(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
-static int32_t internet_protocol_version4_module_func_out(internet_protocol_version4_module_t * module, internet_protocol_version4_context_t * context, protocol_path_node_t * node);
+typedef int32_t (*internet_protocol_version4_module_func_out_t)(internet_protocol_version4_module_t *, protocol_path_node_t *, protocol_context_t *);
 
 static void internet_protocol_version4_option_end_debug(FILE * stream, internet_protocol_version4_option_t * option);
 static void internet_protocol_version4_option_no_operation_debug(FILE * stream, internet_protocol_version4_option_t * option);
@@ -28,7 +28,9 @@ static internet_protocol_version4_module_func_t func = {
     internet_protocol_version4_module_func_serialize,
     internet_protocol_version4_module_func_debug,
     internet_protocol_version4_module_func_in,
-    internet_protocol_version4_module_func_out,
+    (internet_protocol_version4_module_func_out_t) protocol_module_func_out,
+    nil,
+    nil,
     internet_protocol_version4_module_func_local_is
 };
 
@@ -280,6 +282,3 @@ extern int32_t internet_protocol_version4_module_func_local_is(internet_protocol
     return false;
 }
 
-static int32_t internet_protocol_version4_module_func_out(internet_protocol_version4_module_t * module, internet_protocol_version4_context_t * context, protocol_path_node_t * node) {
-    snorlaxdbg(true, false, "critical", "");
-}

@@ -15,74 +15,16 @@ static transmission_control_protocol_context_func_t func = {
     transmission_control_protocol_context_func_addrptr
 };
 
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen) {
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen, uint64_t bufferlen) {
     transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
 
     context->func = address_of(func);
     context->module = module;
-    context->children = protocol_context_array_gen();
+    context->children = nil;
     context->parent = parent;
     context->packet = packet;
     context->packetlen = packetlen;
-
-    return context;
-}
-
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen_reversal(transmission_control_protocol_context_t * original, protocol_packet_t * packet, uint64_t bufferlen) {
-    transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
-
-    context->func = address_of(func);
-    context->module = context->module;
-    context->children = protocol_context_array_gen();
-    
-    // context->packet = packet;
-    snorlaxdbg(false, true, "implement", "context->packet = packet");
-    context->packetlen = 0;
     context->bufferlen = bufferlen;
-
-    if(original->parent) {
-        context->parent = original->parent;
-    }
-
-    return context;
-}
-
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen_fake_connect_synack(transmission_control_block_t * block, protocol_packet_t * buffer, uint64_t bufferlen) {
-#ifndef   RELEASE
-    snorlaxdbg(block == nil, false, "critical", "");
-#endif // RELEASE
-
-    transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
-
-    context->func = address_of(func);
-
-    // OPTION 처리
-
-    uint64_t n = bufferlen;
-
-    buffer = transmission_control_protocol_packet_reserve_header(buffer, &n);
-
-    context->packet = (transmission_control_protocol_packet_t *) buffer;
-    context->packetlen = bufferlen - n;
-    context->bufferlen = n;
-
-    context->block = block;
-
-    snorlaxdbg(true, false, "implement", "");
-    // context->sourcepath = block->destination;
-    // context->source = context->sourcepath->node;
-    // context->destinationpath = block->source;
-    // context->destination = context->destinationpath->node;
-
-    // transmission_control_protocol_context_source_set(context, *((uint16_t *) protocol_address_node_addrptr_get(context->source)));
-    // transmission_control_protocol_context_destination_set(context, *((uint16_t *) protocol_address_node_addrptr_get(context->destination)));
-
-    transmission_control_protocol_context_sequence_set(context, transmission_control_block_sequence_get(block));
-    transmission_control_protocol_context_acknowledge_set(context, transmission_control_block_acknowledge_get(block) + 1);
-    transmission_control_protocol_context_flags_set(context, transmission_control_flag_control_synack);
-    transmission_control_protocol_context_window_set(context, transmission_control_block_window_get(block));
-
-    
 
     return context;
 }

@@ -133,6 +133,7 @@ set(SNORLAX_VPN_SERVER_HEADER   src/snorlax/vpn/server/app.h
                                 src/snorlax/vpn/session.h)
 
 set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol.c
+                                src/snorlax/protocol/module.c
                                 src/snorlax/protocol/context.c
                                 src/snorlax/protocol/path.c
                                 src/snorlax/protocol/module/map.c
