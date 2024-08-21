@@ -4,14 +4,16 @@
 #include "../protocol.h"
 
 static protocol_path_t * protocol_path_func_rem(protocol_path_t * path);
-static protocol_path_node_t * protocol_path_func_add(protocol_path_t * path, protocol_path_node_t * node, protocol_context_t * context, uint32_t type);
+static protocol_path_node_t * protocol_path_func_add(protocol_path_t * path, protocol_path_node_t * node, protocol_context_t * context);
+static void protocol_path_func_debug(protocol_path_t * path, FILE * stream);
 
 static protocol_path_func_t func = {
     protocol_path_func_rem,
+    protocol_path_func_debug,
     protocol_path_func_add
 };
 
-extern protocol_path_t * protocol_path_gen(protocol_context_t * original, uint32_t type, uint64_t hint) {
+extern protocol_path_t * protocol_path_gen(protocol_context_t * original, uint64_t hint) {
 #ifndef   RELEASE
     snorlaxdbg(original == nil, false, "critical", "");
 #endif // RELEASE
@@ -25,8 +27,8 @@ extern protocol_path_t * protocol_path_gen(protocol_context_t * original, uint32
     protocol_context_t * context = original;
 
     do {
-        path->end = (node = protocol_path_add(path, node, context, type));
-    } while(context = original->parent);
+        path->end = (node = protocol_path_add(path, node, context));
+    } while(context = context->parent);
 
     uint64_t n = ((uint64_t) (((uint8_t *) path->end) - ((uint8_t *) path->node))) + sizeof(protocol_path_node_t);
 
@@ -52,7 +54,7 @@ static protocol_path_t * protocol_path_func_rem(protocol_path_t * path) {
     return nil;
 }
 
-static protocol_path_node_t * protocol_path_func_add(protocol_path_t * path, protocol_path_node_t * node, protocol_context_t * context, uint32_t type) {
+static protocol_path_node_t * protocol_path_func_add(protocol_path_t * path, protocol_path_node_t * node, protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(path == nil, false, "critical", "");
     snorlaxdbg(node == nil, false, "critical", "");
@@ -64,8 +66,8 @@ static protocol_path_node_t * protocol_path_func_add(protocol_path_t * path, pro
     protocol_module_t * module = context->module;
     uint16_t addrlen = protocol_module_addrlen_get(module);
 
-    if(path->size <= n + (sizeof(protocol_path_node_t) * 2) + addrlen) {
-        path->size = n + (sizeof(protocol_path_node_t) * 2) + addrlen;
+    if(path->size <= n + ((sizeof(protocol_path_node_t) + addrlen) * 2)) {
+        path->size = n + ((sizeof(protocol_path_node_t) + addrlen) * 2);
         path->node = (protocol_path_node_t *) memory_gen(path->node, path->size);
         node = (protocol_path_node_t *) (&((uint8_t *) path->node)[n]);
     }
@@ -73,10 +75,30 @@ static protocol_path_node_t * protocol_path_func_add(protocol_path_t * path, pro
     node->path = path;
     node->module = module;
     node->length = addrlen;
-    memcpy(&((uint8_t *) node)[sizeof(protocol_path_node_t)], protocol_context_addrptr(context, type), addrlen);
+    if(addrlen) {
+        memcpy(&((uint8_t *) node)[sizeof(protocol_path_node_t)], protocol_context_addrptr(context, protocol_address_type_source), addrlen);
+        memcpy(&((uint8_t *) node)[sizeof(protocol_path_node_t) + addrlen], protocol_context_addrptr(context, protocol_address_type_destination), addrlen);
+    }
 
-    node = (protocol_path_node_t *) (&((uint8_t *) node)[sizeof(protocol_path_node_t) + addrlen]);
+    node = (protocol_path_node_t *) (&((uint8_t *) node)[sizeof(protocol_path_node_t) + (addrlen * 2)]);
     memset(node, 0, sizeof(protocol_path_node_t));
 
     return node;
+}
+
+static void protocol_path_func_debug(protocol_path_t * path, FILE * stream) {
+#ifndef   RELEASE
+    snorlaxdbg(path == nil, false, "critical", "");
+#endif // RELEASE
+
+    char str[256];
+    fprintf(stream, "| protocol path |\n");
+    for(protocol_path_node_t * node = protocol_path_begin(path); node != protocol_path_end(path); node = protocol_path_node_next(node)) {
+        fprintf(stream, "| %u ", node->length);
+        fprintf(stream, "| %p ", node->module);
+        fprintf(stream, "| %p ", node->path);
+        fprintf(stream, "| %s ", protocol_address_to_hexadecimalstr(str, protocol_path_node_source_get(node), node->length));
+        fprintf(stream, "| %s ", protocol_address_to_hexadecimalstr(str, protocol_path_node_destination_get(node), node->length));
+        fprintf(stream, "|\n");
+    }
 }

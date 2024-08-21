@@ -44,7 +44,9 @@ extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmiss
 
                 uint8_t buffer[protocol_packet_max];
 
-                snorlaxdbg(true, false, "implement", "");
+                
+
+                // snorlaxdbg(true, false, "implement", "");
 
                 // if(transmission_control_protocol_module_out(module, transmission_control_protocol_context_gen_fake_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max), context->block->modulepath, 0) == fail) {
                 //     snorlaxdbg(false, true, "debug", "fail");

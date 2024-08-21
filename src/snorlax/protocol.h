@@ -56,6 +56,8 @@ typedef protocol_module_t * (*protocol_module_map_get_t)(protocol_module_map_t *
 
 typedef int32_t (*protocol_context_handler_t)(protocol_module_t *, uint32_t, protocol_context_t *, protocol_context_t *);
 
+extern char * protocol_address_to_hexadecimalstr(char * s, const protocol_address_t * addr, uint16_t len);
+
 struct protocol_module {
     protocol_module_func_t * func;
     sync_t * sync;
@@ -168,6 +170,12 @@ struct protocol_path_node {
     uint32_t length;
 };
 
+#define protocol_path_node_next(node)                               ((protocol_path_node_t *) (&((uint8_t *) (node))[sizeof(protocol_path_node_t) + ((node)->length * 2)]))
+#define protocol_path_node_source_get(node)                         ((uint8_t *) (&((uint8_t *) (node))[sizeof(protocol_path_node_t)]))
+#define protocol_path_node_destination_get(node)                    ((uint8_t *) (&((uint8_t *) (node))[sizeof(protocol_path_node_t) + (node)->length]))
+
+
+
 struct protocol_path {
     protocol_path_func_t * func;
     sync_t * sync;
@@ -178,12 +186,17 @@ struct protocol_path {
 
 struct protocol_path_func {
     protocol_path_t * (*rem)(protocol_path_t *);
-    protocol_path_node_t * (*add)(protocol_path_t *, protocol_path_node_t *, protocol_context_t *, uint32_t type);
+    void (*debug)(protocol_path_t *, FILE * stream);
+    protocol_path_node_t * (*add)(protocol_path_t *, protocol_path_node_t *, protocol_context_t *);
 };
 
-extern protocol_path_t * protocol_path_gen(protocol_context_t * original, uint32_t type, uint64_t hint);
+extern protocol_path_t * protocol_path_gen(protocol_context_t * original, uint64_t hint);
 
 #define protocol_path_rem(path)                             ((path)->func->rem(path))
-#define protocol_path_add(path, node, context, type)        ((path)->func->add(path, node, context, type))
+#define protocol_path_add(path, node, context)              ((path)->func->add(path, node, context))
+#define protocol_path_debug(path, stream)                   ((path)->func->debug(path, stream))
+
+#define protocol_path_begin(path)                           ((path)->node)
+#define protocol_path_end(path)                             ((path)->end)
 
 #endif // __SNORLAX__PROTOCOL__H__

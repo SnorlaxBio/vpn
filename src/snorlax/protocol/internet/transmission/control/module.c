@@ -23,7 +23,8 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_in,
     transmission_control_protocol_module_func_out,
 
-    transmission_control_protocol_module_func_blockon
+    transmission_control_protocol_module_func_blockon,
+    transmission_control_protocol_module_func_sequence_gen
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on) {
@@ -183,15 +184,20 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
 
                 transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
 
-                snorlaxdbg(true, false, "implement", "");
+                context->block->path = protocol_path_gen((protocol_context_t *) context, 128);
+
+                protocol_path_debug(context->block->path, stdout);
+
+                // context->block->source = protocol_path_gen((protocol_context_t *) context, )
+
+                // snorlaxdbg(true, false, "implement", "");
 
                 // context->block->modulepath = protocol_module_path_gen((protocol_context_t *) context, 4);
                 // context->block->source = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_source, 32);
                 // context->block->destination = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_destination, 32);
-
-                if(transmission_control_block_acknowledge_get(context->block) != 0) {
-                    snorlaxdbg(false, true, "check", "");
-                }
+                // if(transmission_control_block_acknowledge_get(context->block) != 0) {
+                //     snorlaxdbg(false, true, "check", "");
+                // }
             } else {
                 snorlaxdbg(false, true, "implement", "");
             }

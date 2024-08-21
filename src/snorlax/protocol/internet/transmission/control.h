@@ -156,8 +156,7 @@ struct transmission_control_block {
     hashtable_node_t * next;
     hashtable_node_key_t key;
 
-    protocol_path_t * source;
-    protocol_path_t * destination;
+    protocol_path_t * path;
 
     uint8_t version;
     uint32_t state;
@@ -251,8 +250,6 @@ struct transmission_control_protocol_module_func {
     int32_t (*out)(transmission_control_protocol_module_t *, transmission_control_protocol_context_t *, protocol_path_node_t *);
 
     int32_t (*blockon)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
-
-
     uint32_t (*sequence_gen)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *);
 };
 
