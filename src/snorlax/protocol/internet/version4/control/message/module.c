@@ -53,7 +53,7 @@ static int32_t internet_control_message_protocol_version4_module_func_deserializ
     snorlaxdbg(context == nil, false, "criticial", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_control_message_protocol_version4_context_gen(module, parent, (internet_control_message_protocol_version4_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_control_message_protocol_version4_context_gen(module, parent, (internet_control_message_protocol_version4_packet_t *) packet, packetlen, 0);
 
     if(packetlen < internet_control_message_protocol_version4_length_min) {
         internet_control_message_protocol_version4_context_error_set(*context, EAGAIN);
@@ -95,7 +95,7 @@ static int32_t internet_control_message_protocol_version4_module_func_in(interne
     snorlaxdbg(context == nil, false, "criticial", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_control_message_protocol_version4_context_gen(module, parent, (internet_control_message_protocol_version4_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_control_message_protocol_version4_context_gen(module, parent, (internet_control_message_protocol_version4_packet_t *) packet, packetlen, 0);
 
     if(internet_control_message_protocol_version4_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         internet_control_message_protocol_version4_module_on(module, protocol_event_exception, parent, *context);

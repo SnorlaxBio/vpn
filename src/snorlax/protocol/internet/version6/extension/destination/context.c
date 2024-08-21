@@ -11,7 +11,7 @@ static internet_protocol_version6_extension_destination_context_func_t func = {
     (internet_protocol_version6_extension_destination_context_func_addrptr_t) protocol_context_func_addrptr
 };
 
-extern internet_protocol_version6_extension_destination_context_t * internet_protocol_version6_extension_destination_context_gen(internet_protocol_version6_extension_destination_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen) {
+extern internet_protocol_version6_extension_destination_context_t * internet_protocol_version6_extension_destination_context_gen(internet_protocol_version6_extension_destination_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen) {
     internet_protocol_version6_extension_destination_context_t * context = (internet_protocol_version6_extension_destination_context_t *) calloc(1, sizeof(internet_protocol_version6_extension_destination_context_t));
 
     context->func = address_of(func);
@@ -20,6 +20,7 @@ extern internet_protocol_version6_extension_destination_context_t * internet_pro
     context->parent = parent;
     context->packet = (internet_protocol_version6_extension_destination_t * ) datagram;
     context->packetlen = datagramlen;
+    context->bufferlen = bufferlen;
 
     return context;
 }

@@ -59,7 +59,7 @@ extern int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_context_gen(module, parent, (internet_protocol_version6_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_context_gen(module, parent, (internet_protocol_version6_packet_t *) packet, packetlen, 0);
 
     if(packetlen < internet_protocol_version6_packet_header_length_min) {
         internet_protocol_version6_context_error_set(*context, EAGAIN);
@@ -130,7 +130,7 @@ extern int32_t internet_protocol_version6_module_func_in(internet_protocol_versi
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_context_gen(module, parent, (internet_protocol_version6_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_context_gen(module, parent, (internet_protocol_version6_packet_t *) packet, packetlen, 0);
 
     if(internet_protocol_version6_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         snorlaxdbg(false, true, "debug", "");

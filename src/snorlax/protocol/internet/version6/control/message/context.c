@@ -11,18 +11,18 @@ static internet_control_message_protocol_version6_context_func_t func = {
     (internet_control_message_protocol_version6_context_func_addrptr_t) protocol_context_func_addrptr
 };
 
-extern internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_t * packet, uint64_t packetlen) {
+extern internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_t * packet, uint64_t packetlen, uint64_t bufferlen) {
     
 
     if(internet_control_message_protocol_version6_length_min <= packetlen) {
         switch(packet->type) {
-            case internet_control_message_protocol_version6_type_destination_unreachable:   return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_destination_unreachable_gen(module, parent, (internet_control_message_protocol_version6_destination_unreachable_t *) packet, packetlen);
-            case internet_control_message_protocol_version6_type_packet_too_big:            return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_packet_too_big_gen(module, parent, (internet_control_message_protocol_version6_packet_too_big_t *) packet, packetlen);
-            case internet_control_message_protocol_version6_type_time_exceeded:             return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_time_exceeded_gen(module, parent, (internet_control_message_protocol_version6_time_exceeded_t *) packet, packetlen);
-            case internet_control_message_protocol_version6_type_parameter_problem:         return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_parameter_problem_gen(module, parent, (internet_control_message_protocol_version6_parameter_problem_t *) packet, packetlen);
-            case internet_control_message_protocol_version6_type_echo_request:              return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_echo_gen(module, parent, (internet_control_message_protocol_version6_echo_t *) packet, packetlen);
-            case internet_control_message_protocol_version6_type_echo_reply:                return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_echo_gen(module, parent, (internet_control_message_protocol_version6_echo_t *) packet, packetlen);
-            case internet_control_message_protocol_version6_type_router_solicitation:       return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_router_solicitation_gen(module, parent, (internet_control_message_protocol_version6_router_solicitation_t *) packet, packetlen);
+            case internet_control_message_protocol_version6_type_destination_unreachable:   return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_destination_unreachable_gen(module, parent, (internet_control_message_protocol_version6_destination_unreachable_t *) packet, packetlen, bufferlen);
+            case internet_control_message_protocol_version6_type_packet_too_big:            return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_packet_too_big_gen(module, parent, (internet_control_message_protocol_version6_packet_too_big_t *) packet, packetlen, bufferlen);
+            case internet_control_message_protocol_version6_type_time_exceeded:             return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_time_exceeded_gen(module, parent, (internet_control_message_protocol_version6_time_exceeded_t *) packet, packetlen, bufferlen);
+            case internet_control_message_protocol_version6_type_parameter_problem:         return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_parameter_problem_gen(module, parent, (internet_control_message_protocol_version6_parameter_problem_t *) packet, packetlen, bufferlen);
+            case internet_control_message_protocol_version6_type_echo_request:              return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_echo_gen(module, parent, (internet_control_message_protocol_version6_echo_t *) packet, packetlen, bufferlen);
+            case internet_control_message_protocol_version6_type_echo_reply:                return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_echo_gen(module, parent, (internet_control_message_protocol_version6_echo_t *) packet, packetlen, bufferlen);
+            case internet_control_message_protocol_version6_type_router_solicitation:       return (internet_control_message_protocol_version6_context_t *) internet_control_message_protocol_version6_context_router_solicitation_gen(module, parent, (internet_control_message_protocol_version6_router_solicitation_t *) packet, packetlen, bufferlen);
         }
     }
 
@@ -35,6 +35,7 @@ extern internet_control_message_protocol_version6_context_t * internet_control_m
     context->parent = parent;
     context->packet = packet;
     context->packetlen = packetlen;
+    context->bufferlen = bufferlen;
 
     return context;
 }

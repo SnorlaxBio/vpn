@@ -200,7 +200,7 @@ struct internet_protocol_version4_context_func {
     uint8_t * (*addrptr)(internet_protocol_version4_context_t *, uint32_t);
 };
 
-extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen);
+extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
 
 #define internet_protocol_version4_context_rem(context)                     ((context)->func->rem(context))
 #define internet_protocol_version4_context_valid(context)                   ((context)->func->valid(context))

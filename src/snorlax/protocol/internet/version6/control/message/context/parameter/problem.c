@@ -10,7 +10,7 @@ static internet_control_message_protocol_version6_context_parameter_problem_func
     (internet_control_message_protocol_version6_context_parameter_problem_func_addrptr_t) protocol_context_func_addrptr
 };
 
-extern internet_control_message_protocol_version6_context_parameter_problem_t * internet_control_message_protocol_version6_context_parameter_problem_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_parameter_problem_t * packet, uint64_t packetlen){
+extern internet_control_message_protocol_version6_context_parameter_problem_t * internet_control_message_protocol_version6_context_parameter_problem_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_parameter_problem_t * packet, uint64_t packetlen, uint64_t bufferlen){
     internet_control_message_protocol_version6_context_parameter_problem_t * context = (internet_control_message_protocol_version6_context_parameter_problem_t *) calloc(1, sizeof(internet_control_message_protocol_version6_context_parameter_problem_t));
 
     context->func = address_of(func);
@@ -18,6 +18,7 @@ extern internet_control_message_protocol_version6_context_parameter_problem_t * 
     context->parent = parent;
     context->packet = packet;
     context->packetlen = packetlen;
+    context->bufferlen = bufferlen;
 
     return context;
 }

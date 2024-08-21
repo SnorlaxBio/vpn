@@ -209,6 +209,20 @@ extern internet_protocol_context_t * internet_protocol_module_func_context_gen(i
 }
 
 static internet_protocol_context_t * internet_protocol_module_func_reply_gen(internet_protocol_module_t * module, internet_protocol_context_t * request) {
-    snorlaxdbg(true, false, "implement", "");
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(request == nil, false, "critical", "");
+#endif // RELEASE
+
+    uint8_t version = internet_protocol_context_version_get(request);
+
+    if(version == 4) {
+        return (internet_protocol_context_t *) internet_protocol_version4_module_reply_gen((internet_protocol_version4_module_t *) module->version4, (internet_protocol_version4_context_t *) request);
+    } else if(version == 16) {
+        return (internet_protocol_context_t *) internet_protocol_version6_module_reply_gen((internet_protocol_version6_module_t *) module->version6, (internet_protocol_version6_context_t *) request);
+    } else {
+        snorlaxdbg(true, false, "critical", "");
+    }
+
     return nil;
 }

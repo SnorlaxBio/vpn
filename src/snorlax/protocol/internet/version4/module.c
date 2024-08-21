@@ -12,6 +12,7 @@ static int32_t internet_protocol_version4_module_func_serialize(internet_protoco
 static void internet_protocol_version4_module_func_debug(internet_protocol_version4_module_t * module, FILE * stream, internet_protocol_version4_context_t * context);
 static int32_t internet_protocol_version4_module_func_in(internet_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_version4_context_t ** context);
 typedef int32_t (*internet_protocol_version4_module_func_out_t)(internet_protocol_version4_module_t *, protocol_path_node_t *, protocol_context_t *);
+static internet_protocol_version4_context_t * internet_protocol_version4_module_func_context_gen(internet_protocol_version4_module_t * module, protocol_path_node_t * node, protocol_context_t * child);
 
 static void internet_protocol_version4_option_end_debug(FILE * stream, internet_protocol_version4_option_t * option);
 static void internet_protocol_version4_option_no_operation_debug(FILE * stream, internet_protocol_version4_option_t * option);
@@ -29,7 +30,7 @@ static internet_protocol_version4_module_func_t func = {
     internet_protocol_version4_module_func_debug,
     internet_protocol_version4_module_func_in,
     (internet_protocol_version4_module_func_out_t) protocol_module_func_out,
-    nil,
+    internet_protocol_version4_module_func_context_gen,
     nil,
     internet_protocol_version4_module_func_local_is
 };
@@ -70,7 +71,7 @@ static int32_t internet_protocol_version4_module_func_deserialize(internet_proto
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version4_context_gen(module, parent, (internet_protocol_version4_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version4_context_gen(module, parent, (internet_protocol_version4_packet_t *) packet, packetlen, 0);
 
     if(packetlen < internet_protocol_version4_packet_header_length_min) {
         internet_protocol_version4_context_error_set(*context, EAGAIN);
@@ -225,7 +226,7 @@ static int32_t internet_protocol_version4_module_func_in(internet_protocol_versi
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version4_context_gen(module, parent, (internet_protocol_version4_packet_t *) packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version4_context_gen(module, parent, (internet_protocol_version4_packet_t *) packet, packetlen, 0);
 
     if(internet_protocol_version4_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         snorlaxdbg(internet_protocol_version4_context_error_get(*context) == 0, false, "critical", "");
@@ -282,3 +283,17 @@ extern int32_t internet_protocol_version4_module_func_local_is(internet_protocol
     return false;
 }
 
+static internet_protocol_version4_context_t * internet_protocol_version4_module_func_context_gen(internet_protocol_version4_module_t * module, protocol_path_node_t * node, protocol_context_t * child) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(node == nil, false, "critical", "");
+    snorlaxdbg(child == nil, false, "critical", "");
+#endif // RELEASE
+    internet_protocol_version4_context_t * context = internet_protocol_version4_context_gen(module, nil, child->packet, child->packetlen, child->bufferlen);
+    
+    // (internet_protocol_version4_context_t *) calloc(1, sizeof(internet_protocol_version4_context_t));
+
+    context->func = address_of(func);
+
+    return context;
+}

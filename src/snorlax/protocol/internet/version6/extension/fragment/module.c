@@ -48,7 +48,7 @@ static int32_t internet_protocol_version6_extension_fragment_module_func_deseria
     snorlaxdbg(parent == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context) *context = internet_protocol_version6_extension_fragment_context_gen(module, parent, packet, packetlen);
+    if(*context) *context = internet_protocol_version6_extension_fragment_context_gen(module, parent, packet, packetlen, 0);
 
     if(packetlen < internet_protocol_version6_extension_length_min) {
         internet_protocol_version6_extension_fragment_context_error_set(*context, EAGAIN);
@@ -94,7 +94,7 @@ static int32_t internet_protocol_version6_extension_fragment_module_func_in(inte
     snorlaxdbg(parent == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context) *context = internet_protocol_version6_extension_fragment_context_gen(module, parent, packet, packetlen);
+    if(*context) *context = internet_protocol_version6_extension_fragment_context_gen(module, parent, packet, packetlen, 0);
 
     if(internet_protocol_version6_extension_fragment_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         internet_protocol_version6_extension_fragment_module_on(module, protocol_event_exception, parent, *context);

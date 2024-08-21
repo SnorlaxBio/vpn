@@ -46,7 +46,7 @@ static int32_t internet_protocol_version6_extension_hopbyhop_module_func_deseria
     snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_extension_hopbyhop_context_gen(module, parent, packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_extension_hopbyhop_context_gen(module, parent, packet, packetlen, 0);
 
     if(packetlen < internet_protocol_version6_extension_length_min) {
         internet_protocol_version6_extension_hopbyhop_context_error_set(*context, EAGAIN);
@@ -116,7 +116,7 @@ static int32_t internet_protocol_version6_extension_hopbyhop_module_func_in(inte
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(*context == nil) *context = internet_protocol_version6_extension_hopbyhop_context_gen(module, parent, packet, packetlen);
+    if(*context == nil) *context = internet_protocol_version6_extension_hopbyhop_context_gen(module, parent, packet, packetlen, 0);
 
     if(internet_protocol_version6_extension_hopbyhop_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         internet_protocol_version6_extension_hopbyhop_module_on(module, protocol_event_exception, parent, *context);
