@@ -37,6 +37,8 @@ extern int32_t protocol_module_func_out(protocol_module_t * module, protocol_pat
     snorlaxdbg(child == nil, false, "critical", "");
 #endif // RELEASE
 
+    snorlaxdbg(true, false, "implement", "recursive module on");
+
     protocol_context_t * context = protocol_module_context_gen(module, node, child);
 
     if(context == nil) {
