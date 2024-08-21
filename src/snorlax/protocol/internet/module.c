@@ -11,12 +11,17 @@ static int32_t internet_protocol_module_func_serialize(internet_protocol_module_
 static void internet_protocol_module_func_debug(internet_protocol_module_t * module, FILE * stream, internet_protocol_context_t * context);
 static int32_t internet_protocol_module_func_in(internet_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, protocol_context_t * parent, internet_protocol_context_t ** context);
 
+    
+    // protocol_context_t * (*context_gen)(internet_protocol_module_t *, internet_protocol_context_t *);
+
 static internet_protocol_module_func_t func = {
     internet_protocol_module_func_rem,
     internet_protocol_module_func_deserialize,
     internet_protocol_module_func_serialize,
     internet_protocol_module_func_debug,
-    internet_protocol_module_func_in
+    internet_protocol_module_func_in,
+    internet_protocol_module_func_out,
+    internet_protocol_module_func_context_gen
 };
 
 extern internet_protocol_module_t * internet_protocol_module_gen(protocol_module_map_t * map, internet_protocol_context_handler_t on, internet_protocol_version4_module_t * version4, internet_protocol_version6_module_t * version6) {
@@ -163,4 +168,30 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
 
 extern int32_t internet_protocol_module_func_on(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
     return success;
+}
+
+extern int32_t internet_protocol_module_func_out(internet_protocol_module_t * module, internet_protocol_context_t * context, protocol_path_node_t * node) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(true, false, "critical", "");
+
+    // if(modulepath) {
+    //     protocol_module_t * parent = protocol_module_path_next(modulepath, index);
+
+    //     return protocol_module_out(parent, protocol_module_context_gen(parent, context), modulepath, index + 1);
+    // }
+}
+
+extern protocol_context_t * internet_protocol_module_func_context_gen(internet_protocol_module_t * module, protocol_context_t * child) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(child == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(true, false, "critical", "");
+
+    return nil;
 }

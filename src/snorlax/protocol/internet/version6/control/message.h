@@ -318,6 +318,7 @@ typedef int32_t (*internet_control_message_protocol_version6_context_handler_t)(
 struct internet_control_message_protocol_version6_module {
     internet_control_message_protocol_version6_module_func_t * func;
     sync_t * sync;
+    uint16_t type;
     uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
@@ -330,7 +331,7 @@ struct internet_control_message_protocol_version6_module_func {
     int32_t (*serialize)(internet_control_message_protocol_version6_module_t *, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_control_message_protocol_version6_module_t *, FILE *, internet_control_message_protocol_version6_context_t *);
     int32_t (*in)(internet_control_message_protocol_version6_module_t *, protocol_packet_t *, uint64_t, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t **);
-//    int32_t (*out)(internet_control_message_protocol_version6_module_t *, internet_protocol_version6_context_t *, internet_control_message_protocol_version6_context_t *, protocol_packet_t **, uint64_t *);
+    int32_t (*out)(internet_control_message_protocol_version6_module_t *, internet_control_message_protocol_version6_context_t *, protocol_path_node_t *);
 };
 
 extern internet_control_message_protocol_version6_module_t * internet_control_message_protocol_version6_module_gen(internet_control_message_protocol_version6_context_handler_t on);
@@ -343,6 +344,7 @@ extern int32_t internet_control_message_protocol_version6_module_func_on(interne
 #define internet_control_message_protocol_version6_module_serialize(module, parent, context, packet, packetlen)         ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_control_message_protocol_version6_module_debug(module, stream, context)                                ((module)->func->debug(module, stream, context))
 #define internet_control_message_protocol_version6_module_in(module, packet, packetlen, parent, context)                ((module)->func->in(module, packet, packetlen, parent, context))
+#define internet_control_message_protocol_version6_module_out(module, context, node)                                    ((module)->func->out(module, context, node))
 
 #define internet_control_message_protocol_version6_module_on(module, type, parent, context)                             ((module)->on(module, type, parent, context))
 
@@ -356,6 +358,7 @@ struct internet_control_message_protocol_version6_context {
     internet_control_message_protocol_version6_packet_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -390,6 +393,7 @@ struct internet_control_message_protocol_version6_context_destination_unreachabl
     internet_control_message_protocol_version6_destination_unreachable_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -411,6 +415,7 @@ struct internet_control_message_protocol_version6_context_packet_too_big {
     internet_control_message_protocol_version6_packet_too_big_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -435,6 +440,7 @@ struct internet_control_message_protocol_version6_context_time_exceeded {
     internet_control_message_protocol_version6_time_exceeded_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -456,6 +462,7 @@ struct internet_control_message_protocol_version6_context_parameter_problem {
     internet_control_message_protocol_version6_parameter_problem_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -480,6 +487,7 @@ struct internet_control_message_protocol_version6_context_echo {
     internet_control_message_protocol_version6_echo_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -506,6 +514,7 @@ struct internet_control_message_protocol_version6_context_router_solicitation {
     internet_control_message_protocol_version6_router_solicitation_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -531,6 +540,7 @@ struct internet_control_message_protocol_version6_context_router_advertisement {
     internet_control_message_protocol_version6_router_advertisement_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -559,6 +569,7 @@ struct internet_control_message_protocol_version6_context_neighbor_solicitation 
     internet_control_message_protocol_version6_neighbor_solicitation_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -580,6 +591,7 @@ struct internet_control_message_protocol_version6_context_neighbor_advertisement
     internet_control_message_protocol_version6_neighbor_advertisement_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 
@@ -594,13 +606,14 @@ extern internet_control_message_protocol_version6_context_neighbor_advertisement
 struct internet_control_message_protocol_version6_context_redirect {
     internet_control_message_protocol_version6_context_redirect_func_t * func;
     sync_t * sync;
-    internet_control_message_protocol_version6_module_t * module;
-    internet_protocol_version6_context_t * parent;
+    ___reference internet_control_message_protocol_version6_module_t * module;  // 
+    ___reference internet_protocol_version6_context_t * parent;
     protocol_context_array_t * children;
     int32_t error;
-    internet_control_message_protocol_version6_redirect_t * packet;
+    ___reference internet_control_message_protocol_version6_redirect_t * packet;
     uint64_t packetlen;
     uint64_t bufferlen;
+
     uint16_t checksum;
 };
 

@@ -176,6 +176,7 @@ typedef int32_t (*internet_control_message_protocol_version4_context_handler_t)(
 struct internet_control_message_protocol_version4_module {
     internet_control_message_protocol_version4_module_func_t * func;
     sync_t * sync;
+    uint16_t type;
     uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
@@ -188,7 +189,7 @@ struct internet_control_message_protocol_version4_module_func {
     int32_t (*serialize)(internet_control_message_protocol_version4_module_t *, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_control_message_protocol_version4_module_t *, FILE *, internet_control_message_protocol_version4_context_t *);
     int32_t (*in)(internet_control_message_protocol_version4_module_t *, protocol_packet_t *, uint64_t, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t **);
-//    int32_t (*out)(internet_control_message_protocol_version4_module_t *, internet_protocol_version4_context_t *, internet_control_message_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
+    int32_t (*out)(internet_control_message_protocol_version4_module_t *, internet_control_message_protocol_version4_context_t *, protocol_path_node_t *);
 };
 
 extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(internet_control_message_protocol_version4_context_handler_t on);
@@ -201,6 +202,7 @@ extern int32_t internet_control_message_protocol_version4_module_func_on(interne
 #define internet_control_message_protocol_version4_module_serialize(module, parent, context, packet, packetlen)         ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_control_message_protocol_version4_module_debug(module, stream, context)                                ((module)->func->debug(module, stream, context))
 #define internet_control_message_protocol_version4_module_in(module, packet, packetlen, parent, context)                ((module)->func->in(module, packet, packetlen, parent, context))
+#define internet_control_message_protocol_version4_module_out(module, context, node)                                    ((module)->func->out(module, context, node))
 
 #define internet_control_message_protocol_version4_module_on(module, type, parent, context)                             ((module)->on(module, type, parent, context))
 

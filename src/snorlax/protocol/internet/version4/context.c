@@ -21,8 +21,8 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
     context->module = module;
     context->children = protocol_context_array_gen();
     context->parent = parent;
-    context->datagram = datagram;
-    context->datagramlen = datagramlen;
+    context->packet = datagram;
+    context->packetlen = datagramlen;
 
     return context;
 }
@@ -68,9 +68,9 @@ static uint8_t * internet_protocol_version4_context_func_addrptr(internet_protoc
 #endif // RELEASE
 
     if(type == protocol_address_type_source) {
-        return (uint8_t *) address_of(context->datagram->source);
+        return (uint8_t *) address_of(context->packet->source);
     } else if(type == protocol_address_type_destination) {
-        return (uint8_t *) address_of(context->datagram->destination);
+        return (uint8_t *) address_of(context->packet->destination);
     }
 
     return nil;

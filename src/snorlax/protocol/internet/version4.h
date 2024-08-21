@@ -108,7 +108,7 @@ struct internet_protocol_version4_pseudo {
     uint32_t destination;
     uint8_t zero;
     uint8_t protocol;
-    uint8_t length;
+    uint16_t length;
 };
 
 struct internet_protocol_version4_address {
@@ -125,6 +125,7 @@ typedef int32_t (*internet_protocol_version4_context_handler_t)(internet_protoco
 struct internet_protocol_version4_module {
     internet_protocol_version4_module_func_t * func;
     sync_t * sync;
+    uint16_t type;
     uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
@@ -139,7 +140,7 @@ struct internet_protocol_version4_module_func {
     int32_t (*serialize)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(internet_protocol_version4_module_t *, FILE *, internet_protocol_version4_context_t *);
     int32_t (*in)(internet_protocol_version4_module_t *, protocol_packet_t *, uint64_t, protocol_context_t *, internet_protocol_version4_context_t **);
-//    int32_t (*out)(internet_protocol_version4_module_t *, protocol_context_t *, internet_protocol_version4_context_t *, protocol_packet_t **, uint64_t *);
+    int32_t (*out)(internet_protocol_version4_module_t *, internet_protocol_version4_context_t *, protocol_path_node_t *);
 
     int32_t (*local_is)(internet_protocol_version4_module_t *, uint32_t);
 
@@ -158,6 +159,7 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
 #define internet_protocol_version4_module_serialize(module, parent, context, packet, packetlen)     ((module)->func->serialize(module, parent, context, packet, packetlen))
 #define internet_protocol_version4_module_debug(module, stream, context)                            ((module)->func->debug(module, stream, context))
 #define internet_protocol_version4_module_in(module, packet, packetlen, parent, context)            ((module)->func->in(module, packet, packetlen, parent, context))
+#define internet_protocol_version4_module_out(module, context, node)                                ((module)->func->out(module, context, node))
 
 #define internet_protocol_version4_module_local_is(module, addr)                                    ((module)->func->local_is(module, addr))
 
@@ -170,16 +172,16 @@ extern int32_t internet_protocol_version4_module_func_on(internet_protocol_versi
 struct internet_protocol_version4_context {
     internet_protocol_version4_context_func_t * func;
     sync_t * sync;
-    internet_protocol_version4_module_t * module;
-    protocol_context_t * parent;
+    ___reference internet_protocol_version4_module_t * module;
+    ___reference protocol_context_t * parent;
     protocol_context_array_t * children;
     int32_t error;
-    internet_protocol_version4_packet_t * datagram;
-    uint64_t datagramlen;
+    ___reference internet_protocol_version4_packet_t * packet;
+    uint64_t packetlen;
     uint64_t bufferlen;
+
     internet_protocol_version4_pseudo_t * pseudo;
     uint64_t pseudolen;
-    uint32_t direction;
 
     uint16_t checksumcal;
     internet_protocol_version4_option_t * option;
@@ -201,21 +203,21 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 
 #define internet_protocol_version4_context_error_set(context, v)            ((context)->error = v)
 #define internet_protocol_version4_context_error_get(context)               ((context)->error)
-#define internet_protocol_version4_context_packetlen_set(context, v)        ((context)->datagramlen = v)
-#define internet_protocol_version4_context_packetlen_get(context)           ((context)->datagramlen)
+#define internet_protocol_version4_context_packetlen_set(context, v)        ((context)->packetlen = v)
+#define internet_protocol_version4_context_packetlen_get(context)           ((context)->packetlen)
 #define internet_protocol_version4_context_checksumcal_get(context)         ((context)->checksumcal)
 #define internet_protocol_version4_context_checksumcal_set(context, v)      ((context)->checksumcal = v)
 #define internet_protocol_version4_context_direction_get(context)           ((context)->direction)
 #define internet_protocol_version4_context_direction_set(context, v)        ((context)->direction = v)
 
-#define internet_protocol_version4_context_total_set(context, v)            ((context)->datagram->total = ntohs(v))
-#define internet_protocol_version4_context_total_get(context)               (htons((context)->datagram->total))
-#define internet_protocol_version4_context_checksum_set(context, v)         ((context)->datagram->checksum = ntohs(v))
-#define internet_protocol_version4_context_checksum_get(context)            (htons((context)->datagram->checksum))
-#define internet_protocol_version4_context_identification_set(context, v)   ((context)->datagram->identification = ntohs(v))
-#define internet_protocol_version4_context_identification_get(context)      (htons((context)->datagram->identification))
-#define internet_protocol_version4_context_fragment_set(context, v)         ((context)->datagram->fragment = ntohs(v))
-#define internet_protocol_version4_context_fragment_get(context)            (htons((context)->datagram->fragment))
+#define internet_protocol_version4_context_total_set(context, v)            ((context)->packet->total = ntohs(v))
+#define internet_protocol_version4_context_total_get(context)               (htons((context)->packet->total))
+#define internet_protocol_version4_context_checksum_set(context, v)         ((context)->packet->checksum = ntohs(v))
+#define internet_protocol_version4_context_checksum_get(context)            (htons((context)->packet->checksum))
+#define internet_protocol_version4_context_identification_set(context, v)   ((context)->packet->identification = ntohs(v))
+#define internet_protocol_version4_context_identification_get(context)      (htons((context)->packet->identification))
+#define internet_protocol_version4_context_fragment_set(context, v)         ((context)->packet->fragment = ntohs(v))
+#define internet_protocol_version4_context_fragment_get(context)            (htons((context)->packet->fragment))
 // TODO: MUST UPGRADE START
 // #define internet_protocol_version4_context_fragment_offset_set(context, v)  ((context)->fragment.detail.offset = v)
 // #define internet_protocol_version4_context_fragment_offset_get(context)     ((context)->fragment.detail.offset)
@@ -224,12 +226,12 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 // #define internet_protocol_version4_context_fragment_mf_set(context, v)      ((context)->fragment.detail.mf = v)
 // #define internet_protocol_version4_context_fragment_mf_get(context)         ((context)->fragment.detail.mf)
 // TODO: MUST UPGRADE END
-#define internet_protocol_version4_context_source_set(context, v)           ((context)->datagram->source = htonl(v))
-#define internet_protocol_version4_context_source_get(context)              (ntohl((context)->datagram->source))
-#define internet_protocol_version4_context_source_ptr_get(context)          ((uint8_t *) (&((context)->datagram->source)))
-#define internet_protocol_version4_context_destination_set(context, v)      ((context)->datagram->destination = htonl(v))
-#define internet_protocol_version4_context_destination_get(context)         (ntohl((context)->datagram->destination))
-#define internet_protocol_version4_context_destination_ptr_get(context)     ((uint8_t *) (&((context)->datagram->destination)))
+#define internet_protocol_version4_context_source_set(context, v)           ((context)->packet->source = htonl(v))
+#define internet_protocol_version4_context_source_get(context)              (ntohl((context)->packet->source))
+#define internet_protocol_version4_context_source_ptr_get(context)          ((uint8_t *) (&((context)->packet->source)))
+#define internet_protocol_version4_context_destination_set(context, v)      ((context)->packet->destination = htonl(v))
+#define internet_protocol_version4_context_destination_get(context)         (ntohl((context)->packet->destination))
+#define internet_protocol_version4_context_destination_ptr_get(context)     ((uint8_t *) (&((context)->packet->destination)))
 #define internet_protocol_version4_context_option_set(context, v)           ((context)->option = ((internet_protocol_version4_option_t *) v))
 #define internet_protocol_version4_context_option_get(context)              ((context)->option)
 
@@ -238,22 +240,22 @@ extern internet_protocol_version4_context_t * internet_protocol_version4_context
 #define internet_protocol_version4_context_segmentlen_set(context, v)       ((context)->segmentlen = v)
 #define internet_protocol_version4_context_segmentlen_get(context)          ((context)->segmentlen)
 
-#define internet_protocol_version4_context_version_set(context, v)          ((context)->datagram->version = v)
-#define internet_protocol_version4_context_version_get(context)             ((context)->datagram->version)
-#define internet_protocol_version4_context_length_set(context, v)           ((context)->datagram->length = v)
-#define internet_protocol_version4_context_length_get(context)              ((context)->datagram->length)
-#define internet_protocol_version4_context_service_set(context, v)          ((context)->datagram->service = v)
-#define internet_protocol_version4_context_service_get(context)             ((context)->datagram->service)
-#define internet_protocol_version4_context_ttl_set(context)                 ((context)->datagram->ttl = v)
-#define internet_protocol_version4_context_ttl_get(context)                 ((context)->datagram->ttl)
-#define internet_protocol_version4_context_protocol_set(context)            ((context)->datagram->protocol = v)
-#define internet_protocol_version4_context_protocol_get(context)            ((context)->datagram->protocol)
+#define internet_protocol_version4_context_version_set(context, v)          ((context)->packet->version = v)
+#define internet_protocol_version4_context_version_get(context)             ((context)->packet->version)
+#define internet_protocol_version4_context_length_set(context, v)           ((context)->packet->length = v)
+#define internet_protocol_version4_context_length_get(context)              ((context)->packet->length)
+#define internet_protocol_version4_context_service_set(context, v)          ((context)->packet->service = v)
+#define internet_protocol_version4_context_service_get(context)             ((context)->packet->service)
+#define internet_protocol_version4_context_ttl_set(context)                 ((context)->packet->ttl = v)
+#define internet_protocol_version4_context_ttl_get(context)                 ((context)->packet->ttl)
+#define internet_protocol_version4_context_protocol_set(context)            ((context)->packet->protocol = v)
+#define internet_protocol_version4_context_protocol_get(context)            ((context)->packet->protocol)
 
 #define internet_protocol_version4_context_pseudo_set(context, v, len)      (((context)->pseudolen = len), ((context)->pseudo = v))
 #define internet_protocol_version4_context_pseudo_get(context)              ((context)->pseudo)
 #define internet_protocol_version4_context_pseudolen_get(context)           ((context)->pseudolen)
 
-#define internet_protocol_version4_context_segment_length_cal(context)      (internet_protocol_version4_context_total_get(context) - internet_protocol_version4_module_header_length_cal((context)->datagram))
+#define internet_protocol_version4_context_segment_length_cal(context)      (internet_protocol_version4_context_total_get(context) - internet_protocol_version4_module_header_length_cal((context)->packet))
 
 #define internet_protocol_version4_context_option_offset_next(option)       ((*(option) == 0 || *(option) == 1) ? (option) + 1 : (option) + (option)[1])
 

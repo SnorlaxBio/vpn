@@ -35,8 +35,11 @@ extern const char * internet_protocol_version6_address_to_string(char * destinat
 extern internet_protocol_version6_pseudo_t * internet_protocol_version6_pseudo_gen(internet_protocol_version6_packet_t * datagram, uint8_t next, uint64_t len) {
     internet_protocol_version6_pseudo_t * pseudo = (internet_protocol_version6_pseudo_t *) calloc(1, sizeof(internet_protocol_version6_pseudo_t));
 
-    memcpy(pseudo->destination, datagram->destination, 16);
-    memcpy(pseudo->source, datagram->source, 16);
+    if(datagram) {
+        memcpy(pseudo->destination, datagram->destination, 16);
+        memcpy(pseudo->source, datagram->source, 16);
+    }
+
     pseudo->length = len;
     pseudo->next = next;
 

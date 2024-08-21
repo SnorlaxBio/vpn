@@ -23,8 +23,8 @@ extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protoc
     context->func = address_of(func);
     context->children = nil;
     context->parent = parent;
-    context->extension = (internet_protocol_version6_extension_hopbyhop_t *) datagram;
-    context->extensionlen = datagramlen;
+    context->packet = (internet_protocol_version6_extension_hopbyhop_t *) datagram;
+    context->packetlen = datagramlen;
 
     return context;
 }

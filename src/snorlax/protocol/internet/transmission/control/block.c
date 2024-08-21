@@ -29,6 +29,7 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
     block->func = address_of(func);
 
     block->key.value = malloc(key->length);
+    block->window = transmission_control_window_size_init;
 
     memcpy(block->key.value, key->value, key->length);
 

@@ -42,6 +42,20 @@ extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmiss
                     agent->subscription = event_engine_socket_client_sub(engine, (socket_client_t *) agent->client, transmission_control_protocol_client_handler_get(), nil, (event_subscription_meta_t *) agent);
                 }
 
+                uint8_t buffer[protocol_packet_max];
+
+                snorlaxdbg(true, false, "implement", "");
+
+                // if(transmission_control_protocol_module_out(module, transmission_control_protocol_context_gen_fake_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max), context->block->modulepath, 0) == fail) {
+                //     snorlaxdbg(false, true, "debug", "fail");
+                // }
+
+                // transmission_control_protocol_context_t * ctx = transmssion_control_block_context_gen_fake_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max);
+
+
+
+                // 앞으로 패킷을 생성하면서 간다.
+
                 // MODULE PATH ,... 
 
                 // 어떻게 DESTINATION 으로 보낼까?

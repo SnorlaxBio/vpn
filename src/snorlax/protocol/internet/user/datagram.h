@@ -44,6 +44,7 @@ typedef int32_t (*user_datagram_protocol_context_handler_t)(user_datagram_protoc
 struct user_datagram_protocol_module {
     user_datagram_protocol_module_func_t * func;
     sync_t * sync;
+    uint16_t type;
     uint16_t addrlen;
     ___reference protocol_module_map_t * map;
 
@@ -56,7 +57,8 @@ struct user_datagram_protocol_module_func {
     int32_t (*serialize)(user_datagram_protocol_module_t *, internet_protocol_context_t *, user_datagram_protocol_context_t *, protocol_packet_t **, uint64_t *);
     void (*debug)(user_datagram_protocol_module_t *, FILE *, user_datagram_protocol_context_t *);
     int32_t (*in)(user_datagram_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, user_datagram_protocol_context_t **);
-//    int32_t (*out)(user_datagram_protocol_module_t *, internet_protocol_context_t *, user_datagram_protocol_context_t *, protocol_packet_t **, uint64_t *);
+    int32_t (*out)(user_datagram_protocol_module_t *, user_datagram_protocol_context_t *, protocol_path_node_t *);
+
 };
 
 extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(protocol_module_map_t * map, user_datagram_protocol_context_handler_t on);
@@ -69,6 +71,7 @@ extern int32_t user_datagram_protocol_module_func_on(user_datagram_protocol_modu
 #define user_datagram_protocol_module_serialize(module, parent, context, packet, len)                   ((module)->func->serialize(module, parent, context, packet, len))
 #define user_datagram_protocol_module_debug(module, stream, context)                                    ((module)->func->debug(module, stream, context))
 #define user_datagram_protocol_module_in(module, packet, packetlen, parent, context)                    ((module)->func->in(module, packet, packetlen, parent, context))
+#define user_datagram_protocol_module_out(module, context, node)                                        ((module)->func->out(module, context, node))
 
 #define user_datagram_protocol_module_on(module, type, parent, context)                                 ((module)->on(module, type, parent, context))
 

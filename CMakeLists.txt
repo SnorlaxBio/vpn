@@ -133,10 +133,8 @@ set(SNORLAX_VPN_SERVER_HEADER   src/snorlax/vpn/server/app.h
                                 src/snorlax/vpn/session.h)
 
 set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol/context.c
+                                src/snorlax/protocol/path.c
                                 src/snorlax/protocol/module/map.c
-                                src/snorlax/protocol/module/path.c
-                                src/snorlax/protocol/address/node.c
-                                src/snorlax/protocol/address/path.c
                                 src/snorlax/protocol/context/array.c
                                 src/snorlax/protocol/internet.c
                                 src/snorlax/protocol/internet/module.c
@@ -173,6 +171,7 @@ set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol/context.c
                                 src/snorlax/protocol/internet/version6/control/message/context/neighbor/solicitation.c
                                 src/snorlax/protocol/internet/version6/control/message/context/neighbor/advertisement.c
                                 src/snorlax/protocol/internet/version6/control/message/context/time/exceeded.c
+                                src/snorlax/protocol/internet/version6/extension/module.c
                                 src/snorlax/protocol/internet/version6/extension/destination/context.c
                                 src/snorlax/protocol/internet/version6/extension/destination/module.c
                                 src/snorlax/protocol/internet/version6/extension/hopbyhop/context.c
@@ -185,6 +184,7 @@ set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol/context.c
                                 src/snorlax/protocol/internet/user/datagram/module.c
                                 src/snorlax/protocol/internet/user/datagram/context.c
                                 src/snorlax/protocol/internet/transmission/control.c
+                                src/snorlax/protocol/internet/transmission/control/packet.c
                                 src/snorlax/protocol/internet/transmission/control/module.c
                                 src/snorlax/protocol/internet/transmission/control/context.c
                                 src/snorlax/protocol/internet/transmission/control/block.c)

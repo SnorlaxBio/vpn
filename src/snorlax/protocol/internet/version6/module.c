@@ -16,6 +16,7 @@ static internet_protocol_version6_module_func_t func = {
     internet_protocol_version6_module_func_serialize,
     internet_protocol_version6_module_func_debug,
     internet_protocol_version6_module_func_in,
+    internet_protocol_version6_module_func_out,
 
     internet_protocol_version6_module_func_local_is,
 
@@ -75,7 +76,7 @@ extern int32_t internet_protocol_version6_module_func_deserialize(internet_proto
     internet_protocol_version6_context_traffic_class_set(*context, internet_protocol_version6_traffic_class_get(datagram));
     internet_protocol_version6_context_flow_label_set(*context, internet_protocol_version6_flow_label_get(datagram));
 
-    internet_protocol_version6_context_direction_set(*context, internet_protocol_version6_direction_cal(internet_protocol_version6_context_source_get(*context), internet_protocol_version6_context_destination_get(*context), module->addr));
+    // internet_protocol_version6_context_direction_set(*context, internet_protocol_version6_direction_cal(internet_protocol_version6_context_source_get(*context), internet_protocol_version6_context_destination_get(*context), module->addr));
 
     internet_protocol_version6_module_debug(module, stdout, *context);
 
@@ -190,4 +191,8 @@ extern int32_t internet_protocol_version6_module_func_local_is(internet_protocol
     }
 
     return false;
+}
+
+extern int32_t internet_protocol_version6_module_func_out(internet_protocol_version6_module_t * module, internet_protocol_version6_context_t * context, protocol_path_node_t * node) {
+    snorlaxdbg(true, false, "implement", "");
 }

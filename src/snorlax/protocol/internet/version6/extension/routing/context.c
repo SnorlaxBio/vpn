@@ -20,8 +20,8 @@ extern internet_protocol_version6_extension_routing_context_t * internet_protoco
     context->module = module;
     context->children = nil;
     context->parent = parent;
-    context->extension = (internet_protocol_version6_extension_routing_t *) datagram;
-    context->extensionlen = datagramlen;
+    context->packet = (internet_protocol_version6_extension_routing_t *) datagram;
+    context->packetlen = datagramlen;
 
     return context;
 }

@@ -11,13 +11,15 @@ static int32_t internet_control_message_protocol_version4_module_func_deserializ
 static int32_t internet_control_message_protocol_version4_module_func_serialize(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void internet_control_message_protocol_version4_module_func_debug(internet_control_message_protocol_version4_module_t * module, FILE * stream, internet_control_message_protocol_version4_context_t * context);
 static int32_t internet_control_message_protocol_version4_module_func_in(internet_control_message_protocol_version4_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_context_t ** context);
+static int32_t internet_control_message_protocol_version4_module_func_out(internet_control_message_protocol_version4_module_t * module, internet_control_message_protocol_version4_context_t * context, protocol_path_node_t * node);
 
 static internet_control_message_protocol_version4_module_func_t func = {
     internet_control_message_protocol_version4_module_func_rem,
     internet_control_message_protocol_version4_module_func_deserialize,
     internet_control_message_protocol_version4_module_func_serialize,
     internet_control_message_protocol_version4_module_func_debug,
-    internet_control_message_protocol_version4_module_func_in
+    internet_control_message_protocol_version4_module_func_in,
+    internet_control_message_protocol_version4_module_func_out
 };
 
 extern internet_control_message_protocol_version4_module_t * internet_control_message_protocol_version4_module_gen(internet_control_message_protocol_version4_context_handler_t on) {
@@ -112,4 +114,8 @@ extern int32_t internet_control_message_protocol_version4_module_func_on(interne
     snorlaxdbg(false, true, "implement", "");
 
     return success;
+}
+
+static int32_t internet_control_message_protocol_version4_module_func_out(internet_control_message_protocol_version4_module_t * module, internet_control_message_protocol_version4_context_t * context, protocol_path_node_t * node) {
+    snorlaxdbg(true, false, "critical", "");
 }

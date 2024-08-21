@@ -9,12 +9,15 @@ static int32_t internet_protocol_version6_extension_hopbyhop_module_func_seriali
 static void internet_protocol_version6_extension_hopbyhop_module_func_debug(internet_protocol_version6_extension_hopbyhop_module_t * module, FILE * stream, internet_protocol_version6_extension_hopbyhop_context_t * context);
 static int32_t internet_protocol_version6_extension_hopbyhop_module_func_in(internet_protocol_version6_extension_hopbyhop_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_hopbyhop_context_t ** context);
 
+typedef int32_t (*internet_protocol_version6_extension_hopbyhop_module_func_out_t)(internet_protocol_version6_extension_hopbyhop_module_t *, internet_protocol_version6_extension_hopbyhop_context_t *, protocol_path_node_t *);
+
 static internet_protocol_version6_extension_hopbyhop_module_func_t func = {
     internet_protocol_version6_extension_hopbyhop_module_func_rem,
     internet_protocol_version6_extension_hopbyhop_module_func_deserialize,
     internet_protocol_version6_extension_hopbyhop_module_func_serialize,
     internet_protocol_version6_extension_hopbyhop_module_func_debug,
-    internet_protocol_version6_extension_hopbyhop_module_func_in
+    internet_protocol_version6_extension_hopbyhop_module_func_in,
+    (internet_protocol_version6_extension_hopbyhop_module_func_out_t) internet_protocol_version6_extension_module_func_out
 };
 
 extern internet_protocol_version6_extension_hopbyhop_module_t * internet_protocol_version6_extension_hopbyhop_module_gen(internet_protocol_version6_extension_hopbyhop_context_handler_t on) {
@@ -83,8 +86,8 @@ static void internet_protocol_version6_extension_hopbyhop_module_func_debug(inte
 // FILE * stream,
 // internet_protocol_version6_extension_hopbyhop_context_t * context
     fprintf(stream, "| hopbyhop ");
-    fprintf(stream, "| %d ", context->extension->next);
-    fprintf(stream, "| %d ", (context->extension->length + 1) * 8);
+    fprintf(stream, "| %d ", context->packet->next);
+    fprintf(stream, "| %d ", (context->packet->length + 1) * 8);
 
     for(internet_protocol_version6_option_t * option = internet_protocol_version6_extension_hopbyhop_context_option_begin(context); option != internet_protocol_version6_extension_hopbyhop_context_option_end(context); option = internet_protocol_version6_option_next(option)) {
         uint8_t type = *option;

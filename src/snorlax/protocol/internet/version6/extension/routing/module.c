@@ -9,12 +9,15 @@ static int32_t internet_protocol_version6_extension_routing_module_func_serializ
 static void internet_protocol_version6_extension_routing_module_func_debug(internet_protocol_version6_extension_routing_module_t * module, FILE * stream, internet_protocol_version6_extension_routing_context_t * context);
 static int32_t internet_protocol_version6_extension_routing_module_func_in(internet_protocol_version6_extension_routing_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_version6_context_t * parent, internet_protocol_version6_extension_routing_context_t ** context);
 
+typedef int32_t (*internet_protocol_version6_extension_routing_module_func_out_t)(internet_protocol_version6_extension_routing_module_t *, internet_protocol_version6_extension_routing_context_t *, protocol_path_node_t *);
+
 static internet_protocol_version6_extension_routing_module_func_t func = {
     internet_protocol_version6_extension_routing_module_func_rem,
     internet_protocol_version6_extension_routing_module_func_deserialize,
     internet_protocol_version6_extension_routing_module_func_serialize,
     internet_protocol_version6_extension_routing_module_func_debug,
-    internet_protocol_version6_extension_routing_module_func_in
+    internet_protocol_version6_extension_routing_module_func_in,
+    (internet_protocol_version6_extension_routing_module_func_out_t) internet_protocol_version6_extension_module_func_out
 };
 
 extern internet_protocol_version6_extension_routing_module_t * internet_protocol_version6_extension_routing_module_gen(internet_protocol_version6_extension_routing_context_handler_t on) {
@@ -76,14 +79,14 @@ static void internet_protocol_version6_extension_routing_module_func_debug(inter
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(stream == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "criticial", "");
-    snorlaxdbg(context->extension == nil, false, "criticial", "");
+    snorlaxdbg(context->packet == nil, false, "criticial", "");
 #endif // RELEASE
 
     fprintf(stream, "| routing ");
-    fprintf(stream, "| %d ", context->extension->next);
-    fprintf(stream, "| %d ", (context->extension->length + 1) * 8);
-    fprintf(stream, "| %d ", context->extension->type);
-    fprintf(stream, "| %d ", context->extension->left);
+    fprintf(stream, "| %d ", context->packet->next);
+    fprintf(stream, "| %d ", (context->packet->length + 1) * 8);
+    fprintf(stream, "| %d ", context->packet->type);
+    fprintf(stream, "| %d ", context->packet->left);
     fprintf(stream, "|\n");
 
     // TODO: TYPE SPECIFIC DATA 

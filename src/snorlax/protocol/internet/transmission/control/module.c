@@ -1,14 +1,19 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #include "../control.h"
+#include "../../../internet.h"
+#include "../../../internet/version4.h"
+#include "../../../internet/version6.h"
 
 static transmission_control_protocol_module_t * transmission_control_protocol_module_func_rem(transmission_control_protocol_module_t * module);
 static int32_t transmission_control_protocol_module_func_deserialize(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
 static int32_t transmission_control_protocol_module_func_serialize(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context, protocol_packet_t ** packet, uint64_t * packetlen);
 static void transmission_control_protocol_module_func_debug(transmission_control_protocol_module_t * module, FILE * stream, transmission_control_protocol_context_t * context);
 static int32_t transmission_control_protocol_module_func_in(transmission_control_protocol_module_t * module, protocol_packet_t * packet, uint64_t packetlen, internet_protocol_context_t * parent, transmission_control_protocol_context_t ** context);
+static int32_t transmission_control_protocol_module_func_out(transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context, protocol_path_node_t * node);
 
 static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_rem,
@@ -16,6 +21,7 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_serialize,
     transmission_control_protocol_module_func_debug,
     transmission_control_protocol_module_func_in,
+    transmission_control_protocol_module_func_out,
 
     transmission_control_protocol_module_func_blockon
 };
@@ -96,7 +102,7 @@ static void transmission_control_protocol_module_func_debug(transmission_control
     fprintf(stream, "| %u ", transmission_control_protocol_context_source_get(context));
     fprintf(stream, "| %u ", transmission_control_protocol_context_destination_get(context));
     fprintf(stream, "| %u ", transmission_control_protocol_context_sequence_get(context));
-    fprintf(stream, "| %u ", transmission_control_protocol_context_acknowledgment_get(context));
+    fprintf(stream, "| %u ", transmission_control_protocol_context_acknowledge_get(context));
     fprintf(stream, "| %d ", transmission_control_protocol_context_offset_get(context));
     fprintf(stream, "| cwr %c ", transmission_control_protocol_context_cwr_get(context) ? 'o' : 'x');
     fprintf(stream, "| ece %c ", transmission_control_protocol_context_ece_get(context) ? 'o' : 'x');
@@ -170,16 +176,20 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
             if(context->block == nil) {
                 hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key))));
 
-                transmission_control_block_state_set(context->block, transmission_control_state_syn_sent);
-                transmission_control_block_sequence_set(context->block, transmission_control_protocol_context_sequence_get(context));
+                transmission_control_block_state_set(context->block, transmission_control_state_syn_rcvd);
+                transmission_control_block_acknowledge_set(context->block, transmission_control_protocol_context_sequence_get(context));
+                transmission_control_block_sequence_set(context->block, transmission_control_protocol_module_seqeuence_gen(context->module, parent, context));
+                transmission_control_block_version_set(context->block, internet_protocol_context_version_get(parent));
+
                 transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
 
-                context->block->modulepath = protocol_module_path_gen((protocol_context_t *) context, 4);
-                context->block->source = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_source, 32);
-                // context->block->source = protocol_address_path_get(context, 4);
-                // context->block->destination = protocol_address_path_get(context, 4);
+                snorlaxdbg(true, false, "implement", "");
 
-                if(transmission_control_block_acknowledgment_get(context->block) != 0) {
+                // context->block->modulepath = protocol_module_path_gen((protocol_context_t *) context, 4);
+                // context->block->source = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_source, 32);
+                // context->block->destination = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_destination, 32);
+
+                if(transmission_control_block_acknowledge_get(context->block) != 0) {
                     snorlaxdbg(false, true, "check", "");
                 }
             } else {
@@ -198,4 +208,41 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
     }
 
     return success;
+}
+
+extern uint32_t transmission_control_protocol_module_func_sequence_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(parent == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    uint32_t seq = time(nil);
+
+    seq = seq + transmission_control_protocol_context_source_get(context);
+    seq = seq + transmission_control_protocol_context_destination_get(context);
+
+    uint8_t version = internet_protocol_context_version_get(parent);
+
+    if(version == 4) {
+        seq = seq + internet_protocol_version4_context_source_get((internet_protocol_version4_context_t *) parent);
+        seq = seq + internet_protocol_version4_context_destination_get((internet_protocol_version4_context_t *) parent);
+    } else if(version == 6) {
+        uint32_t * addr = (uint32_t *) internet_protocol_version6_context_source_get((internet_protocol_version6_context_t *) parent);
+
+        for(int i = 0; i < 4; i++, addr++) seq = seq + (*addr);
+
+        addr = (uint32_t *) internet_protocol_version6_context_destination_get((internet_protocol_version6_context_t *) parent);
+
+        for(int i = 0; i < 4; i++, addr++) seq = seq + (*addr);
+    } else {
+        snorlaxdbg(version != 4 && version != 6, false, "critical", "");
+    }
+    // seq += internet_protocol_
+
+    return seq;
+}
+
+static int32_t transmission_control_protocol_module_func_out(transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context, protocol_path_node_t * node) {
+    snorlaxdbg(true, false, "critical", "");
 }
