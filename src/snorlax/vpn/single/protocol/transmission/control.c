@@ -36,7 +36,8 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_in(trans
     snorlaxdbg(transmission_control_protocol_context_key_has(context) == false, false, "critical", "");
 
     if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
-        snorlaxdbg(true, false, "check", "");
+        snorlaxdbg(false, true, "check", "");
+        return fail;
     }
 
     snorlaxdbg(context->block == nil, false, "check", "");

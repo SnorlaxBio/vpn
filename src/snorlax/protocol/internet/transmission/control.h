@@ -396,6 +396,7 @@ extern int32_t transmssion_control_protocol_context_is_connect_ack(transmission_
 #define transmission_control_protocol_context_fin_off(context)                                  ((context)->packet->control.bit.fin = 0)
 #define transmission_control_protocol_context_flags_get(context)                                ((context)->packet->control.flags)
 #define transmission_control_protocol_context_flags_set(context, v)                             ((context)->packet->control.flags = v)
+#define transmission_control_protocol_context_flags_has(context, v)                             ((context)->packet->control.flags & v)
 #define transmission_control_protocol_context_window_get(context)                               (ntohs((context)->packet->window))
 #define transmission_control_protocol_context_window_set(context, v)                            ((context)->packet->window = htons(v))
 #define transmission_control_protocol_context_checksum_get(context)                             (ntohs((context)->packet->checksum))

@@ -67,6 +67,7 @@ static int32_t transmission_control_protocol_context_func_valid(transmission_con
 
     if(transmission_control_protocol_context_checksumcal_get(context) != transmission_control_protocol_context_checksum_get(context)) {
         transmission_control_protocol_context_error_set(context, EIO);
+        snorlaxdbg(transmission_control_protocol_context_checksumcal_get(context) != transmission_control_protocol_context_checksum_get(context), false, "critical", "");
         return false;
     }
 

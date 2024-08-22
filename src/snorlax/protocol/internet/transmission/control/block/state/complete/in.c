@@ -72,9 +72,7 @@ extern int32_t transmission_control_block_state_establish_complete_in(transmissi
         snorlaxdbg(false, true, "debug", "state is changed, send message check and send");
     }
 
-    snorlaxdbg(true, false, "implement", "");
-
-    return fail;
+    return success;
 }
 
 extern int32_t transmission_control_block_state_finish_wait_frist_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {

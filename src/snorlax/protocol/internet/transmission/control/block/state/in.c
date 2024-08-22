@@ -73,6 +73,15 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack)) {
+        transmission_control_block_sequence_set(block, transmission_control_protocol_context_acknowledge_get(context));
+    }
+
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh)) {
+        snorlaxdbg(false, false, "debug", "data => %p", transmission_control_protocol_context_data_get(context));
+        snorlaxdbg(false, false, "debug", "datalen => %u", transmission_control_protocol_context_datalen_get(context));
+    }
+
     snorlaxdbg(true, false, "implement", "");
 
     return fail;

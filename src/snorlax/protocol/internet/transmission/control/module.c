@@ -175,6 +175,7 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
 
             // | transmission control protocol | 52756 | 22 | 3255904328 | 324549507 | 8 | cwr x | ece x | urg x | ack o | psh x | rst x | syn x | fin x | 501 | 2220 | 0 |
             // 위의 패킷처럼 중간에 빠져 나오는 패킷이 있다. 이럴 경우, 빠르게 CLOSE IP 를 보내도록 하자.
+            transmission_control_protocol_context_error_set(context, EINVAL);
             snorlaxdbg(false, true, "implement", "fast close");
 
             return fail;
