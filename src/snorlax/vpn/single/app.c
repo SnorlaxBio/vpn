@@ -14,6 +14,9 @@
 #include "app/tun.h"
 #include "app/netlink.h"
 #include "protocol/transmission/control.h"
+#include "protocol/internet.h"
+#include "protocol/internet/version4.h"
+#include "protocol/internet/version6.h"
 #include "../agent.h"
 
 static vpn_single_app_t * app = nil;
@@ -98,10 +101,10 @@ extern vpn_single_app_t * vpn_single_app_gen(void) {
 
     application->protocolmap.transport = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), transport_protocol_map_get);
 
-    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_on, address_of(application->internet.addr.version4));
-    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_on, application->internet.addr.version6);
+    internet_protocol_version4_module_t * version4 = internet_protocol_version4_module_gen(application->protocolmap.transport, internet_protocol_version4_module_func_vpn_single_on, address_of(application->internet.addr.version4));
+    internet_protocol_version6_module_t * version6 = internet_protocol_version6_module_gen(application->protocolmap.transport, internet_protocol_version6_module_func_vpn_single_on, application->internet.addr.version6);
 
-    application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport, internet_protocol_module_func_on, version4, version6);
+    application->protocol.internet = internet_protocol_module_gen(application->protocolmap.transport, internet_protocol_module_func_vpn_single_on, version4, version6);
 
     return application;
 }

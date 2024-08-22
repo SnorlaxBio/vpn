@@ -6,7 +6,7 @@
 #include "../../../client.h"
 
 extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
-    snorlaxdbg(false, true, "debug", "");
+    snorlaxdbg(false, true, "debug", "event => %d", type);
     if(type == protocol_event_in) {
         if(transmission_control_protocol_context_key_has(context)) {
             if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
@@ -46,11 +46,17 @@ extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmiss
             snorlaxdbg(false, true, "debug", "");
         }
     } else if(type == protocol_event_complete_in) {
-
+        if(transmission_control_block_state_get(context->block) == transmission_control_state_syn_sent) {
+            printf("========================================================\n");
+        }
     } else if(type == protocol_event_out) {
 
     } else if(type == protocol_event_complete_out) {
-        
+
+    } else if(type == protocol_event_exception) {
+        snorlaxdbg(false, true, "exception", "number => %d", transmission_control_protocol_context_error_get(context));
+    } else {
+        snorlaxdbg(false, true, "debug", "type => %d", type);
     }
     
 

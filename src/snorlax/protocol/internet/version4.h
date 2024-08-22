@@ -137,7 +137,9 @@ struct internet_protocol_version4_module {
 
     internet_protocol_version4_context_handler_t on;
 
+    internet_protocol_module_t * parent;
     ___reference uint32_t * addr;
+
     uint16_t identification;
     uint8_t default_ttl;
 };

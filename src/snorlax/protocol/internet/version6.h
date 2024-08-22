@@ -239,6 +239,7 @@ struct internet_protocol_version6_module {
 
     internet_protocol_version6_context_handler_t on;
     
+    internet_protocol_module_t * parent;
     ___reference uint8_t * addr;
 };
 
