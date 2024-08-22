@@ -241,9 +241,6 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
-
-
-
 #define transmission_control_block_sequence_set(block, v)           ((block)->sequence = v)
 #define transmission_control_block_sequence_get(block)              ((block)->sequence)
 #define transmission_control_block_acknowledge_set(block, v)        ((block)->acknowledge = v)
@@ -264,6 +261,8 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 #define transmission_control_block_send(block, data, datalen)       ((block)->func->send(block, data, datalen))
 #define transmission_control_block_recv(block, context)             ((block)->func->recv(block, context))
 #define transmission_control_block_close(block)                     ((block)->func->close(block))
+#define transmission_control_block_in(block, context)               ((block)->func->in(block, context))
+#define transmission_control_block_out(block)                       ((block)->func->out(block))
 
 typedef int32_t (*transmission_control_protocol_context_handler_t)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
 
