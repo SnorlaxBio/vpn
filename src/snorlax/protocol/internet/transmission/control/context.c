@@ -31,6 +31,10 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
     context->packetlen = packetlen;
     context->bufferlen = bufferlen;
 
+    if(context->packetlen == 0) {
+        context->data = (uint8_t *) packet;
+    }
+
     return context;
 }
 
@@ -139,6 +143,6 @@ static uint8_t * transmission_control_protocol_context_func_addrptr(transmission
 
 static void transmission_control_protocol_context_func_checksum_build(transmission_control_protocol_context_t * context, const uint8_t * pseudo, uint64_t pseudolen) {
     context->checksum = transmission_control_protocol_checksum_cal(context->packet, context->packetlen, (internet_protocol_pseudo_t *) pseudo, pseudolen);
-    
+
     transmission_control_protocol_context_checksum_set(context, context->checksum);
 }

@@ -12,6 +12,11 @@
 
 #include <snorlax.h>
 
+// 
+#define internet_protocol_version4_no       2
+#define internet_protocol_version6_no       10
+
+
 #define protocol_event_in                   1
 #define protocol_event_out                  2
 #define protocol_event_exception            3

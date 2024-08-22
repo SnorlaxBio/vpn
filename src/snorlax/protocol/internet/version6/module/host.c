@@ -30,6 +30,7 @@ extern internet_protocol_version6_module_host_t * internet_protocol_version6_mod
     module->map = map;
     module->on = on;
     module->addrlen = 16;
+    module->type = internet_protocol_version6_no;
 
     return module;
 }

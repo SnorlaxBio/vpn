@@ -12,6 +12,7 @@ static int32_t internet_protocol_module_func_vpn_single_on_exception(internet_pr
 static int32_t internet_protocol_module_func_vpn_single_on_complete(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context);
 static int32_t internet_protocol_module_func_vpn_single_on_complete_in(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context);
 static int32_t internet_protocol_module_func_vpn_single_on_complete_out(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context);
+static int32_t internet_protocol_module_func_vpn_single_on_complete_default(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context);
 
 extern int32_t internet_protocol_module_func_vpn_single_on(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
 #ifndef   RELEASE
@@ -26,7 +27,7 @@ extern int32_t internet_protocol_module_func_vpn_single_on(internet_protocol_mod
         case protocol_event_complete:               return internet_protocol_module_func_vpn_single_on_complete(module, type, parent, context);
         case protocol_event_complete_in:            return internet_protocol_module_func_vpn_single_on_complete_in(module, type, parent, context);
         case protocol_event_complete_out:           return internet_protocol_module_func_vpn_single_on_complete_out(module, type, parent, context);
-        default:                                    snorlaxdbg(false, true, "debug", "type => %d", type);   return fail;
+        default:                                    return internet_protocol_module_func_vpn_single_on_complete_default(module, type, parent, context);
     }
 
     return success;
@@ -71,6 +72,14 @@ static int32_t internet_protocol_module_func_vpn_single_on_complete(internet_pro
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
+    return success;
+}
+
+static int32_t internet_protocol_module_func_vpn_single_on_complete_in(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
     snorlaxdbg(false, true, "debug", "");
 
     if(parent != nil) {
@@ -80,27 +89,27 @@ static int32_t internet_protocol_module_func_vpn_single_on_complete(internet_pro
         return success;
     }
 
+//    transmission_Control_block_
+
     vpn_single_app_t * single = vpn_single_app_get();
 
     snorlaxdbg(single == nil, false, "critical", "");
 
+
+
     descriptor_event_subscription_t * tun = single->tun;
+
+    // snorlaxdbg(context->packetlen == 0, false, "critical", "");
+    // snorlaxdbg(context->packet == nil, false, "critical", "");
+
+    internet_protocol_module_debug(module, stdout, context);
 
     if(descriptor_event_subscription_write(tun, context->packet, context->packetlen) == fail) {
         internet_protocol_context_error_set(context, errno);
         return fail;
     }
 
-    return success;
-}
-
-static int32_t internet_protocol_module_func_vpn_single_on_complete_in(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
-#ifndef   RELEASE
-    snorlaxdbg(module == nil, false, "critical", "");
-    snorlaxdbg(context == nil, false, "critical", "");
-#endif // RELEASE
-
-    snorlaxdbg(false, true, "debug", "");
+    snorlaxdbg(false, true, "debug", "packet write => %lu", context->packetlen);
 
     return success;
 }
@@ -114,4 +123,15 @@ static int32_t internet_protocol_module_func_vpn_single_on_complete_out(internet
     snorlaxdbg(false, true, "debug", "");
 
     return success;
+}
+
+static int32_t internet_protocol_module_func_vpn_single_on_complete_default(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "debug", "");
+
+    return fail;
 }

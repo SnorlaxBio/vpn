@@ -47,6 +47,7 @@ extern internet_protocol_version4_module_t * internet_protocol_version4_module_g
     module->map = map;
     module->on = on;
     module->addr = addr;
+    module->type = internet_protocol_version4_no;
     module->addrlen = sizeof(uint32_t);
     module->identification = time(nil);
     module->default_ttl = 64;
@@ -115,6 +116,8 @@ static void internet_protocol_version4_module_func_debug(internet_protocol_versi
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
+    char s[128];
+
     fprintf(stream, "| internet protocol ");
     fprintf(stream, "| %d ", internet_protocol_version4_context_version_get(context));
     fprintf(stream, "| % 2d ", internet_protocol_version4_context_length_get(context));
@@ -125,11 +128,11 @@ static void internet_protocol_version4_module_func_debug(internet_protocol_versi
     fprintf(stream, "| % 3d ", internet_protocol_version4_context_ttl_get(context));
     fprintf(stream, "| % 3d ", internet_protocol_version4_context_protocol_get(context));
     fprintf(stream, "| % 6d ", internet_protocol_version4_context_checksum_get(context));
-    fprintf(stream, "| %15s ", internet_protocol_version4_address_uint32_to_str(internet_protocol_version4_context_source_get(context)));
-    fprintf(stream, "| %15s ", internet_protocol_version4_address_uint32_to_str(internet_protocol_version4_context_destination_get(context)));
+    fprintf(stream, "| %15s ", internet_protocol_version4_address_to_string(s, *((uint32_t *) internet_protocol_version4_context_source_ptr_get(context))));
+    fprintf(stream, "| %15s ", internet_protocol_version4_address_to_string(s, *((uint32_t *) internet_protocol_version4_context_destination_ptr_get(context))));
     fprintf(stream, "|\n");
-
-    for(internet_protocol_version4_option_t * option = internet_protocol_version4_context_option_get(context); option != internet_protocol_version4_context_segment_get(context) || *option == 0; option = internet_protocol_version4_context_option_offset_next(option)) {
+    snorlaxdbg(false, true, "implement", "option = internet_protocol_version4_context_option_get(context); option != internet_protocol_version4_context_segment_get(context) && option != nil && *option != 0 => 을 가볍게 매크로 하나로 변경하자.");
+    for(internet_protocol_version4_option_t * option = internet_protocol_version4_context_option_get(context); option != internet_protocol_version4_context_segment_get(context) && option != nil && *option != 0; option = internet_protocol_version4_context_option_offset_next(option)) {
         switch(internet_protocol_version4_option_type_get(option)) {
             case internet_protocol_version4_option_type_end:                    internet_protocol_version4_option_end_debug(stream, option);                    break;
             case internet_protocol_version4_option_type_no_operation:           internet_protocol_version4_option_no_operation_debug(stream, option);           break;
@@ -302,12 +305,12 @@ static internet_protocol_version4_context_t * internet_protocol_version4_module_
     internet_protocol_version4_context_length_set(context, internet_protocol_version4_packet_header_length_min / 4);
     internet_protocol_version4_context_total_set(context, internet_protocol_version4_context_packetlen_get(context));
     internet_protocol_version4_context_identification_set(context, internet_protocol_version4_module_identification_gen(module));
-    internet_protocol_version4_context_fragment_set(context, internet_protocol_version4_fragment_field_gen(0, 0, 0));
+    internet_protocol_version4_context_fragment_set(context, internet_protocol_version4_fragment_field_gen(1, 0, 0));
     internet_protocol_version4_context_ttl_set(context, internet_protocol_version4_module_default_ttl_get(module));
     internet_protocol_version4_context_protocol_set(context, protocol_module_number_get(child->module));
     internet_protocol_version4_context_checksum_set(context, internet_protocol_version4_context_checksum_cal(context));
-    internet_protocol_version4_context_source_set(context, internet_protocol_version4_to_addr(protocol_path_node_destination_get(node)));
-    internet_protocol_version4_context_destination_set(context, internet_protocol_version4_to_addr(protocol_path_node_source_get(node)));
+    internet_protocol_version4_context_source_set(context, ntohl(internet_protocol_version4_to_addr(protocol_path_node_destination_get(node))));
+    internet_protocol_version4_context_destination_set(context, ntohl(internet_protocol_version4_to_addr(protocol_path_node_source_get(node))));
 
     context->pseudo = internet_protocol_version4_pseudo_gen(internet_protocol_version4_context_datagram_get(context));
     context->pseudolen = sizeof(internet_protocol_version4_pseudo_t);

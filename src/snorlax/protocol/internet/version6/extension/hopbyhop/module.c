@@ -25,6 +25,7 @@ extern internet_protocol_version6_extension_hopbyhop_module_t * internet_protoco
 
     module->func = address_of(func);
     module->on = on;
+    module->type = internet_protocol_version6_extension_hopbyhop_no;
 
     return module;
 }

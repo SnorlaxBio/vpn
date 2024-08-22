@@ -37,6 +37,7 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
     module->on = on;
     module->block = hashtable_gen(transmission_control_block_func_hash);
     module->addrlen = sizeof(uint16_t);
+    module->type = transmission_control_protocol_no;
 
     return module;
 }
@@ -216,6 +217,8 @@ extern int32_t transmission_control_protocol_module_func_blockon(transmission_co
             transmission_control_protocol_context_t * response = transmission_control_block_context_gen_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max);
 
             if(response) {
+                transmission_control_protocol_module_debug(module, stdout, response);
+
                 snorlaxdbg(false, true, "implement", "calculate checksum");
 
                 protocol_path_node_t * parent = protocol_path_node_next(protocol_path_begin(context->block->path));

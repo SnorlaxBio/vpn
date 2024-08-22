@@ -38,14 +38,14 @@ extern int32_t protocol_module_func_out(protocol_module_t * module, protocol_pat
     snorlaxdbg(child == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "recursive module on");
-
     protocol_context_t * context = protocol_module_context_gen(module, node, child);
 
     if(context == nil) {
         snorlaxdbg(protocol_context_error_get(child) == 0, false, "critical", "");
         return fail;
     } else {
+        protocol_module_debug(module, stdout, context);
+        
         if(protocol_module_on(child->module, protocol_event_out, context, child) == fail) {
             protocol_context_error_set(context, ECHILD);
             protocol_module_propagate_on(module, protocol_event_exception, nil, context);
@@ -84,7 +84,6 @@ extern protocol_context_t * protocol_module_func_reply_gen(protocol_module_t * m
 extern int32_t protocol_module_func_propagate_on(protocol_module_t * module, uint32_t type, protocol_context_t * parent, protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
-    snorlaxdbg(parent == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 

@@ -29,6 +29,7 @@ extern internet_control_message_protocol_version4_module_t * internet_control_me
 
     module->func = address_of(func);
     module->on = on;
+    module->type = internet_control_message_protocol_version4_no;
 
     return module;
 }

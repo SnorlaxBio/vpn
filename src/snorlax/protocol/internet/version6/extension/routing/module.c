@@ -25,6 +25,7 @@ extern internet_protocol_version6_extension_routing_module_t * internet_protocol
 
     module->func = address_of(func);
     module->on = on;
+    module->type = internet_protocol_version6_extension_routing_no;
 
     return module;
 }

@@ -62,7 +62,7 @@ extern const char * internet_protocol_version4_address_to_string(char * s, uint3
 extern uint16_t internet_protocol_version4_fragment_field_gen(uint8_t df, uint8_t mf, uint16_t offset) {
     uint16_t value = 0;
 
-    value = (((value | (df << 1u)) | (mf)) << 12u);
+    value = (((value | (df << 1u)) | (mf)) << 13u);
 
     value = (value | offset);
 

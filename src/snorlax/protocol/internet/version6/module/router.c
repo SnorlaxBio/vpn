@@ -26,6 +26,7 @@ extern internet_protocol_version6_module_router_t * internet_protocol_version6_m
     module->map = map;
     module->on = on;
     module->addrlen = 16;
+    module->type = internet_protocol_version6_no;
 
     return module;
 }

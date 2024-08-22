@@ -342,6 +342,7 @@ extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_c
 #define transmission_control_protocol_context_packetlen_set(context)                            ((context)->packetlen = v)
 #define transmission_control_protocol_context_headerlen_get(context)                            ((context)->headerlen)
 #define transmission_control_protocol_context_headerlen_set(context, v)                         ((context)->headerlen = v)
+#define transmission_control_protocol_context_headerlen_add(context, v)                         ((context)->headerlen = (context)->headerlen + v)
 #define transmission_control_protocol_context_datalen_get(context)                              ((context)->datalen)
 #define transmission_control_protocol_context_datalen_set(context, v)                           ((context)->datalen = v)
 #define transmission_control_protocol_context_checksumcal_get(context)                          ((context)->checksum)

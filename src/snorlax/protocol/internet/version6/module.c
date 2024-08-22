@@ -35,6 +35,7 @@ extern internet_protocol_version6_module_t * internet_protocol_version6_module_g
     module->on = on;
     module->addr = addr;
     module->addrlen = 16;
+    module->type = internet_protocol_version6_no;
 
     return module;
 }

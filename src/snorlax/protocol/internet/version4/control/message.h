@@ -12,6 +12,7 @@
 
 #include <snorlax.h>
 #include <snorlax/protocol.h>
+#include <snorlax/protocol/internet.h>
 
 struct internet_protocol_version4_context;
 struct internet_protocol_version4_module;

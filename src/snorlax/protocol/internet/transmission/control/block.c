@@ -101,12 +101,14 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
     snorlaxdbg(false, true, "debug", "implement transmission control protocol option");
 
     transmission_control_protocol_context_buffer_reserve(context, transmission_control_protocol_packet_length_min);
+    // transmission_control_protocol_context_headerlen_set(context, transmission_control_protocol_context_headerlen_get(context) + transmission_control_protocol_packet_length_min);
+    transmission_control_protocol_context_headerlen_add(context, transmission_control_protocol_packet_length_min);
 
-    transmission_control_protocol_context_source_set(context, transmission_control_protocol_to_port(protocol_path_node_destination_get(node)));
-    transmission_control_protocol_context_destination_set(context, transmission_control_protocol_to_port(protocol_path_node_source_get(node)));
-    transmission_control_protocol_context_sequence_set(context, transmission_control_block_acknowledge_get(block));
-    transmission_control_protocol_context_acknowledge_set(context, transmission_control_block_sequence_get(block));
-    transmission_control_protocol_context_offset_set(context, 0);
+    transmission_control_protocol_context_source_set(context, ntohs(transmission_control_protocol_to_port(protocol_path_node_destination_get(node))));
+    transmission_control_protocol_context_destination_set(context, ntohs(transmission_control_protocol_to_port(protocol_path_node_source_get(node))));
+    transmission_control_protocol_context_sequence_set(context, transmission_control_block_sequence_get(block));
+    transmission_control_protocol_context_acknowledge_set(context, transmission_control_block_acknowledge_get(block));
+    transmission_control_protocol_context_offset_set(context, transmission_control_protocol_context_headerlen_get(context) / 4);
     transmission_control_protocol_context_flags_set(context, transmission_control_flag_control_synack);
     transmission_control_protocol_context_window_set(context, transmission_control_block_window_get(block));
     transmission_control_protocol_context_urgent_set(context, 0);

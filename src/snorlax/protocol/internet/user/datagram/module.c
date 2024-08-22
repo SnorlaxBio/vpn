@@ -30,6 +30,7 @@ extern user_datagram_protocol_module_t * user_datagram_protocol_module_gen(proto
     module->map = map;
     module->on = on;
     module->addrlen = sizeof(uint16_t);
+    module->type = user_datagram_protocol_no;
 
     return module;
 }

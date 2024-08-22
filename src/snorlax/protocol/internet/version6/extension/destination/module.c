@@ -24,6 +24,7 @@ extern internet_protocol_version6_extension_destination_module_t * internet_prot
 
     module->func = address_of(func);
     module->on = on;
+    module->type = internet_protocol_version6_extension_destination_no;
 
     return module;
 }
