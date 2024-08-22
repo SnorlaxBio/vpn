@@ -3,7 +3,7 @@
 static transmission_control_block_agent_single_t * transmission_control_block_agent_single_func_rem(transmission_control_block_agent_single_t * agent);
 
 static int32_t transmission_control_block_agent_single_func_open(transmission_control_block_agent_single_t * agent);
-static int32_t transmission_control_block_agent_single_func_send(transmission_control_block_agent_single_t * agent);
+static int32_t transmission_control_block_agent_single_func_send(transmission_control_block_agent_single_t * agent, uint8_t * data, uint64_t datalen);
 static int32_t transmission_control_block_agent_single_func_recv(transmission_control_block_agent_single_t * agent);
 static int32_t transmission_control_block_agent_single_func_close(transmission_control_block_agent_single_t * agent);
 
@@ -45,14 +45,12 @@ static int32_t transmission_control_block_agent_single_func_open(transmission_co
     return fail;
 }
 
-static int32_t transmission_control_block_agent_single_func_send(transmission_control_block_agent_single_t * agent) {
+static int32_t transmission_control_block_agent_single_func_send(transmission_control_block_agent_single_t * agent, uint8_t * data, uint64_t datalen) {
 #ifndef   RELEASE
     snorlaxdbg(agent == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
-
-    return fail;
+    return socket_client_event_subscription_write(agent->subscription, data, datalen);
 }
 
 static int32_t transmission_control_block_agent_single_func_recv(transmission_control_block_agent_single_t * agent) {

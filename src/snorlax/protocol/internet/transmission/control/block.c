@@ -7,16 +7,20 @@
 
 static transmission_control_block_t * transmission_control_block_func_rem(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_open(transmission_control_block_t * block);
-static int32_t transmission_control_block_func_send(transmission_control_block_t * block);
+static int32_t transmission_control_block_func_send(transmission_control_block_t * block, const uint8_t * data, uint64_t datalen);
 static int32_t transmission_control_block_func_recv(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_close(transmission_control_block_t * block);
+static int32_t transmission_control_block_func_in(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block);
 
 static transmission_control_block_func_t func = {
     transmission_control_block_func_rem,
     transmission_control_block_func_open,
     transmission_control_block_func_send,
     transmission_control_block_func_recv,
-    transmission_control_block_func_close
+    transmission_control_block_func_close,
+    transmission_control_block_func_in,
+    transmission_control_block_func_out
 };
 
 extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key, transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context) {
@@ -34,6 +38,7 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
     block->key.length = key->length;
     block->window = transmission_control_window_size_init;
     block->module = module;
+    block->buffer.out = buffer_list_gen(buffer_list_node_gen, module->max_segment_size);
 
     memcpy(block->key.value, key->value, key->length);
 
@@ -85,7 +90,7 @@ static int32_t transmission_control_block_func_open(transmission_control_block_t
     return fail;
 }
 
-static int32_t transmission_control_block_func_send(transmission_control_block_t * block) {
+static int32_t transmission_control_block_func_recv(transmission_control_block_t * block) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
@@ -95,12 +100,86 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     return fail;
 }
 
-static int32_t transmission_control_block_func_recv(transmission_control_block_t * block) {
+static int32_t transmission_control_block_func_send(transmission_control_block_t * block, const uint8_t * data, uint64_t datalen) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
+    if(transmission_control_block_avail_io(block) == false) {
+        snorlaxdbg(transmission_control_block_avail_io(block) == false, false, "warning", "");
+        return fail;
+    }
+
+    uint16_t mss = block->module->max_segment_size;
+    uint64_t n = datalen / mss;
+    uint64_t last = datalen % mss;
+    buffer_list_t * out = block->buffer.out;
+
+    for(uint64_t i = 0; i < n; i++) {
+        buffer_list_node_t * node = buffer_list_back(out, mss);
+        memcpy(buffer_list_node_front(node), address_of(data[i * mss]), mss);
+    }
+
+    if(last) {
+        buffer_list_node_t * node = buffer_list_back(out, mss);
+        memcpy(buffer_list_node_front(node), address_of(data[n * mss]), last);
+    }
+
+    return datalen;
+}
+
+static int32_t transmission_control_block_func_in(transmission_control_block_t * block, transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(block == nil, false, "critical", "");
+#endif // RELEASE
+
+    uint32_t acknowledge = transmission_control_block_acknowledge_get(block);
+    uint32_t sequence = transmission_control_protocol_context_sequence_get(context);
+
+    uint32_t difference = acknowledge - sequence;
+    
+    if(protocol_packet_max < difference) {
+        snorlaxdbg(protocol_packet_max < difference, false, "check", "");
+        transmission_control_protocol_context_error_set(context, EINVAL);
+        return fail;
+    }
+
+    snorlaxdbg(false, true, "debug", "acknowledge => %u", acknowledge);
+    snorlaxdbg(false, true, "debug", "sequence => %u", sequence);
+
+    if(difference == 0) {
+        if(transmission_control_protocol_context_datalen_get(context) > 0) {
+            int32_t n = transmission_control_block_agent_send(block->agent, transmission_control_protocol_context_data_get(context), transmission_control_protocol_context_datalen_get(context));
+            if(n == fail) {
+                snorlaxdbg(transmission_control_protocol_context_error_get(context) == 0, false, "critical", "");
+
+                if(transmission_control_protocol_context_error_get(context) != EAGAIN) {
+                    snorlaxdbg(transmission_control_protocol_context_error_get(context) != 0, false, "critical", "%d", transmission_control_protocol_context_error_get(context));
+                    snorlaxdbg(true, false, "implement", "fast close");
+                    return fail;
+                }
+
+                transmission_control_protocol_context_error_set(context, 0);
+            } else if(n != transmission_control_protocol_context_datalen_get(context)) {
+                transmission_control_protocol_context_error_set(context, EIO);
+                snorlaxdbg(transmission_control_protocol_context_error_get(context) != 0, false, "critical", "%d", transmission_control_protocol_context_error_get(context));
+                return fail;
+            }
+
+            acknowledge = acknowledge + n;
+
+            snorlaxdbg(sequence + transmission_control_protocol_context_datalen_get(context) != acknowledge, false, "critical", "");
+
+            transmission_control_block_acknowledge_set(block, acknowledge);
+        }
+
+        return transmission_control_protocol_context_datalen_get(context);
+    } else {
+        snorlaxdbg(sequence + transmission_control_protocol_context_datalen_get(context) != acknowledge, false, "critical", "");
+
+        return success;
+    }
+
     return fail;
 }
 
@@ -140,4 +219,12 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
     return context;
 }
 
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block) {
+#ifndef   RELEASE
+    snorlaxdbg(block == nil, false, "critical", "");
+#endif // RELEASE
 
+    snorlaxdbg(true, false, "implement", "");
+
+    return fail;
+}

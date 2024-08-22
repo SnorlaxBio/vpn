@@ -11,6 +11,7 @@
 #define   __SNORLAX__PROTOCOL_INTERNET_TRANSMISSION_CONTROL__H__
 
 #include <snorlax/hashtable.h>
+#include <snorlax/buffer/list.h>
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
@@ -89,6 +90,8 @@ extern uint8_t * transmission_control_protocol_packet_reserve_header(uint8_t * b
 
 extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
+#define transmission_control_protocol_default_max_segment_size              1024
+
 #define transmission_control_protocol_packet_length_min                     20
 
 #define transmission_control_protocol_option_type_end                       0
@@ -110,14 +113,14 @@ struct transmission_control_block_agent_func {
     transmission_control_block_agent_t * (*rem)(transmission_control_block_agent_t *);
 
     int32_t (*open)(transmission_control_block_agent_t *);
-    int32_t (*send)(transmission_control_block_agent_t *);
+    int32_t (*send)(transmission_control_block_agent_t *, uint8_t *, uint64_t);
     int32_t (*recv)(transmission_control_block_agent_t *);
     int32_t (*close)(transmission_control_block_agent_t *);
 };
 
 #define transmission_control_block_agent_rem(agent)                         ((agent)->func->rem(agent))
 #define transmission_control_block_agent_open(agent)                        ((agent)->func->open(agent))
-#define transmission_control_block_agent_send(agent)                        ((agent)->func->send(agent))
+#define transmission_control_block_agent_send(agent, data, datalen)         ((agent)->func->send(agent, data, datalen))
 
 #define transmission_control_block_agent_recv(agent)                        ((agent)->func->recv(agent))
 #define transmission_control_block_agent_close(agent)                       ((agent)->func->close(agent))
@@ -142,6 +145,10 @@ struct transmission_control_block {
     uint32_t acknowledge;
     uint16_t window;
 
+    struct {
+        buffer_list_t * out;
+    } buffer;
+    
     transmission_control_block_agent_t * agent;
 };
 
@@ -149,10 +156,13 @@ struct transmission_control_block_func {
     transmission_control_block_t * (*rem)(transmission_control_block_t *);
 
     int32_t (*open)(transmission_control_block_t *);
-    int32_t (*send)(transmission_control_block_t *);
+    int32_t (*send)(transmission_control_block_t *, const uint8_t *, uint64_t);
     int32_t (*recv)(transmission_control_block_t *);
     int32_t (*close)(transmission_control_block_t *);
     int32_t (*listen)(transmission_control_block_t *);
+
+    int32_t (*in)(transmission_control_block_t *, transmission_control_protocol_context_t * context);
+    int32_t (*out)(transmission_control_block_t *);
 };
 
 extern int32_t transmission_control_block_event_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
@@ -189,22 +199,30 @@ extern int32_t transmission_control_block_state_time_wait_complete_in(transmissi
 extern int32_t transmission_control_block_state_closed_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 extern int32_t transmission_control_block_state_exception_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
-#define transmission_control_block_state_get(block)                 ((block)->state)
-#define transmission_control_block_state_set(block, v)              ((block)->state = v)
+
+
 
 #define transmission_control_window_size_init                       (65536 / 2)
 
-#define transmission_control_state_closed                           0
-#define transmission_control_state_listen                           1
-#define transmission_control_state_synchronize_sequence_sent        2
-#define transmission_control_state_synchronize_sequence_recv        3
-#define transmission_control_state_establish                        4
-#define transmission_control_state_finish_wait_first                5
-#define transmission_control_state_finish_wait_second               6
-#define transmission_control_state_close_wait                       7
-#define transmission_control_state_closing                          8
-#define transmission_control_state_last_acknowledge                 9
-#define transmission_control_state_time_wait                        10
+#define transmission_control_state_avail_in                         (0x80000000u)
+#define transmission_control_state_avail_out                        (0x40000000u)
+#define transmission_control_state_avail_accept                     (0x20000000u)
+#define transmission_control_state_avail_io                         (transmission_control_state_avail_in | transmission_control_state_avail_out)
+
+#define transmission_control_state_closed                           (0)
+#define transmission_control_state_listen                           (transmission_control_state_avail_accept | 1)
+#define transmission_control_state_synchronize_sequence_sent        (transmission_control_state_avail_io | 2)
+#define transmission_control_state_synchronize_sequence_recv        (transmission_control_state_avail_io | 3)
+#define transmission_control_state_establish                        (transmission_control_state_avail_io | 4)
+#define transmission_control_state_finish_wait_first                (5)
+#define transmission_control_state_finish_wait_second               (6)
+#define transmission_control_state_close_wait                       (7)
+#define transmission_control_state_closing                          (8)
+#define transmission_control_state_last_acknowledge                 (9)
+#define transmission_control_state_time_wait                        (10)
+
+#warning "implement transmission_control_state_avail macro"
+
 
 #define transmission_control_flag_control_cwr                       (0x01u << 7u)
 #define transmission_control_flag_control_ece                       (0x01u << 6u)
@@ -223,6 +241,9 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
+
+
+
 #define transmission_control_block_sequence_set(block, v)           ((block)->sequence = v)
 #define transmission_control_block_sequence_get(block)              ((block)->sequence)
 #define transmission_control_block_acknowledge_set(block, v)        ((block)->acknowledge = v)
@@ -234,12 +255,14 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 #define transmission_control_block_state_get(block)                 ((block)->state)
 #define transmission_control_block_state_set(block, v)              ((block)->state = v)
 
+#define transmission_control_block_avail_io(block)                  (transmission_control_block_state_get(block) & 0xC0000000u)
+
 #define transmission_control_block_func_hash                        internet_protocol_version_hash
 
 #define transmission_control_block_rem(block)                       ((block)->func->rem(block))
 #define transmission_control_block_open(block)                      ((block)->func->open(block))
-#define transmission_control_block_send(block)                      ((block)->func->send(block))
-#define transmission_control_block_recv(block)                      ((block)->func->recv(block))
+#define transmission_control_block_send(block, data, datalen)       ((block)->func->send(block, data, datalen))
+#define transmission_control_block_recv(block, context)             ((block)->func->recv(block, context))
 #define transmission_control_block_close(block)                     ((block)->func->close(block))
 
 typedef int32_t (*transmission_control_protocol_context_handler_t)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
@@ -254,6 +277,8 @@ struct transmission_control_protocol_module {
     transmission_control_protocol_context_handler_t on;
 
     hashtable_t * block;
+
+    uint16_t max_segment_size;
 };
 
 struct transmission_control_protocol_module_func {

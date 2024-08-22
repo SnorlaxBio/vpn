@@ -5,27 +5,27 @@
 #include "../../app.h"
 #include "../../../client.h"
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-static int32_t transmission_control__protocol_module_func_vpn_single_on_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-static int32_t transmission_control__protocol_module_func_vpn_single_on_exception(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-static int32_t transmission_control__protocol_module_func_vpn_single_on_complete(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-static int32_t transmission_control__protocol_module_func_vpn_single_on_complete_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-static int32_t transmission_control__protocol_module_func_vpn_single_on_complete_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-static int32_t transmission_control__protocol_module_func_vpn_single_on_default(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_exception(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_complete(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_complete_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_complete_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+static int32_t transmission_control_protocol_module_func_vpn_single_on_default(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
     switch(type) {
-        case protocol_event_in:             return transmission_control__protocol_module_func_vpn_single_on_in(module, type, parent, context);
-        case protocol_event_out:            return transmission_control__protocol_module_func_vpn_single_on_out(module, type, parent, context);
-        case protocol_event_exception:      return transmission_control__protocol_module_func_vpn_single_on_exception(module, type, parent, context);
-        case protocol_event_complete:       return transmission_control__protocol_module_func_vpn_single_on_complete(module, type, parent, context);
-        case protocol_event_complete_in:    return transmission_control__protocol_module_func_vpn_single_on_complete_in(module, type, parent, context);
-        case protocol_event_complete_out:   return transmission_control__protocol_module_func_vpn_single_on_complete_out(module, type, parent, context);
-        default:                            return transmission_control__protocol_module_func_vpn_single_on_default(module, type, parent, context);
+        case protocol_event_in:             return transmission_control_protocol_module_func_vpn_single_on_in(module, type, parent, context);
+        case protocol_event_out:            return transmission_control_protocol_module_func_vpn_single_on_out(module, type, parent, context);
+        case protocol_event_exception:      return transmission_control_protocol_module_func_vpn_single_on_exception(module, type, parent, context);
+        case protocol_event_complete:       return transmission_control_protocol_module_func_vpn_single_on_complete(module, type, parent, context);
+        case protocol_event_complete_in:    return transmission_control_protocol_module_func_vpn_single_on_complete_in(module, type, parent, context);
+        case protocol_event_complete_out:   return transmission_control_protocol_module_func_vpn_single_on_complete_out(module, type, parent, context);
+        default:                            return transmission_control_protocol_module_func_vpn_single_on_default(module, type, parent, context);
     }
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
@@ -66,14 +66,16 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_in(trans
         }
 
         if(agent->subscription == nil) {
-            agent->subscription = event_engine_socket_client_sub(engine, (socket_client_t *) agent->client, transmission_control_protocol_client_handler_get(), nil, (event_subscription_meta_t *) agent);
+            transmission_control_block_agent_single_meta_t * meta = transmission_control_block_agent_single_meta_gen(context->block);
+            
+            agent->subscription = event_engine_socket_client_sub(engine, (socket_client_t *) agent->client, transmission_control_protocol_client_handler_get(), nil, (event_subscription_meta_t *) meta);
         }
     }
 
     return success;
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
@@ -83,7 +85,7 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_out(tran
     return success;
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_exception(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_exception(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
@@ -93,7 +95,7 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_exceptio
     return success;
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_complete(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_complete(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
@@ -103,7 +105,7 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_complete
     return success;
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_complete_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_complete_in(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
@@ -125,7 +127,7 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_complete
     return success;
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_complete_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_complete_out(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
@@ -135,7 +137,7 @@ static int32_t transmission_control__protocol_module_func_vpn_single_on_complete
     return success;
 }
 
-static int32_t transmission_control__protocol_module_func_vpn_single_on_default(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
+static int32_t transmission_control_protocol_module_func_vpn_single_on_default(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(module == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");

@@ -90,11 +90,10 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
         snorlaxdbg(false, true, "debug", "datalen => %u", transmission_control_protocol_context_datalen_get(context));
 
         snorlaxdbg(block->agent == nil, false, "critical", "");
-        snorlaxdbg(true, false, "implement", "");
 
-        // AGENT 로직을 구현한다.
-        // transmission_control_block_recv(block, context);
-
+        if(transmission_control_block_recv(block, context) == fail) {
+            return fail;
+        }
     }
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst)) {
         snorlaxdbg(true, false, "implement", "");
