@@ -164,77 +164,32 @@ extern int32_t transmission_control_protocol_module_func_on(transmission_control
 }
 
 extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
-    if(type == protocol_event_in) {
-        if(context->block != nil) {
-            snorlaxdbg(context->block != nil, false, "critical", "");
-        }
-
+    if(context->block == nil) {
         context->block = (transmission_control_block_t *) hashtable_get(module->block, address_of(context->key));
+        if(type == protocol_event_in && context->block == nil) {
+            if(transmission_control_protocol_context_is_connect_syn(context)) {
+                hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key), module, context)));
 
-        // DIRECTION EXTERNAL > INTERNAL: VPN 에 잡히지 않는다. 어떻게 재현할 것인가?
-
-        // DIRECTION INTERNAL > EXTERNAL
-
-        if(transmission_control_protocol_context_is_connect_syn(context)) {
-            if(context->block == nil) {
-                hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key))));
-
-                transmission_control_block_state_set(context->block, transmission_control_state_syn_rcvd);
-                transmission_control_block_acknowledge_set(context->block, transmission_control_protocol_context_sequence_get(context) + 1);
-                transmission_control_block_sequence_set(context->block, transmission_control_protocol_module_seqeuence_gen(context->module, parent, context));
-                transmission_control_block_version_set(context->block, internet_protocol_context_version_get(parent));
-
-                transmission_control_block_window_set(context->block, transmission_control_protocol_context_window_get(context));
-
-                context->block->path = protocol_path_gen((protocol_context_t *) context, 128);
-
-                protocol_path_debug(context->block->path, stdout);
-
-                // context->block->source = protocol_path_gen((protocol_context_t *) context, )
-
-                // snorlaxdbg(true, false, "implement", "");
-
-                // context->block->modulepath = protocol_module_path_gen((protocol_context_t *) context, 4);
-                // context->block->source = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_source, 32);
-                // context->block->destination = protocol_address_path_gen((protocol_context_t *) context, protocol_address_type_destination, 32);
-                // if(transmission_control_block_acknowledge_get(context->block) != 0) {
-                //     snorlaxdbg(false, true, "check", "");
-                // }
-            } else {
-                snorlaxdbg(false, true, "implement", "");
+                return success;
             }
 
-        } else if(transmssion_control_protocol_context_is_accept_syn(context)) {
-            snorlaxdbg(true, false, "implement", "");
-        } else {
-            snorlaxdbg(true, false, "implement", "");
-        }
-    } else if(type == protocol_event_complete_in) {
-        snorlaxdbg(context->block == nil, false, "critical", "");
+            // | transmission control protocol | 52756 | 22 | 3255904328 | 324549507 | 8 | cwr x | ece x | urg x | ack o | psh x | rst x | syn x | fin x | 501 | 2220 | 0 |
+            // 위의 패킷처럼 중간에 빠져 나오는 패킷이 있다. 이럴 경우, 빠르게 CLOSE IP 를 보내도록 하자.
+            snorlaxdbg(false, true, "implement", "fast close");
 
-        if(transmission_control_block_state_get(context->block) == transmission_control_state_syn_rcvd) {
-            char buffer[protocol_packet_max];
-            transmission_control_protocol_context_t * response = transmission_control_block_context_gen_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max);
-
-            if(response) {
-                transmission_control_protocol_module_debug(module, stdout, response);
-
-                snorlaxdbg(false, true, "implement", "calculate checksum");
-
-                protocol_path_node_t * parent = protocol_path_node_next(protocol_path_begin(context->block->path));
-
-                snorlaxdbg(parent == nil, false, "critica", "");
-
-                if(protocol_module_out(parent->module, parent, (protocol_context_t *) response) == fail) {
-                    snorlaxdbg(false, true, "debug", "fail to protocol_module_out(...)");
-                }
-            }
-        } else {
-            snorlaxdbg(true, false, "implement", "");
+            return fail;
         }
     }
 
-    return success;
+    switch(type) {
+        case protocol_event_in:                 return transmission_control_block_event_in_on(context->block, parent, context);
+        case protocol_event_out:                return transmission_control_block_event_out_on(context->block, parent, context);
+        case protocol_event_exception:          return transmission_control_block_event_exception_on(context->block, parent, context);
+        case protocol_event_complete:           return transmission_control_block_event_complete_on(context->block, parent, context);
+        case protocol_event_complete_in:        return transmission_control_block_event_complete_in_on(context->block, parent, context);
+        case protocol_event_complete_out:       return transmission_control_block_event_complete_out_on(context->block, parent, context);
+        default:                                return transmission_control_block_event_none_on(context->block, parent, context);
+    }
 }
 
 extern uint32_t transmission_control_protocol_module_func_sequence_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -279,6 +234,7 @@ static int32_t transmission_control_protocol_module_func_out(transmission_contro
     /**
      * TCP 의 경우 CONTROL BLOCK BUFFER 에 데이터를 삽입하고, 끝낸다.
      */
+
     snorlaxdbg(true, false, "critical", "");
 
     return fail;

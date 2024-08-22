@@ -22,26 +22,24 @@ struct transmission_control_block_agent_func;
 typedef hashtable_t transmission_control_block_map_t;
 
 struct transmission_control_protocol_packet;
-union transmission_control_protocol_address_pair;
 
 struct transmission_control_protocol_module;
 struct transmission_control_protocol_module_func;
 struct transmission_control_protocol_context;
 struct transmission_control_protocol_context_func;
 
-typedef struct transmission_control_block               transmission_control_block_t;
-typedef struct transmission_control_block_func          transmission_control_block_func_t;
-typedef struct transmission_control_block_agent         transmission_control_block_agent_t;
-typedef struct transmission_control_block_agent_func    transmission_control_block_agent_func_t;
+typedef struct transmission_control_block                   transmission_control_block_t;
+typedef struct transmission_control_block_func              transmission_control_block_func_t;
+typedef struct transmission_control_block_agent             transmission_control_block_agent_t;
+typedef struct transmission_control_block_agent_func        transmission_control_block_agent_func_t;
 
-typedef struct transmission_control_protocol_packet transmission_control_protocol_packet_t;
-typedef union transmission_control_protocol_address_pair transmission_control_protocol_address_pair_t;
-typedef uint8_t transmission_control_protocol_option_t;
+typedef struct transmission_control_protocol_packet         transmission_control_protocol_packet_t;
+typedef uint8_t                                             transmission_control_protocol_option_t;
 
-typedef struct transmission_control_protocol_module transmission_control_protocol_module_t;
-typedef struct transmission_control_protocol_module_func transmission_control_protocol_module_func_t;
-typedef struct transmission_control_protocol_context transmission_control_protocol_context_t;
-typedef struct transmission_control_protocol_context_func transmission_control_protocol_context_func_t;
+typedef struct transmission_control_protocol_module         transmission_control_protocol_module_t;
+typedef struct transmission_control_protocol_module_func    transmission_control_protocol_module_func_t;
+typedef struct transmission_control_protocol_context        transmission_control_protocol_context_t;
+typedef struct transmission_control_protocol_context_func   transmission_control_protocol_context_func_t;
 
 struct transmission_control_protocol_packet {
     uint16_t source;
@@ -86,33 +84,9 @@ struct transmission_control_protocol_packet {
     uint16_t pointer;
 };
 
-// 필요한지 고민해보자.
-union transmission_control_protocol_address_pair {
-    struct {
-        struct {
-            uint32_t addr;
-            uint16_t port;
-        } local;
-        struct {
-            uint32_t addr;
-            uint16_t port;
-        } foreign;
-    } version4;
-    struct {
-        struct {
-            uint8_t addr[16];
-            uint16_t port;
-        } local;
-        struct {
-            uint8_t addr[16];
-            uint16_t port;
-        } foreign;
-    } version6;
-};
 
 extern uint8_t * transmission_control_protocol_packet_reserve_header(uint8_t * buffer, uint64_t * bufferlen);
 
-extern int32_t transmission_control_protocol_address_pair_init(transmission_control_protocol_address_pair_t * pair, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
 #define transmission_control_protocol_packet_length_min                     20
@@ -159,6 +133,7 @@ struct transmission_control_block {
     hashtable_node_key_t key;
 
     protocol_path_t * path;
+    transmission_control_protocol_module_t * module;
 
     uint8_t version;
     uint32_t state;
@@ -179,23 +154,56 @@ struct transmission_control_block_func {
     int32_t (*listen)(transmission_control_block_t *);
 };
 
+extern int32_t transmission_control_block_event_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_event_out_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_event_exception_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_event_complete_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_event_complete_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_event_complete_out_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_event_none_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
+extern int32_t transmission_control_block_state_listen_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_synchronize_sequence_sent_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_synchronize_sequence_recv_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_establish_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_finish_wait_frist_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_finish_wait_second_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_close_wait_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_closing_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_last_acknowledge_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_time_wait_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_closed_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_exception_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
+extern int32_t transmission_control_block_state_listen_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_synchronize_sequence_sent_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_synchronize_sequence_recv_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_establish_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_finish_wait_frist_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_finish_wait_second_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_close_wait_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_closing_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_last_acknowledge_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_time_wait_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_closed_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_state_exception_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
 #define transmission_control_block_state_get(block)                 ((block)->state)
 #define transmission_control_block_state_set(block, v)              ((block)->state = v)
 
 #define transmission_control_window_size_init                       (65536 / 2)
 
-#define transmission_control_state_none                             0
+#define transmission_control_state_closed                           0
 #define transmission_control_state_listen                           1
-#define transmission_control_state_syn_sent                         2
-#define transmission_control_state_syn_rcvd                         3
-#define transmission_control_state_est                              4
-#define transmission_control_state_fin_wait_1                       5
-#define transmission_control_state_fin_wait_2                       6
+#define transmission_control_state_synchronize_sequence_sent        2
+#define transmission_control_state_synchronize_sequence_recv        3
+#define transmission_control_state_establish                        4
+#define transmission_control_state_finish_wait_first                5
+#define transmission_control_state_finish_wait_second               6
 #define transmission_control_state_close_wait                       7
 #define transmission_control_state_closing                          8
-#define transmission_control_state_last_ack                         9
+#define transmission_control_state_last_acknowledge                 9
 #define transmission_control_state_time_wait                        10
-#define transmission_control_state_closed                           0
 
 #define transmission_control_flag_control_cwr                       (0x01u << 7u)
 #define transmission_control_flag_control_ece                       (0x01u << 6u)
@@ -210,7 +218,7 @@ struct transmission_control_block_func {
 
 #define transmission_control_protocol_header_len                    20
 
-extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key);
+extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key, transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context);
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
@@ -222,6 +230,8 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 #define transmission_control_block_window_get(block)                ((block)->window)
 #define transmission_control_block_version_set(block, v)            ((block)->version = v)
 #define transmission_control_block_version_get(block)               ((block)->version)
+#define transmission_control_block_state_get(block)                 ((block)->state)
+#define transmission_control_block_state_set(block, v)              ((block)->state = v)
 
 #define transmission_control_block_func_hash                        internet_protocol_version_hash
 
@@ -307,6 +317,7 @@ struct transmission_control_protocol_context {
 
     hashtable_node_key_t key;                                   // 중복적으로 키가 발생한다. 불필요한 공간인가? 아니면 조금 더 메모리를 줄일 수 있는가?
     transmission_control_block_t * block;
+    uint32_t state;
 };
 
 struct transmission_control_protocol_context_func {
@@ -321,9 +332,11 @@ extern transmission_control_protocol_context_t * transmission_control_protocol_c
 extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context);
 extern uint32_t transmission_control_protocol_direction_cal(transmission_control_protocol_context_t * context);
 
+// SINGLE METHOD ...
 extern int32_t transmission_control_protocol_context_is_connect_syn(transmission_control_protocol_context_t * context);
-extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context);
+extern int32_t transmssion_control_protocol_context_is_connect_ack(transmission_control_protocol_context_t * context);
 
+// extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context);
 // extern void transmission_control_protocol_context_func_buffer_reserve(transmission_control_protocol_context_t * context, uint64_t n);
 
 #define transmission_control_protocol_context_buffer_reserve(context, n)                        (protocol_context_buffer_reserve_reversal((protocol_context_t *) (context), n))
@@ -393,6 +406,8 @@ extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_c
 #define transmission_control_protocol_context_option_set(context, v)                            ((context)->option = v)
 #define transmission_control_protocol_context_data_get(context)                                 ((context)->data)
 #define transmission_control_protocol_context_data_set(context, v)                              ((context)->data = v)
+#define transmission_control_protocol_context_state_get(context)                                ((context)->state)
+#define transmission_control_protocol_context_state_set(context, v)                             ((context)->state = v)
 
 #define transmission_control_protocol_context_block_set(context, v)                             ((context)->block = v)
 #define transmission_control_protocol_context_block_get(context)                                ((context)->block)

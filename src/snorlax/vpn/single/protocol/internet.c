@@ -100,18 +100,11 @@ static int32_t internet_protocol_module_func_vpn_single_on_complete_out(internet
         return success;
     }
 
-//    transmission_Control_block_
-
     vpn_single_app_t * single = vpn_single_app_get();
 
     snorlaxdbg(single == nil, false, "critical", "");
 
-
-
     descriptor_event_subscription_t * tun = single->tun;
-
-    // snorlaxdbg(context->packetlen == 0, false, "critical", "");
-    // snorlaxdbg(context->packet == nil, false, "critical", "");
 
     internet_protocol_module_debug(module, stdout, context);
 

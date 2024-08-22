@@ -77,23 +77,56 @@ extern int32_t transmission_control_protocol_context_key_gen(transmission_contro
 #ifndef   RELEASE
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
-    snorlaxdbg(false, true, "debug", "");
-    transmission_control_protocol_address_pair_t pair;
-    if(transmission_control_protocol_address_pair_init(&pair, context->parent, context) == fail) {
-        snorlaxdbg(false, true, "warning", "");
-        /**
-         * 라우터의 경우 키가 정상적으로 설정되지 않을 수 있다.
-         */
-        return fail;
+
+    if(context->parent) {
+        uint8_t version = internet_protocol_context_version_get(context->parent);
+
+        if(version == 4) {
+            context->key.length = (sizeof(uint32_t) + sizeof(uint16_t)) * 2;
+            context->key.value = memory_gen(context->key.value, context->key.length);
+
+            memcpy(context->key.value                                                       , transmission_control_protocol_context_addrptr(context, protocol_address_type_source), sizeof(uint16_t));
+            memcpy(address_of(context->key.value[sizeof(uint16_t)])                         , internet_protocol_context_addrptr(context, protocol_address_type_source), sizeof(uint32_t));
+            memcpy(address_of(context->key.value[sizeof(uint16_t) + sizeof(uint32_t)])      , transmission_control_protocol_context_addrptr(context, protocol_address_type_destination), sizeof(uint16_t));
+            memcpy(address_of(context->key.value[(sizeof(uint16_t) * 2) + sizeof(uint32_t)]), internet_protocol_context_addrptr(context, protocol_address_type_destination), sizeof(uint32_t));
+
+            return success;
+        } else if(version == 6) {
+            context->key.length = ((sizeof(uint32_t) * 4) + sizeof(uint16_t)) * 2;
+            context->key.value = memory_gen(context->key.value, context->key.length);
+
+            memcpy(context->key.value, transmission_control_protocol_context_addrptr(context, protocol_address_type_source), sizeof(uint16_t));
+            memcpy(address_of(context->key.value[sizeof(uint16_t)]), internet_protocol_context_addrptr(context, protocol_address_type_source), sizeof(uint32_t) * 4);
+            memcpy(address_of(context->key.value[sizeof(uint16_t) + (sizeof(uint32_t) * 4)]), transmission_control_protocol_context_addrptr(context, protocol_address_type_destination), sizeof(uint16_t));
+            memcpy(address_of(context->key.value[(sizeof(uint16_t) * 2) + (sizeof(uint32_t) * 4)]), internet_protocol_context_addrptr(context, protocol_address_type_destination), sizeof(uint32_t) * 4);
+
+            return success;
+        } else {
+            snorlaxdbg(version != 4 && version != 6, false, "critical", "");
+        }
+    } else if(context->block && context->block->path) {
+        protocol_path_node_t * node = protocol_path_begin(context->block->path);
+
+        snorlaxdbg(node == nil, false, "critical", "");
+
+        protocol_path_node_t * next = protocol_path_node_next(node);
+
+        snorlaxdbg(next == nil, false, "critical", "");
+
+        context->key.length = (node->length + next->length) * 2;
+        context->key.value = memory_gen(context->key.value, context->key.length);
+
+        memcpy(context->key.value, protocol_path_node_source_get(node), node->length);
+        memcpy(address_of(context->key.value[node->length]), protocol_path_node_source_get(next), next->length);
+        memcpy(address_of(context->key.value[node->length + next->length]), protocol_path_node_destination_get(node), node->length);
+        memcpy(address_of(context->key.value[node->length * 2 + next->length]), protocol_path_node_destination_get(next), next->length);
+
+        return success;
+    } else {
+        snorlaxdbg(true, false, "critical", "");
     }
 
-    uint8_t version = internet_protocol_context_version_get(context->parent);
-
-    if(version == 4) context->key.length = (sizeof(uint32_t) + sizeof(uint16_t)) * 2;
-    if(version == 6) context->key.length = ((sizeof(uint32_t) * 4) + sizeof(uint16_t)) * 2;
-
-    context->key.value = memory_gen(context->key.value, context->key.length);
-    memcpy(context->key.value, &pair, context->key.length);
+    snorlaxdbg(true, false, "implement", "");
 
     return fail;
 }
@@ -124,8 +157,29 @@ extern int32_t transmission_control_protocol_context_is_connect_syn(transmission
     uint8_t flags = transmission_control_protocol_context_flags_get(context);
 
     if(flags == transmission_control_flag_control_syn) {
-        snorlaxdbg(false, true, "debug", "connect syn");
-        return true;
+        if(context->block == nil || transmission_control_block_state_get(context->block) == transmission_control_state_synchronize_sequence_recv) {
+            return true;
+        }
+    }
+
+    snorlaxdbg(false, true, "debug", "");
+
+    return false;
+}
+
+extern int32_t transmssion_control_protocol_context_is_connect_ack(transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+    snorlaxdbg(context->block == nil, false, "critical", "");       // TODO: PACKET DROP ...
+#endif // RELEASE
+
+    uint8_t flags = transmission_control_protocol_context_flags_get(context);
+
+    if(flags == transmission_control_flag_control_ack) {
+        snorlaxdbg(false, true, "implement", "old applied packet drop");
+        if(transmission_control_block_state_get(context->block) == transmission_control_state_synchronize_sequence_recv) {
+            return true;
+        }
     }
 
     return false;
