@@ -115,11 +115,12 @@ struct transmission_control_block_agent_func {
     int32_t (*close)(transmission_control_block_agent_t *);
 };
 
-#define transmission_control_block_agent_rem(agent)             ((agent)->func->rem(agent))
-#define transmission_control_block_agent_open(agent)            ((agent)->func->open(agent))
-#define transmission_control_block_agent_send(agent)            ((agent)->func->send(agent))
-#define transmission_control_block_agent_recv(agent)            ((agent)->func->recv(agent))
-#define transmission_control_block_agent_close(agent)           ((agent)->func->close(agent))
+#define transmission_control_block_agent_rem(agent)                         ((agent)->func->rem(agent))
+#define transmission_control_block_agent_open(agent)                        ((agent)->func->open(agent))
+#define transmission_control_block_agent_send(agent)                        ((agent)->func->send(agent))
+
+#define transmission_control_block_agent_recv(agent)                        ((agent)->func->recv(agent))
+#define transmission_control_block_agent_close(agent)                       ((agent)->func->close(agent))
 
 /**
  * Inherited hashtable_node_t

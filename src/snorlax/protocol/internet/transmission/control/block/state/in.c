@@ -73,16 +73,38 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_cwr)) {
+        snorlaxdbg(true, false, "implement", "");
+    }
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ece)) {
+        snorlaxdbg(true, false, "implement", "");
+    }
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_urg)) {
+        snorlaxdbg(true, false, "implement", "");
+    }
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack)) {
         transmission_control_block_sequence_set(block, transmission_control_protocol_context_acknowledge_get(context));
     }
-
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh)) {
-        snorlaxdbg(false, false, "debug", "data => %p", transmission_control_protocol_context_data_get(context));
-        snorlaxdbg(false, false, "debug", "datalen => %u", transmission_control_protocol_context_datalen_get(context));
-    }
+        snorlaxdbg(false, true, "debug", "data => %p", transmission_control_protocol_context_data_get(context));
+        snorlaxdbg(false, true, "debug", "datalen => %u", transmission_control_protocol_context_datalen_get(context));
 
-    snorlaxdbg(true, false, "implement", "");
+        snorlaxdbg(block->agent == nil, false, "critical", "");
+        snorlaxdbg(true, false, "implement", "");
+
+        // AGENT 로직을 구현한다.
+        // transmission_control_block_recv(block, context);
+
+    }
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst)) {
+        snorlaxdbg(true, false, "implement", "");
+    }
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_syn)) {
+        snorlaxdbg(true, false, "implement", "");
+    }
+    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_fin)) {
+        snorlaxdbg(true, false, "implement", "");
+    }
 
     return fail;
 }

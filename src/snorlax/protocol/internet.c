@@ -15,9 +15,7 @@ extern uint32_t internet_protocol_checksum_sum(protocol_packet_t * packet, uint6
     
     if(packetlen % 2){
         uint16_t last = packet[packetlen - 1];
-        printf("checksum => %x\n", last);
         last = (last << 8u);
-        printf("checksum => %x\n", last);
         value = value + last;
     }
 
