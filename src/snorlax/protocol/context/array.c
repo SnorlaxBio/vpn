@@ -6,11 +6,13 @@
 static protocol_context_array_t * protocol_context_array_func_rem(protocol_context_array_t * collection);
 static protocol_context_t * protocol_context_array_func_get(protocol_context_array_t * collection, uint64_t index);
 static protocol_context_t ** protocol_context_array_func_pop(protocol_context_array_t * collection);
+static void protocol_context_array_func_push(protocol_context_array_t * collection, protocol_context_t * context);
 
 static protocol_context_array_func_t func = {
     protocol_context_array_func_rem,
     protocol_context_array_func_get,
-    protocol_context_array_func_pop
+    protocol_context_array_func_pop,
+    protocol_context_array_func_push
 };
 
 extern protocol_context_array_t * protocol_context_array_gen(void) {
@@ -61,4 +63,21 @@ static protocol_context_t ** protocol_context_array_func_pop(protocol_context_ar
     collection->size = collection->size + 1;
 
     return context;
+}
+
+static void protocol_context_array_func_push(protocol_context_array_t * collection, protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(collection == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+    if(collection->capacity <= collection->size) {
+        uint64_t capacity = collection->capacity;
+        collection->capacity = collection->capacity ? (collection->capacity << 1) : 1;
+        collection->container = memory_gen(collection->container, collection->capacity * sizeof(protocol_context_t *));
+        memset(&collection->container[capacity], 0, (collection->capacity - capacity) * sizeof(protocol_context_t *));
+    }
+
+    collection->container[collection->size] = context;
+
+    collection->size = collection->size + 1;
 }

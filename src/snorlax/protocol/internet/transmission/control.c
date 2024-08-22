@@ -18,6 +18,8 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
     uint16_t checksum = segment->checksum;
     segment->checksum = 0;
 
+    snorlaxdbg(false, true, "debug", "segmentlen => %lu", segmentlen);
+
     uint32_t value = internet_protocol_checksum_sum((protocol_packet_t *) pseudo, pseudolen);
     value = value + internet_protocol_checksum_sum((protocol_packet_t *) segment, segmentlen);
 

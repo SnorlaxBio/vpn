@@ -7,13 +7,13 @@
 static internet_protocol_version4_context_t * internet_protocol_version4_context_func_rem(internet_protocol_version4_context_t * context);
 static int32_t internet_protocol_version4_context_func_valid(internet_protocol_version4_context_t * context);
 static uint8_t * internet_protocol_version4_context_func_addrptr(internet_protocol_version4_context_t * context, uint32_t type);
-typedef void (*internet_protocol_version4_context_func_checksum_build_t)(internet_protocol_version4_context_t *, const uint8_t *, uint64_t);
+static void internet_protocol_version4_context_func_build(internet_protocol_version4_context_t * context, const uint8_t * pseudo, uint64_t pseudolen);
 
 static internet_protocol_version4_context_func_t func = {
     internet_protocol_version4_context_func_rem,
     internet_protocol_version4_context_func_valid,
     internet_protocol_version4_context_func_addrptr,
-    (internet_protocol_version4_context_func_checksum_build_t) protocol_context_func_checksum_build
+    internet_protocol_version4_context_func_build
 };
 
 extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen) {
@@ -51,14 +51,16 @@ static int32_t internet_protocol_version4_context_func_valid(internet_protocol_v
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(internet_protocol_version4_context_error_get(context)) return false;
+    if(internet_protocol_version4_context_error_get(context)) {
+        snorlaxdbg(false, true, "debug", "error => %d\n", internet_protocol_version4_context_error_get(context));
+        return false;
+    }
 
-    if(internet_protocol_version4_context_checksum_get(context) != internet_protocol_version4_context_checksumcal_get(context)) {
-        snorlaxdbg(false, true, "debug", "checksum => %u", internet_protocol_version4_context_checksum_get(context));
-        snorlaxdbg(false, true, "debug", "checksumcal => %u", internet_protocol_version4_context_checksumcal_get(context));
-        
+    snorlaxdbg(false, true, "debug", "checksum => %u", internet_protocol_version4_context_checksum_get(context));
+    snorlaxdbg(false, true, "debug", "checksumcal => %u", internet_protocol_version4_context_checksumcal_get(context));
+
+    if(internet_protocol_version4_context_checksum_get(context) != internet_protocol_version4_context_checksumcal_get(context)) {    
         internet_protocol_version4_context_error_set(context, EIO);
-
         return false;
     }
 
@@ -77,4 +79,15 @@ static uint8_t * internet_protocol_version4_context_func_addrptr(internet_protoc
     }
 
     return nil;
+}
+
+static void internet_protocol_version4_context_func_build(internet_protocol_version4_context_t * context, const uint8_t * pseudo, uint64_t pseudolen) {
+#ifndef   RELEASE
+    snorlaxdbg(context == nil, false, "critical", "");
+    snorlaxdbg(pseudo != nil, false, "critical", "");
+    snorlaxdbg(pseudolen != 0, false, "critical", "");
+#endif // RELEASE
+
+    internet_protocol_version4_context_checksumcal_set(context, internet_protocol_version4_context_checksum_cal(context));
+    internet_protocol_version4_context_checksum_set(context, internet_protocol_version4_context_checksumcal_get(context));
 }

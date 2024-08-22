@@ -82,6 +82,17 @@ static int32_t internet_protocol_module_func_vpn_single_on_complete_in(internet_
 #endif // RELEASE
     snorlaxdbg(false, true, "debug", "");
 
+    return success;
+}
+
+static int32_t internet_protocol_module_func_vpn_single_on_complete_out(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(module == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "debug", "");
+
     if(parent != nil) {
         /**
          * 상위 레이어로 전달하는 경로로 패킷을 전달한다.
@@ -110,17 +121,6 @@ static int32_t internet_protocol_module_func_vpn_single_on_complete_in(internet_
     }
 
     snorlaxdbg(false, true, "debug", "packet write => %lu", context->packetlen);
-
-    return success;
-}
-
-static int32_t internet_protocol_module_func_vpn_single_on_complete_out(internet_protocol_module_t * module, uint32_t type, protocol_context_t * parent, internet_protocol_context_t * context) {
-#ifndef   RELEASE
-    snorlaxdbg(module == nil, false, "critical", "");
-    snorlaxdbg(context == nil, false, "critical", "");
-#endif // RELEASE
-
-    snorlaxdbg(false, true, "debug", "");
 
     return success;
 }

@@ -297,7 +297,7 @@ struct transmission_control_protocol_context {
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
 
-    uint16_t checksum;
+    uint16_t checksumcal;
 
     uint32_t headerlen;
     uint32_t datalen;
@@ -345,8 +345,8 @@ extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_c
 #define transmission_control_protocol_context_headerlen_add(context, v)                         ((context)->headerlen = (context)->headerlen + v)
 #define transmission_control_protocol_context_datalen_get(context)                              ((context)->datalen)
 #define transmission_control_protocol_context_datalen_set(context, v)                           ((context)->datalen = v)
-#define transmission_control_protocol_context_checksumcal_get(context)                          ((context)->checksum)
-#define transmission_control_protocol_context_checksumcal_set(context, v)                       ((context)->checksum =  v)
+#define transmission_control_protocol_context_checksumcal_get(context)                          ((context)->checksumcal)
+#define transmission_control_protocol_context_checksumcal_set(context, v)                       ((context)->checksumcal =  v)
 #define transmission_control_protocol_context_source_get(context)                               (ntohs((context)->packet->source))
 #define transmission_control_protocol_context_source_set(context, v)                            ((context)->packet->source = htons(v))
 #define transmission_control_protocol_context_destination_get(context)                          (ntohs((context)->packet->destination))

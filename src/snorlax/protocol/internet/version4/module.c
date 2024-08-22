@@ -297,6 +297,10 @@ static internet_protocol_version4_context_t * internet_protocol_version4_module_
 #endif // RELEASE
     internet_protocol_version4_context_t * context = internet_protocol_version4_context_gen(module, nil, (internet_protocol_version4_packet_t *) child->packet, child->packetlen, child->bufferlen);
 
+    protocol_context_array_push(context->children, child);
+    internet_protocol_version4_context_segment_set(context, child->packet);
+    internet_protocol_version4_context_segmentlen_set(context, child->packetlen);
+
     snorlaxdbg(false, true, "debug", "option");
 
     internet_protocol_version4_context_buffer_reserve(context, internet_protocol_version4_packet_header_length_min);
@@ -304,6 +308,7 @@ static internet_protocol_version4_context_t * internet_protocol_version4_module_
     internet_protocol_version4_context_version_set(context, 4);
     internet_protocol_version4_context_length_set(context, internet_protocol_version4_packet_header_length_min / 4);
     internet_protocol_version4_context_total_set(context, internet_protocol_version4_context_packetlen_get(context));
+    fprintf(stdout, "internet_protocol_version4_context_total_get(context) => %u\n", internet_protocol_version4_context_total_get(context));
     internet_protocol_version4_context_identification_set(context, internet_protocol_version4_module_identification_gen(module));
     internet_protocol_version4_context_fragment_set(context, internet_protocol_version4_fragment_field_gen(1, 0, 0));
     internet_protocol_version4_context_ttl_set(context, internet_protocol_version4_module_default_ttl_get(module));
@@ -316,7 +321,16 @@ static internet_protocol_version4_context_t * internet_protocol_version4_module_
     context->pseudolen = sizeof(internet_protocol_version4_pseudo_t);
 
     protocol_context_checksum_build(child, (uint8_t *) context->pseudo, context->pseudolen);
-    internet_protocol_version4_context_checksum_set(context, internet_protocol_version4_context_checksum_cal(context));
+
+    snorlaxdbg(protocol_context_valid(child) == false, false, "critical", "");
+
+    // internet_protocol_version4_context_checksum_cal()
+
+    internet_protocol_version4_context_checksum_build(context, nil, 0);
+
+//    internet_protocol_version4_context_checksum_set(context, internet_protocol_version4_context_checksum_cal(context));
+
+    snorlaxdbg(protocol_context_valid(context) == false, false, "critical", "");
 
     return context;
 }

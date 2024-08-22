@@ -20,7 +20,7 @@ extern uint32_t internet_protocol_checksum_sum(protocol_packet_t * packet, uint6
     uint16_t * values = (uint16_t *) packet;
 
     for(uint64_t i = 0; i < n; i++) {
-        value = value + htons(values[i]);
+        value = value + ntohs(values[i]);
     }
     
     if(packetlen % 2) {

@@ -60,7 +60,15 @@ static int32_t transmission_control_protocol_context_func_valid(transmission_con
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(false, true, "implement", "");
+    if(transmission_control_protocol_context_error_get(context)) return false;
+
+    snorlaxdbg(false, true, "debug", "checksumcal => %u", transmission_control_protocol_context_checksumcal_get(context));
+    snorlaxdbg(false, true, "debug", "checksum => %u", transmission_control_protocol_context_checksum_get(context));
+
+    if(transmission_control_protocol_context_checksumcal_get(context) != transmission_control_protocol_context_checksum_get(context)) {
+        transmission_control_protocol_context_error_set(context, EIO);
+        return false;
+    }
 
     return true;
 }
@@ -142,7 +150,8 @@ static uint8_t * transmission_control_protocol_context_func_addrptr(transmission
 }
 
 static void transmission_control_protocol_context_func_checksum_build(transmission_control_protocol_context_t * context, const uint8_t * pseudo, uint64_t pseudolen) {
-    context->checksum = transmission_control_protocol_checksum_cal(context->packet, context->packetlen, (internet_protocol_pseudo_t *) pseudo, pseudolen);
+    snorlaxdbg(false, true, "debug", "context->packetlen => %lu\n", context->packetlen);
+    context->checksumcal = transmission_control_protocol_checksum_cal(context->packet, context->packetlen, (internet_protocol_pseudo_t *) pseudo, pseudolen);
 
-    transmission_control_protocol_context_checksum_set(context, context->checksum);
+    transmission_control_protocol_context_checksum_set(context, context->checksumcal);
 }

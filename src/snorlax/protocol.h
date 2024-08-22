@@ -179,6 +179,7 @@ struct protocol_context_array_func {
     protocol_context_array_t * (*rem)(protocol_context_array_t *);
     protocol_context_t * (*get)(protocol_context_array_t *, uint64_t);
     protocol_context_t ** (*pop)(protocol_context_array_t *);
+    void (*push)(protocol_context_array_t *, protocol_context_t *);
 };
 
 extern protocol_context_array_t * protocol_context_array_gen(void);
@@ -186,6 +187,7 @@ extern protocol_context_array_t * protocol_context_array_gen(void);
 #define protocol_context_array_rem(collection)                      ((collection)->func->rem(collection))
 #define protocol_context_array_get(collection, index)               ((collection)->func->get(collection, index))
 #define protocol_context_array_pop(collection)                      ((collection)->func->pop(collection))
+#define protocol_context_array_push(collection, context)            ((collection)->func->push(collection, context))
 
 #define protocol_context_array_size(collection)                     ((collection) ? (collection)->size : 0)
 
