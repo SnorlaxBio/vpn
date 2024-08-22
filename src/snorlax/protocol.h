@@ -14,12 +14,10 @@
 
 #define protocol_event_in                   1
 #define protocol_event_out                  2
-// #define protocol_event_exception            3
-#define protocol_event_exception            4
-#define protocol_event_exception_out        5
-#define protocol_event_complete             6
-#define protocol_event_complete_in          7
-#define protocol_event_complete_out         8
+#define protocol_event_exception            3
+#define protocol_event_complete             4
+#define protocol_event_complete_in          5
+#define protocol_event_complete_out         6
 
 #define protocol_packet_max                 65536
 
@@ -91,8 +89,12 @@ extern int32_t protocol_module_func_out(protocol_module_t * module, protocol_pat
 extern protocol_context_t * protocol_module_func_reply_gen(protocol_module_t * module, protocol_context_t * request);
 extern int32_t protocol_module_func_on(protocol_module_t * module, uint32_t type, protocol_context_t * parent, protocol_context_t * context);
 
+extern int32_t protocol_module_func_propagate_on(protocol_module_t * module, uint32_t type, protocol_context_t * parent, protocol_context_t * context);
+
 #define protocol_module_addrlen_get(module)                                             ((module)->addrlen)
 #define protocol_module_number_get(module)                                              ((module)->type)
+
+#define protocol_module_propagate_on(module, type, parent, context)                     (protocol_module_func_propagate_on((protocol_module_t *) module, type, (protocol_context_t *) parent, (protocol_context_t *) context))
 
 #define protocol_module_rem(module)                                                     ((module)->func->rem(module))
 #define protocol_module_deserialize(module, packet, packetlen, parent, context)         ((module)->func->deserialize(module, packet, packetlen, parent, context))
@@ -180,7 +182,7 @@ extern protocol_context_array_t * protocol_context_array_gen(void);
 #define protocol_context_array_get(collection, index)               ((collection)->func->get(collection, index))
 #define protocol_context_array_pop(collection)                      ((collection)->func->pop(collection))
 
-#define protocol_context_array_size(collection)                     ((collection)->size)
+#define protocol_context_array_size(collection)                     ((collection) ? (collection)->size : 0)
 
 struct protocol_path_node {
     ___reference protocol_path_t * path;

@@ -47,6 +47,10 @@ extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmiss
         }
     } else if(type == protocol_event_complete_in) {
 
+    } else if(type == protocol_event_out) {
+
+    } else if(type == protocol_event_complete_out) {
+        
     }
     
 
