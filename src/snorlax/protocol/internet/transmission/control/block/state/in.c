@@ -72,7 +72,7 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
     snorlaxdbg(parent == nil, false, "critical", "");
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
-
+    
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_cwr)) {
         snorlaxdbg(true, false, "implement", "");
     }
@@ -94,6 +94,8 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
         if(transmission_control_block_in(block, context) == fail) {
             return fail;
         }
+
+        snorlaxdbg(false, true, "implement", "window cal");
     }
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst)) {
         snorlaxdbg(true, false, "implement", "");
@@ -104,6 +106,7 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_fin)) {
         snorlaxdbg(true, false, "implement", "");
     }
+
 
     return fail;
 }

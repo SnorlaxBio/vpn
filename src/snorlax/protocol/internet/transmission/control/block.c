@@ -1,3 +1,12 @@
+/**
+ * @file        snorlax/protocol/internet/transmission/control/block.c
+ * @brief
+ * @details
+ * 
+ * @author      snorlax <ceo@snorlax.bio>
+ * @since       Aug 23, 2024
+ * @see         [Transmission Control Protocol <sup>TCP</sup>](https://datatracker.ietf.org/doc/html/rfc9293)
+ */
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -11,7 +20,7 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
 static int32_t transmission_control_block_func_recv(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_close(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_in(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
-static int32_t transmission_control_block_func_out(transmission_control_block_t * block);
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_node_t * node);
 
 static transmission_control_block_func_t func = {
     transmission_control_block_func_rem,
@@ -74,10 +83,21 @@ static transmission_control_block_t * transmission_control_block_func_rem(transm
     return nil;
 }
 
+/**
+ * @fn          int32_t transmission_control_block_func_open(transmission_control_block_t * block)
+ * @brief
+ * @details     
+ */
 static int32_t transmission_control_block_func_open(transmission_control_block_t * block) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
+
+#ifdef    TRANSMISSION_CONTROL_PROTOCOL_SUPPORT_AUTOMATIC_OPEN
+    // @see      [User/Transmission Control Protocol <sup>TCP</sup> Interface / 3.9.1.2. Send](https://datatracker.ietf.org/doc/html/rfc9293#section-3.9.1)
+    snorlaxdbg(false, true, "implement", "send if data exist");
+#endif // TRANSMISSION_CONTROL_PROTOCOL_SUPPORT_AUTOMATIC_OPEN
+    // TRANSMISSION_CONTROL_PROTOCOL_SUPPORT_AUTOMATIC_OPEN
 
     // block
 
@@ -105,25 +125,58 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
+    snorlaxdbg(true, false, "refactor", "");
+
     if(transmission_control_block_avail_io(block) == false) {
         snorlaxdbg(transmission_control_block_avail_io(block) == false, false, "warning", "");
         return fail;
     }
 
-    uint16_t mss = block->module->max_segment_size;
-    uint64_t n = datalen / mss;
-    uint64_t last = datalen % mss;
     buffer_list_t * out = block->buffer.out;
+
+    transmission_control_block_node_t * node = transmission_control_block_buffer_back(out);
+    uint64_t remain = transmission_control_block_node_remain(node);
+
+    transmission_control_block_node_t * front = node;
+
+    // TRANSMISSION 할 노드를 찾는다.
+    for(front = transmission_control_block_buffer_back(out); front != nil; front = transmission_control_block_node_next(front)) {
+
+    }
+
+    if(remain > 0) {
+        if(datalen <= remain) {
+            memcpy(buffer_list_node_front(node), data, datalen);
+            buffer_list_node_size_set(node, buffer_list_node_size_get(node) + datalen);
+
+            transmission_control_block_out(block, node);
+
+            return datalen;
+        }
+        memcpy(buffer_list_node_front(node), data, remain);
+        buffer_list_node_size_set(node, buffer_list_node_size_get(node) + remain);
+    }
+
+    uint64_t len = datalen - remain;
+    uint16_t mss = block->module->max_segment_size;
+    uint64_t n = len / mss;
+    uint64_t last = len % mss;
+
+    data = data + remain;
 
     for(uint64_t i = 0; i < n; i++) {
         buffer_list_node_t * node = buffer_list_back(out, mss);
         memcpy(buffer_list_node_front(node), address_of(data[i * mss]), mss);
+        buffer_list_node_size_set(node, buffer_list_node_size_get(node) + mss);
     }
 
     if(last) {
         buffer_list_node_t * node = buffer_list_back(out, mss);
         memcpy(buffer_list_node_front(node), address_of(data[n * mss]), last);
+        buffer_list_node_size_set(node, buffer_list_node_size_get(node) + last);
     }
+    // 새롭게 들어온 녀석들이 있다면,... 바로 보낸다.
+    transmission_control_block_out(block, front);
 
     return datalen;
 }
@@ -219,12 +272,45 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
     return context;
 }
 
-static int32_t transmission_control_block_func_out(transmission_control_block_t * block) {
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_node_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
+#if       0
+    // 새롭게 들어온 녀석에 대해서 바로 보내는 것이 맞을까?
+    // 나중에 변경하도록 하자.
+    while(node->prev && transmission_control_block_node_transmit_count_get(node->prev) == 0) {
+        node = node->prev;
+    }
+
+    // 커널 소스를 봐야겠다.
+    // https://datatracker.ietf.org/doc/html/rfc9293#section-3.9.1 읽고 구현하자.
+#endif // 0
+
     snorlaxdbg(true, false, "implement", "");
 
-    return fail;
+    if(transmission_control_block_avail_io(block)) {
+    }
+
+    /**
+     * If the connection has not been opened, the send is considered an error.
+     */
+    if(transmission_control_block_finishing(block)) {
+        return fail;
+    }
+
+    return success;
+
+    // return transmission_control_block_finishing(block) ? fail : success;
+
+    // }
+
+    // // for(transmission_control_block_node_t * node = transmission_control_block_)
+
+    // // 졸립다. 조금 후에 짜자...
+
+    // snorlaxdbg(true, false, "implement", "");
+
+    // return fail;
 }

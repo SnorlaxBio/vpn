@@ -5,7 +5,6 @@
 
 #include "../../../../control.h"
 
-
 extern int32_t transmission_control_block_state_listen_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
