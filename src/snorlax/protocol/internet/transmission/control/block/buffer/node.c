@@ -16,8 +16,6 @@ typedef uint64_t (*transmission_control_block_buffer_node_capacity_get_t)(transm
 typedef void (*transmission_control_block_buffer_node_capacity_set_t)(transmission_control_block_buffer_node_t *, uint64_t);
 typedef void (*transmission_control_block_buffer_node_clear_t)(transmission_control_block_buffer_node_t *);
 
-static void transmission_control_block_buffer_node_func_position_set(transmission_control_block_buffer_node_t * node, uint64_t n);
-
 static transmission_control_block_buffer_node_func_t func = {
     (transmission_control_block_buffer_node_rem_t) buffer_list_node_func_rem,
     (transmission_control_block_buffer_node_front_t) buffer_list_node_func_front,
@@ -26,7 +24,7 @@ static transmission_control_block_buffer_node_func_t func = {
     (transmission_control_block_buffer_node_length_t) buffer_list_node_func_length,
     (transmission_control_block_buffer_node_remain_t) buffer_list_node_func_remain,
     (transmission_control_block_buffer_node_position_get_t) buffer_list_node_func_position_get,
-    transmission_control_block_buffer_node_func_position_set,
+    (transmission_control_block_buffer_node_position_set_t) buffer_list_node_func_position_set,
     (transmission_control_block_buffer_node_size_get_t) buffer_list_node_func_size_get,
     (transmission_control_block_buffer_node_size_set_t) buffer_list_node_func_size_set,
     (transmission_control_block_buffer_node_capacity_get_t) buffer_list_node_func_capacity_get,
@@ -62,15 +60,4 @@ extern transmission_control_block_buffer_node_t * transmission_control_block_buf
     nanosecond_get(address_of(node->time));
 
     return node;
-}
-
-static void transmission_control_block_buffer_node_func_position_set(transmission_control_block_buffer_node_t * node, uint64_t v) {
-#ifndef   RELEASE
-    snorlaxdbg(node == nil, false, "critical", "");
-    snorlaxdbg(node->size < v, false, "critical", "");
-#endif // RELEASE
-
-    node->position = v;
-
-    node->sequence = node->sequence + v;
 }

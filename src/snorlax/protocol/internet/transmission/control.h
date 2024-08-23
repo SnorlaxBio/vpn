@@ -399,7 +399,7 @@ extern transmission_control_block_buffer_node_t * transmission_control_block_buf
 
 #define transmission_control_block_buffer_node_transmit_count_get(node)             ((node)->transmit.count)
 #define transmission_control_block_buffer_node_sequence_set(node, v)                ((node)->sequence = v)
-#define transmission_control_block_buffer_node_sequence_get(node)                   ((node)->sequence)
+#define transmission_control_block_buffer_node_sequence_get(node)                   ((node)->sequence + (node)->position)
 
 #define transmission_control_block_buffer_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))
 
