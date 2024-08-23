@@ -62,6 +62,7 @@ static int32_t internet_protocol_module_func_vpn_single_on_exception(internet_pr
 #endif // RELEASE
 
     snorlaxdbg(false, true, "debug", "");
+    snorlaxdbg(false, true, "debug", "exception => %d", protocol_context_error_get(context));
 
     return success;
 }

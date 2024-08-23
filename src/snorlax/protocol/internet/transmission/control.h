@@ -162,6 +162,10 @@ struct transmission_control_block {
     uint32_t sequence;
     uint32_t acknowledge;
     struct {
+        uint32_t sequence;
+        uint32_t acknowledge;
+    } remote;
+    struct {
         uint16_t remote;
         uint16_t local;
     } window;
@@ -257,40 +261,44 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
-___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t * buffer, uint64_t bufferlen);
+___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t flags, uint8_t * buffer, uint64_t bufferlen);
 ___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node);
 
-#define transmission_control_block_sequence_set(block, v)           ((block)->sequence = v)
-#define transmission_control_block_sequence_get(block)              ((block)->sequence)
-#define transmission_control_block_acknowledge_set(block, v)        ((block)->acknowledge = v)
-#define transmission_control_block_acknowledge_get(block)           ((block)->acknowledge)
-#define transmission_control_block_window_remote_set(block, v)      ((block)->window.remote = v)
-#define transmission_control_block_window_remote_get(block)         ((block)->window.remote)
-#define transmission_control_block_window_local_set(block, v)       ((block)->window.local = v)
-#define transmission_control_block_window_local_get(block)          ((block)->window.local)
-#define transmission_control_block_version_set(block, v)            ((block)->version = v)
-#define transmission_control_block_version_get(block)               ((block)->version)
-#define transmission_control_block_state_get(block)                 ((block)->state)
-#define transmission_control_block_state_set(block, v)              ((block)->state = v)
-#define transmission_control_block_state_has(block, v)              ((block)->state & v)
+#define transmission_control_block_sequence_set(block, v)               ((block)->sequence = v)
+#define transmission_control_block_sequence_get(block)                  ((block)->sequence)
+#define transmission_control_block_acknowledge_set(block, v)            ((block)->acknowledge = v)
+#define transmission_control_block_acknowledge_get(block)               ((block)->acknowledge)
+#define transmission_control_block_remote_sequence_set(block, v)        ((block)->remote.sequence = v)
+#define transmission_control_block_remote_sequence_get(block)           ((block)->remote.sequence)
+#define transmission_control_block_remote_acknowledge_set(block, v)     ((block)->remote.acknowledge = v)
+#define transmission_control_block_remote_acknowledge_get(block)        ((block)->remote.acknowledge)
+#define transmission_control_block_window_remote_set(block, v)          ((block)->window.remote = v)
+#define transmission_control_block_window_remote_get(block)             ((block)->window.remote)
+#define transmission_control_block_window_local_set(block, v)           ((block)->window.local = v)
+#define transmission_control_block_window_local_get(block)              ((block)->window.local)
+#define transmission_control_block_version_set(block, v)                ((block)->version = v)
+#define transmission_control_block_version_get(block)                   ((block)->version)
+#define transmission_control_block_state_get(block)                     ((block)->state)
+#define transmission_control_block_state_set(block, v)                  ((block)->state = v)
+#define transmission_control_block_state_has(block, v)                  ((block)->state & v)
 
-#define transmission_control_block_avail_io(block)                  (transmission_control_block_state_get(block) & transmission_control_state_avail_io)
-#define transmission_control_block_avail_in(block)                  (transmission_control_block_state_get(block) & transmission_control_state_avail_in)
-#define transmission_control_block_avail_out(block)                 (transmission_control_block_state_get(block) & transmission_control_state_avail_out)
-#define transmission_control_block_is_finishing(block)              (transmission_control_block_state_get(block) & transmission_control_state_finishing)
+#define transmission_control_block_avail_io(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_io)
+#define transmission_control_block_avail_in(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_in)
+#define transmission_control_block_avail_out(block)                     (transmission_control_block_state_get(block) & transmission_control_state_avail_out)
+#define transmission_control_block_is_finishing(block)                  (transmission_control_block_state_get(block) & transmission_control_state_finishing)
 
-#define transmission_control_block_func_hash                        internet_protocol_version_hash
+#define transmission_control_block_func_hash                            internet_protocol_version_hash
 
-#define transmission_control_block_rem(block)                       ((block)->func->rem(block))
-#define transmission_control_block_open(block)                      ((block)->func->open(block))
-#define transmission_control_block_send(block, data, datalen)       ((block)->func->send(block, data, datalen))
-#define transmission_control_block_recv(block, context)             ((block)->func->recv(block, context))
-#define transmission_control_block_close(block)                     ((block)->func->close(block))
-#define transmission_control_block_in(block, context)               ((block)->func->in(block, context))
-#define transmission_control_block_out(block, node)                 ((block)->func->out(block, node))
+#define transmission_control_block_rem(block)                           ((block)->func->rem(block))
+#define transmission_control_block_open(block)                          ((block)->func->open(block))
+#define transmission_control_block_send(block, data, datalen)           ((block)->func->send(block, data, datalen))
+#define transmission_control_block_recv(block, context)                 ((block)->func->recv(block, context))
+#define transmission_control_block_close(block)                         ((block)->func->close(block))
+#define transmission_control_block_in(block, context)                   ((block)->func->in(block, context))
+#define transmission_control_block_out(block, node)                     ((block)->func->out(block, node))
 
-#define transmission_control_block_check_window_remote              transmission_control_block_func_check_window_remote
-#define transmission_control_block_context_gen_transmit_segment     transmission_control_block_func_context_gen_transmit_segment
+#define transmission_control_block_check_window_remote                  transmission_control_block_func_check_window_remote
+#define transmission_control_block_context_gen_transmit_segment         transmission_control_block_func_context_gen_transmit_segment
 
 typedef transmission_control_block_buffer_node_t * (*transmission_control_block_buffer_node_factory_t)(transmission_control_block_buffer_t *, const void *, uint64_t);
 
@@ -341,6 +349,7 @@ extern void transmission_control_block_buffer_func_transmit_on(transmission_cont
 
 #define transmission_control_block_buffer_transmit_on                           transmission_control_block_buffer_func_transmit_on
 
+#define transmission_control_block_buffer_head(buffer)                          ((buffer)->head)
 #define transmission_control_block_buffer_tail(buffer)                          ((buffer)->tail)
 #define transmission_control_block_buffer_node_unprocessed_get(buffer, node)    ((buffer)->node.unprocessed ? (buffer)->node.unprocessed : ((buffer)->node.unprocessed = node))
 

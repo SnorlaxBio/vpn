@@ -128,8 +128,6 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "refactor", "");
-
     if(transmission_control_block_avail_io(block) == false) {
         snorlaxdbg(transmission_control_block_avail_io(block) == false, false, "warning", "");
         return fail;
@@ -138,11 +136,11 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     transmission_control_block_buffer_t * out = block->buffer.out;
     transmission_control_block_buffer_node_t * node = transmission_control_block_buffer_tail(out);
     uint64_t remain = transmission_control_block_buffer_node_remain(node);
-    uint32_t sequence = transmission_control_block_sequence_get(block);
+    uint32_t sequence = node ? transmission_control_block_buffer_node_sequence_get(node) : transmission_control_block_sequence_get(block);
 
     if(remain > 0) {
         if(datalen <= remain) {
-            memcpy(transmission_control_block_buffer_node_front(node), data, datalen);
+            memcpy(transmission_control_block_buffer_node_back(node), data, datalen);
             transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + datalen);
 
             transmission_control_block_out(block, node);
@@ -150,7 +148,7 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
             return datalen;
         }
 
-        memcpy(transmission_control_block_buffer_node_front(node), data, remain);
+        memcpy(transmission_control_block_buffer_node_back(node), data, remain);
         transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + remain);
 
         data = data + remain;
@@ -164,15 +162,20 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     uint64_t n = len / mss;
     uint64_t last = len % mss;
 
+    snorlaxdbg(false, true, "debug", "capacity => %u", mss);
+
     for(uint64_t i = 0; i < n; i++) {
         /**
          * 매크로나 함수로 작게 만들 수 있어 보인다.
          */
         transmission_control_block_buffer_node_t * node = transmission_control_block_buffer_back(out, mss);
 
+        snorlaxdbg(false, true, "debug", "capacity => %lu", transmission_control_block_buffer_node_capacity_get(node));
+        snorlaxdbg(false, true, "debug", "size => %lu", transmission_control_block_buffer_node_size_get(node));
+
         if(transmission_control_block_buffer_node_size_get(node) == 0)  transmission_control_block_buffer_node_sequence_set(node, sequence);
 
-        memcpy(transmission_control_block_buffer_node_front(node), data, mss);
+        memcpy(transmission_control_block_buffer_node_back(node), data, mss);
         transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + mss);
         data = data + mss;
         sequence = sequence + mss;
@@ -181,9 +184,16 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     if(last) {
         transmission_control_block_buffer_node_t * node = transmission_control_block_buffer_back(out, mss);
 
+        snorlaxdbg(false, true, "debug", "capacity => %lu", transmission_control_block_buffer_node_capacity_get(node));
+        snorlaxdbg(false, true, "debug", "size => %lu", transmission_control_block_buffer_node_size_get(node));
+        snorlaxdbg(false, true, "debug", "position => %lu", transmission_control_block_buffer_node_position_get(node));
+
         if(transmission_control_block_buffer_node_size_get(node) == 0)  transmission_control_block_buffer_node_sequence_set(node, sequence);
 
-        memcpy(transmission_control_block_buffer_node_front(node), data, last);
+        snorlaxdbg(false, true, "debug", "node => %p", node);
+        snorlaxdbg(false, true, "debug", "transmission_control_block_buffer_node_front(node) => %p", transmission_control_block_buffer_node_front(node));
+        snorlaxdbg(false, true, "debug", "data => %p", data);
+        memcpy(transmission_control_block_buffer_node_back(node), data, last);
         transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + last);
     }
 
@@ -196,6 +206,9 @@ static int32_t transmission_control_block_func_in(transmission_control_block_t *
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
+
+    transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
+    transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
 
     uint32_t acknowledge = transmission_control_block_acknowledge_get(block);
     uint32_t sequence = transmission_control_protocol_context_sequence_get(context);
@@ -256,7 +269,7 @@ ___implement static int32_t transmission_control_block_func_listen(transmission_
 }
 
 ___implement
-extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * data, uint8_t * buffer, uint64_t bufferlen) {
+extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * data, uint8_t flags, uint8_t * buffer, uint64_t bufferlen) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
     snorlaxdbg(data == nil, false, "critical", "");
@@ -281,10 +294,27 @@ extern transmission_control_protocol_context_t * transmission_control_block_func
 
     transmission_control_protocol_context_source_set(context, ntohs(transmission_control_protocol_to_port(protocol_path_node_destination_get(node))));
     transmission_control_protocol_context_destination_set(context, ntohs(transmission_control_protocol_to_port(protocol_path_node_source_get(node))));
-    transmission_control_protocol_context_sequence_set(context, transmission_control_block_sequence_get(block));
+
+    transmission_control_protocol_context_sequence_set(context, transmission_control_block_buffer_node_sequence_get(data));
+        
     transmission_control_protocol_context_acknowledge_set(context, transmission_control_block_acknowledge_get(block));
     transmission_control_protocol_context_offset_set(context, transmission_control_protocol_context_headerlen_get(context) / 4);
-    transmission_control_protocol_context_flags_set(context, transmission_control_flag_control_synack);
+    
+    snorlaxdbg(false, true, "debug", "transmission_control_flag_control_syn");
+    snorlaxdbg(false, true, "debug", "block ack => %u", transmission_control_block_acknowledge_get(block));
+    snorlaxdbg(false, true, "debug", "acknowledge => %u", transmission_control_protocol_context_acknowledge_get(context));
+    snorlaxdbg(false, true, "debug", "sequence => %u", transmission_control_protocol_context_sequence_get(context));
+    snorlaxdbg(false, true, "debug", "sequence => %u", transmission_control_block_buffer_node_sequence_get(data));
+
+    if(transmission_control_block_sequence_get(block) != transmission_control_block_buffer_node_sequence_get(data)) {
+        flags = flags | transmission_control_flag_control_syn;
+    }
+
+    // if(transmission_control_block_acknowledge_get(block) != transmission_control_block_remote_sequence_get(block)) {
+    //     flags = flags | transmission_control_flag_control_ack;
+    // }
+
+    transmission_control_protocol_context_flags_set(context, flags);
     transmission_control_protocol_context_window_set(context, transmission_control_block_window_local_get(block));
     transmission_control_protocol_context_urgent_set(context, 0);
 
@@ -333,14 +363,20 @@ static int32_t transmission_control_block_func_out(transmission_control_block_t 
         transmission_control_protocol_module_t * module = block->module;
         transmission_control_block_buffer_t * out = block->buffer.out;
 
-        node = transmission_control_block_buffer_node_unprocessed_get(out, node);
+        snorlaxdbg(false, true, "debug", "node => %p", node);
 
-        while(node && transmission_control_block_check_window_remote(block, node)) {
+        node = transmission_control_block_buffer_node_unprocessed_get(out, node);
+        snorlaxdbg(false, true, "debug", "unprocessed node");
+        node = node ? node : transmission_control_block_buffer_head(block->buffer.out);
+
+        while(transmission_control_block_check_window_remote(block, node)) {
             uint64_t len = transmission_control_block_buffer_node_length(node);
 
             snorlaxdbg(module->max_segment_size < len, false, "warning", "");
+
+            uint8_t flags = transmission_control_block_check_window_remote(block, node->next) ? 0 : transmission_control_flag_control_psh;
             
-            transmission_control_protocol_context_t * context = transmission_control_block_context_gen_transmit_segment(block, node, buffer, protocol_packet_max);
+            transmission_control_protocol_context_t * context = transmission_control_block_func_context_gen_transmit_segment(block, node, flags, buffer, protocol_packet_max);
 
             snorlaxdbg(context == nil, false, "critical", "");
 
@@ -365,9 +401,10 @@ static int32_t transmission_control_block_func_out(transmission_control_block_t 
 
 ___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node) {
 #ifndef   RELEASE
-    snorlaxdbg(block == nil, false, "critical", "");
-    snorlaxdbg(node == nil, false, "critical", "");
+        snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
+
+    if(node == nil) return false;
 
     snorlaxdbg(false, true, "implement", "");
 

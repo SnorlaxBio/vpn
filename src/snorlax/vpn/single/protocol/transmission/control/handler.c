@@ -26,9 +26,6 @@ static void onSubscription(___notnull socket_client_event_subscription_t * subsc
 
 static void onOpen(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
     snorlaxdbg(false, true, "debug", "");
-
-
-
     // GET METATA
 }
 

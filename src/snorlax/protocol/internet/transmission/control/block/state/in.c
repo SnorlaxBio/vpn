@@ -83,19 +83,29 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
         snorlaxdbg(true, false, "implement", "");
     }
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack)) {
-        transmission_control_block_sequence_set(block, transmission_control_protocol_context_acknowledge_get(context));
+        snorlaxdbg(true, false, "critical", "");
+
+        // transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
+        // if(transmission_control_block_sequence_get(block) != transmission_control_block_remote_acknowledge_get(block)) {
+        //     snorlaxdbg(false, true, "critical", "remove old buffer");
+        //     transmission_control_block_sequence_set(block, transmission_control_block_remote_acknowledge_get(block));
+        // }
     }
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh)) {
-        snorlaxdbg(false, true, "debug", "data => %p", transmission_control_protocol_context_data_get(context));
-        snorlaxdbg(false, true, "debug", "datalen => %u", transmission_control_protocol_context_datalen_get(context));
+        snorlaxdbg(true, false, "critical", "");
+        //
 
-        snorlaxdbg(block->agent == nil, false, "critical", "");
 
-        if(transmission_control_block_in(block, context) == fail) {
-            return fail;
-        }
+        // snorlaxdbg(false, true, "debug", "data => %p", transmission_control_protocol_context_data_get(context));
+        // snorlaxdbg(false, true, "debug", "datalen => %u", transmission_control_protocol_context_datalen_get(context));
 
-        snorlaxdbg(false, true, "implement", "window cal");
+        // snorlaxdbg(block->agent == nil, false, "critical", "");
+
+        // if(transmission_control_block_in(block, context) == fail) {
+        //     return fail;
+        // }
+
+        // snorlaxdbg(false, true, "implement", "window cal");
     }
     if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst)) {
         snorlaxdbg(true, false, "implement", "");
@@ -107,8 +117,7 @@ extern int32_t transmission_control_block_state_establish_in(transmission_contro
         snorlaxdbg(true, false, "implement", "");
     }
 
-
-    return fail;
+    return success;
 }
 
 extern int32_t transmission_control_block_state_finish_wait_frist_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {

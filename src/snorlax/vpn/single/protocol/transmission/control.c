@@ -62,7 +62,7 @@ static int32_t transmission_control_protocol_module_func_vpn_single_on_in(transm
             uint8_t * addr = internet_protocol_context_destination_get(context->parent);
             uint16_t port = transmission_control_protocol_context_destination_get(context);
 
-            agent->client = (version == 4 ? vpn_client_tcp4_gen(ntohs(*((uint32_t *) addr)), port) : vpn_client_tcp6_gen(addr, port));
+            agent->client = (version == 4 ? vpn_client_tcp4_gen(*((uint32_t *) addr), port) : vpn_client_tcp6_gen(addr, port));
         }
 
         if(agent->subscription == nil) {

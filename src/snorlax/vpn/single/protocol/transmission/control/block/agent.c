@@ -50,6 +50,8 @@ static int32_t transmission_control_block_agent_single_func_send(transmission_co
     snorlaxdbg(agent == nil, false, "critical", "");
 #endif // RELEASE
 
+    snorlaxdbg(false, true, "debug", "send");
+
     return socket_client_event_subscription_write(agent->subscription, data, datalen);
 }
 

@@ -45,14 +45,16 @@ extern transmission_control_block_buffer_node_t * transmission_control_block_buf
 
     if(data) {
         uint64_t page = buffer->page ? buffer->page : 1;
-        node->capacity = (n / page + 1) * page;
+        node->capacity = ((n / page) + (n % page == 0 ? 0 : 1)) * page;
+        snorlaxdbg(false, true, "debug", "capacity => %lu", node->capacity);
         node->mem = memory_gen(nil, node->capacity);
 
         memcpy(node->mem, data, n);
         node->size = n;
     } else if(n > 0) {
         uint64_t page = buffer->page ? buffer->page : 1;
-        node->capacity = (n / page + 1) * page;
+        node->capacity = ((n / page) + (n % page == 0 ? 0 : 1)) * page;
+        snorlaxdbg(false, true, "debug", "capacity => %lu", node->capacity);
 
         node->mem = memory_gen(nil, node->capacity); 
     }

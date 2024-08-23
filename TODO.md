@@ -12,3 +12,21 @@
 
 - snorlax network tcp/ip socket ... test
 - simple connect 
+
+### 20240823 | TCP SEQNUMBER ... 
+
+- SEND / RECV
+
+https://www.kernel.org/doc/Documentation/networking/segmentation-offloads.txt
+
+TCP segmentation allows a device to segment a single frame into multiple frames with a data payload size specified in skb_shinfo()->gso_size.
+When TCP segmentation requested the bit for either SKB_GSO_TCPV4 or SKB_GSO_TCPV6 should be set in skb_shinfo()->gso_type and skb_shinfo()->gso_size should be set to a non-zero value.
+
+TCP segmentation is dependent on support for the use of partial checksum offload.  For this reason TSO is normally disabled if the Tx checksum offload for a given device is disabled.
+
+In order to support TCP segmentation offload it is necessary to populate the network and transport header offsets of the skbuff so that the device
+drivers will be able determine the offsets of the IP or IPv6 header and the TCP header.  In addition as CHECKSUM_PARTIAL is required csum_start should also point to the TCP header of the packet.
+
+For IPv4 segmentation we support one of two types in terms of the IP ID. The default behavior is to increment the IP ID with every segment.  If the GSO type SKB_GSO_TCP_FIXEDID is specified then we will not increment the IP ID and all segments will use the same IP ID.  If a device has NETIF_F_TSO_MANGLEID set then the IP ID can be ignored when performing TSO and we will either increment the IP ID for all frames, or leave it at a static value based on driver preference.
+
+
