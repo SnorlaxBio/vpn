@@ -41,7 +41,7 @@ static void onRead(___notnull socket_client_event_subscription_t * subscription,
 
     descriptor_buffer_t * buffer = socket_client_event_subscription_buffer_get(subscription);
     buffer_node_t * in = nil;
-    buffer_t * in = buffer->in;
+    // buffer_t * in = buffer->in;
 
     while(buffer_node_length(in = buffer_front(buffer->in)) > 0) {
         int32_t n = transmission_control_block_send(meta->block, (uint8_t *) buffer_node_front(in), buffer_node_length(in));

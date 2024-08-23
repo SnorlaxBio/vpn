@@ -19,8 +19,9 @@ static int32_t transmission_control_block_func_open(transmission_control_block_t
 static int32_t transmission_control_block_func_send(transmission_control_block_t * block, const uint8_t * data, uint64_t datalen);
 static int32_t transmission_control_block_func_recv(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_close(transmission_control_block_t * block);
+___implement static int32_t transmission_control_block_func_listen(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_in(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
-static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_node_t * node);
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node);
 
 static transmission_control_block_func_t func = {
     transmission_control_block_func_rem,
@@ -28,6 +29,7 @@ static transmission_control_block_func_t func = {
     transmission_control_block_func_send,
     transmission_control_block_func_recv,
     transmission_control_block_func_close,
+    transmission_control_block_func_listen,
     transmission_control_block_func_in,
     transmission_control_block_func_out
 };
@@ -45,9 +47,9 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
 
     block->key.value = malloc(key->length);
     block->key.length = key->length;
-    block->window = transmission_control_window_size_init;
+    block->window.local = transmission_control_window_size_init;
     block->module = module;
-    block->buffer.out = buffer_list_gen(buffer_list_node_gen, module->max_segment_size);
+    block->buffer.out = transmission_control_block_buffer_gen(transmission_control_block_buffer_node_gen, module->max_segment_size);
 
     memcpy(block->key.value, key->value, key->length);
 
@@ -63,7 +65,8 @@ extern transmission_control_block_t * transmission_control_block_gen(hashtable_n
         transmission_control_block_version_set(block, internet_protocol_context_version_get(context->parent));
 
         snorlaxdbg(false, true, "implement", "default window when transmission control block gen and remove below");
-        transmission_control_block_window_set(block, transmission_control_protocol_context_window_get(context));
+        transmission_control_block_window_local_set(block, transmission_control_protocol_context_window_get(context));
+        transmission_control_block_window_remote_set(block, transmission_control_protocol_context_window_get(context));
 
         protocol_path_debug(block->path, stdout);
     }
@@ -132,29 +135,28 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
         return fail;
     }
 
-    buffer_list_t * out = block->buffer.out;
-
-    transmission_control_block_node_t * node = transmission_control_block_buffer_back(out);
-    uint64_t remain = transmission_control_block_node_remain(node);
-
-    transmission_control_block_node_t * front = node;
-
-    // TRANSMISSION 할 노드를 찾는다.
-    for(front = transmission_control_block_buffer_back(out); front != nil; front = transmission_control_block_node_next(front)) {
-
-    }
+    transmission_control_block_buffer_t * out = block->buffer.out;
+    transmission_control_block_buffer_node_t * node = transmission_control_block_buffer_tail(out);
+    uint64_t remain = transmission_control_block_buffer_node_remain(node);
+    uint32_t sequence = transmission_control_block_sequence_get(block);
 
     if(remain > 0) {
         if(datalen <= remain) {
-            memcpy(buffer_list_node_front(node), data, datalen);
-            buffer_list_node_size_set(node, buffer_list_node_size_get(node) + datalen);
+            memcpy(transmission_control_block_buffer_node_front(node), data, datalen);
+            transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + datalen);
 
             transmission_control_block_out(block, node);
 
             return datalen;
         }
-        memcpy(buffer_list_node_front(node), data, remain);
-        buffer_list_node_size_set(node, buffer_list_node_size_get(node) + remain);
+
+        memcpy(transmission_control_block_buffer_node_front(node), data, remain);
+        transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + remain);
+
+        data = data + remain;
+        sequence = sequence + remain;
+    } else {
+        node = nil;
     }
 
     uint64_t len = datalen - remain;
@@ -162,21 +164,30 @@ static int32_t transmission_control_block_func_send(transmission_control_block_t
     uint64_t n = len / mss;
     uint64_t last = len % mss;
 
-    data = data + remain;
-
     for(uint64_t i = 0; i < n; i++) {
-        buffer_list_node_t * node = buffer_list_back(out, mss);
-        memcpy(buffer_list_node_front(node), address_of(data[i * mss]), mss);
-        buffer_list_node_size_set(node, buffer_list_node_size_get(node) + mss);
+        /**
+         * 매크로나 함수로 작게 만들 수 있어 보인다.
+         */
+        transmission_control_block_buffer_node_t * node = transmission_control_block_buffer_back(out, mss);
+
+        if(transmission_control_block_buffer_node_size_get(node) == 0)  transmission_control_block_buffer_node_sequence_set(node, sequence);
+
+        memcpy(transmission_control_block_buffer_node_front(node), data, mss);
+        transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + mss);
+        data = data + mss;
+        sequence = sequence + mss;
     }
 
     if(last) {
-        buffer_list_node_t * node = buffer_list_back(out, mss);
-        memcpy(buffer_list_node_front(node), address_of(data[n * mss]), last);
-        buffer_list_node_size_set(node, buffer_list_node_size_get(node) + last);
+        transmission_control_block_buffer_node_t * node = transmission_control_block_buffer_back(out, mss);
+
+        if(transmission_control_block_buffer_node_size_get(node) == 0)  transmission_control_block_buffer_node_sequence_set(node, sequence);
+
+        memcpy(transmission_control_block_buffer_node_front(node), data, last);
+        transmission_control_block_buffer_node_size_set(node, transmission_control_block_buffer_node_size_get(node) + last);
     }
-    // 새롭게 들어온 녀석들이 있다면,... 바로 보낸다.
-    transmission_control_block_out(block, front);
+
+    transmission_control_block_out(block, node);
 
     return datalen;
 }
@@ -236,8 +247,48 @@ static int32_t transmission_control_block_func_in(transmission_control_block_t *
     return fail;
 }
 
-static int32_t transmission_control_block_func_close(transmission_control_block_t * block) {
+___implement static int32_t transmission_control_block_func_close(transmission_control_block_t * block) {
+    return fail;
+}
 
+___implement static int32_t transmission_control_block_func_listen(transmission_control_block_t * block) {
+    return fail;
+}
+
+___implement
+extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * data, uint8_t * buffer, uint64_t bufferlen) {
+#ifndef   RELEASE
+    snorlaxdbg(block == nil, false, "critical", "");
+    snorlaxdbg(data == nil, false, "critical", "");
+    snorlaxdbg(buffer == nil, false, "critical", "");
+    snorlaxdbg(bufferlen == 0, false, "critical", "");
+#endif // RELEASE
+
+    protocol_path_node_t * node = protocol_path_begin(block->path);
+
+    transmission_control_protocol_context_t * context = transmission_control_protocol_context_gen((transmission_control_protocol_module_t *) node->module, nil, (transmission_control_protocol_packet_t *) buffer, 0, bufferlen);
+
+    transmission_control_protocol_context_block_set(context, block);
+    transmission_control_protocol_context_key_gen(context);
+
+    transmission_control_protocol_context_buffer_reversal_push(context, transmission_control_block_buffer_node_front(data), (context->datalen = transmission_control_block_buffer_node_length(data)));
+
+    snorlaxdbg(false, true, "debug", "implement transmission control protocol option");
+
+    transmission_control_protocol_context_buffer_reversal_reserve(context, transmission_control_protocol_packet_length_min);
+
+    transmission_control_protocol_context_headerlen_add(context, transmission_control_protocol_packet_length_min);
+
+    transmission_control_protocol_context_source_set(context, ntohs(transmission_control_protocol_to_port(protocol_path_node_destination_get(node))));
+    transmission_control_protocol_context_destination_set(context, ntohs(transmission_control_protocol_to_port(protocol_path_node_source_get(node))));
+    transmission_control_protocol_context_sequence_set(context, transmission_control_block_sequence_get(block));
+    transmission_control_protocol_context_acknowledge_set(context, transmission_control_block_acknowledge_get(block));
+    transmission_control_protocol_context_offset_set(context, transmission_control_protocol_context_headerlen_get(context) / 4);
+    transmission_control_protocol_context_flags_set(context, transmission_control_flag_control_synack);
+    transmission_control_protocol_context_window_set(context, transmission_control_block_window_local_get(block));
+    transmission_control_protocol_context_urgent_set(context, 0);
+
+    return context;
 }
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen) {
@@ -256,7 +307,7 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 
     snorlaxdbg(false, true, "debug", "implement transmission control protocol option");
 
-    transmission_control_protocol_context_buffer_reserve(context, transmission_control_protocol_packet_length_min);
+    transmission_control_protocol_context_buffer_reversal_reserve(context, transmission_control_protocol_packet_length_min);
 
     transmission_control_protocol_context_headerlen_add(context, transmission_control_protocol_packet_length_min);
 
@@ -266,51 +317,59 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
     transmission_control_protocol_context_acknowledge_set(context, transmission_control_block_acknowledge_get(block));
     transmission_control_protocol_context_offset_set(context, transmission_control_protocol_context_headerlen_get(context) / 4);
     transmission_control_protocol_context_flags_set(context, transmission_control_flag_control_synack);
-    transmission_control_protocol_context_window_set(context, transmission_control_block_window_get(block));
+    transmission_control_protocol_context_window_set(context, transmission_control_block_window_local_get(block));
     transmission_control_protocol_context_urgent_set(context, 0);
 
     return context;
 }
 
-static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_node_t * node) {
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-#if       0
-    // 새롭게 들어온 녀석에 대해서 바로 보내는 것이 맞을까?
-    // 나중에 변경하도록 하자.
-    while(node->prev && transmission_control_block_node_transmit_count_get(node->prev) == 0) {
-        node = node->prev;
-    }
-
-    // 커널 소스를 봐야겠다.
-    // https://datatracker.ietf.org/doc/html/rfc9293#section-3.9.1 읽고 구현하자.
-#endif // 0
-
-    snorlaxdbg(true, false, "implement", "");
-
     if(transmission_control_block_avail_io(block)) {
+        uint8_t buffer[protocol_packet_max];
+        transmission_control_protocol_module_t * module = block->module;
+        transmission_control_block_buffer_t * out = block->buffer.out;
+
+        node = transmission_control_block_buffer_node_unprocessed_get(out, node);
+
+        while(node && transmission_control_block_check_window_remote(block, node)) {
+            uint64_t len = transmission_control_block_buffer_node_length(node);
+
+            snorlaxdbg(module->max_segment_size < len, false, "warning", "");
+            
+            transmission_control_protocol_context_t * context = transmission_control_block_context_gen_transmit_segment(block, node, buffer, protocol_packet_max);
+
+            snorlaxdbg(context == nil, false, "critical", "");
+
+            transmission_control_protocol_module_debug(module, stdout, context);
+            protocol_path_node_t * parent = protocol_path_node_next(protocol_path_begin(block->path));
+            if(protocol_module_out(parent->module, parent, (protocol_context_t *) context) == fail) {
+                snorlaxdbg(false, true, "critical", "fail to protocol_module_out(...) => %d", transmission_control_protocol_context_error_get(context));
+                context = transmission_control_protocol_context_rem(context);
+                break;
+            }
+
+            transmission_control_block_buffer_transmit_on(out, node);
+
+            node = node->next;
+        }
+
+        return success;
     }
 
-    /**
-     * If the connection has not been opened, the send is considered an error.
-     */
-    if(transmission_control_block_finishing(block)) {
-        return fail;
-    }
+    return transmission_control_block_is_finishing(block) ? fail : success;
+}
 
-    return success;
+___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node) {
+#ifndef   RELEASE
+    snorlaxdbg(block == nil, false, "critical", "");
+    snorlaxdbg(node == nil, false, "critical", "");
+#endif // RELEASE
 
-    // return transmission_control_block_finishing(block) ? fail : success;
+    snorlaxdbg(false, true, "implement", "");
 
-    // }
-
-    // // for(transmission_control_block_node_t * node = transmission_control_block_)
-
-    // // 졸립다. 조금 후에 짜자...
-
-    // snorlaxdbg(true, false, "implement", "");
-
-    // return fail;
+    return true;
 }

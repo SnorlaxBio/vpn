@@ -80,7 +80,7 @@ typedef uint8_t internet_protocol_version4_segment_t;
 #define internet_protocol_version4_option_internet_timestamp_begin(option)                      ((uint32_t *) (&(option)[4]))
 #define internet_protocol_version4_option_internet_timestamp_end(option)                        ((uint32_t *)(&(option)[internet_protocol_version4_option_length_get(option)]))
 
-#define internet_protocol_version4_context_buffer_reserve(context, n)                           (protocol_context_buffer_reserve_reversal((protocol_context_t *) context, n))
+#define internet_protocol_version4_context_buffer_reserve(context, n)                           (protocol_context_buffer_reversal_reserve((protocol_context_t *) context, n))
 
 struct internet_protocol_version4_packet {
 #if       __BYTE_ORDER == __LITTLE_ENDIAN

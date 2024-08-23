@@ -39,12 +39,13 @@ extern int32_t transmission_control_block_state_synchronize_sequence_recv_comple
     char buffer[protocol_packet_max];
     transmission_control_protocol_context_t * response = transmission_control_block_context_gen_connect_synack(context->block, buffer + protocol_packet_max, protocol_packet_max);
 
+    // TODO: MACRO 혹은 함수로 빼자.
     if(response) {
         transmission_control_protocol_module_debug(block->module, stdout, response);
 
         protocol_path_node_t * parent = protocol_path_node_next(protocol_path_begin(context->block->path));
 
-        snorlaxdbg(parent == nil, false, "critica", "");
+        snorlaxdbg(parent == nil, false, "critical", "");
 
         if(protocol_module_out(parent->module, parent, (protocol_context_t *) response) == fail) {
             snorlaxdbg(false, true, "debug", "fail to protocol_module_out(...)");

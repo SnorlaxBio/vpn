@@ -67,7 +67,8 @@ typedef int32_t (*protocol_context_handler_t)(protocol_module_t *, uint32_t, pro
 
 extern char * protocol_address_to_hexadecimalstr(char * s, const protocol_address_t * addr, uint16_t len);
 
-extern void protocol_context_buffer_reserve_reversal(protocol_context_t * context, uint64_t n);
+extern void protocol_context_buffer_reversal_reserve(protocol_context_t * context, uint64_t n);
+extern uint64_t protocol_context_buffer_reversal_push(protocol_context_t * context, const uint8_t * data, uint64_t datalen);
 
 struct protocol_module {
     protocol_module_func_t * func;
@@ -132,7 +133,7 @@ struct protocol_context_func {
 };
 
 extern uint8_t * protocol_context_func_addrptr(protocol_context_t * context, uint32_t type);
-extern void protocol_context_func_checksum_build(protocol_context_t * context, const uint8_t * pseudo, uint64_t pseudolen);
+___pure extern void protocol_context_func_checksum_build(protocol_context_t * context, const uint8_t * pseudo, uint64_t pseudolen);
 
 #define protocol_context_rem(context)                                                   ((context)->func->rem(context))
 #define protocol_context_valid(context)                                                 ((context)->func->valid(context))
