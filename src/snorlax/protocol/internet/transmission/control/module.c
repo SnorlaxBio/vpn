@@ -24,7 +24,6 @@ static transmission_control_protocol_module_func_t func = {
     transmission_control_protocol_module_func_out,
     nil,
     nil,
-    transmission_control_protocol_module_func_blockon,
     transmission_control_protocol_module_func_sequence_gen
 };
 
@@ -142,7 +141,31 @@ static int32_t transmission_control_protocol_module_func_in(transmission_control
         return fail;
     }
 
+    hashtable_node_key_t * key = transmission_control_protocol_context_key_get(*context);
+    transmission_control_block_t * block = (transmission_control_block_t *) hashtable_get(module->block, key);
+
+    if(block == nil) {
+        if(transmission_control_protocol_context_is_connect_syn(*context) == false) {
+            transmission_control_protocol_context_error_set(*context, EFAULT);
+            transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
+            return fail;
+        }
+
+        block = transmission_control_block_gen(key, module);
+        transmission_control_protocol_context_block_set(*context, block);
+    }
+
+    if(transmission_control_block_in(block, *context) == fail) {
+        transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
     if(transmission_control_protocol_module_on(module, protocol_event_in, parent, *context) == fail) {
+        transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
+        return fail;
+    }
+
+    if(transmission_control_block_complete_in(block, *context) == fail) {
         transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);
         return fail;
     }
@@ -162,36 +185,6 @@ extern int32_t transmission_control_protocol_module_func_on(transmission_control
     }
 
     return success;
-}
-
-extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
-    if(context->block == nil) {
-        context->block = (transmission_control_block_t *) hashtable_get(module->block, address_of(context->key));
-        if(type == protocol_event_in && context->block == nil) {
-            if(transmission_control_protocol_context_is_connect_syn(context)) {
-                hashtable_set(module->block, (hashtable_node_t *) (context->block = transmission_control_block_gen(address_of(context->key), module, context)));
-
-                return success;
-            }
-
-            // | transmission control protocol | 52756 | 22 | 3255904328 | 324549507 | 8 | cwr x | ece x | urg x | ack o | psh x | rst x | syn x | fin x | 501 | 2220 | 0 |
-            // 위의 패킷처럼 중간에 빠져 나오는 패킷이 있다. 이럴 경우, 빠르게 CLOSE IP 를 보내도록 하자.
-            transmission_control_protocol_context_error_set(context, EINVAL);
-            snorlaxdbg(false, true, "implement", "fast close");
-
-            return fail;
-        }
-    }
-
-    switch(type) {
-        case protocol_event_in:                 return transmission_control_block_event_in_on(context->block, parent, context);
-        case protocol_event_out:                return transmission_control_block_event_out_on(context->block, parent, context);
-        case protocol_event_exception:          return transmission_control_block_event_exception_on(context->block, parent, context);
-        case protocol_event_complete:           return transmission_control_block_event_complete_on(context->block, parent, context);
-        case protocol_event_complete_in:        return transmission_control_block_event_complete_in_on(context->block, parent, context);
-        case protocol_event_complete_out:       return transmission_control_block_event_complete_out_on(context->block, parent, context);
-        default:                                return transmission_control_block_event_none_on(context->block, parent, context);
-    }
 }
 
 extern uint32_t transmission_control_protocol_module_func_sequence_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {

@@ -16,22 +16,18 @@
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
-#ifndef   RELEASE
-
-#ifndef   TRANSMISSION_CONTROL_PROTOCOL_SUPPORT_AUTOMATIC_OPEN
-#define   TRANSMISSION_CONTROL_PROTOCOL_SUPPORT_AUTOMATIC_OPEN      1
-#endif // TRANSMISSION_CONTROL_PROTOCOL_SUPPORT_AUTOMATIC_OPEN
-
-#endif // RELEASE
-
 struct transmission_control_block;
 struct transmission_control_block_func;
 struct transmission_control_block_agent;
 struct transmission_control_block_agent_func;
-struct transmission_control_block_buffer;
-struct transmission_control_block_buffer_func;
-struct transmission_control_block_buffer_node;
-struct transmission_control_block_buffer_node_func;
+struct transmission_control_block_buffer_in;
+struct transmission_control_block_buffer_in_func;
+struct transmission_control_block_buffer_in_node;
+struct transmission_control_block_buffer_in_node_func;
+struct transmission_control_block_buffer_out;
+struct transmission_control_block_buffer_out_func;
+struct transmission_control_block_buffer_out_node;
+struct transmission_control_block_buffer_out_node_func;
 
 typedef hashtable_t transmission_control_block_map_t;
 
@@ -42,23 +38,28 @@ struct transmission_control_protocol_module_func;
 struct transmission_control_protocol_context;
 struct transmission_control_protocol_context_func;
 
-typedef struct transmission_control_block                   transmission_control_block_t;
-typedef struct transmission_control_block_func              transmission_control_block_func_t;
-typedef struct transmission_control_block_agent             transmission_control_block_agent_t;
-typedef struct transmission_control_block_agent_func        transmission_control_block_agent_func_t;
+typedef struct transmission_control_block                           transmission_control_block_t;
+typedef struct transmission_control_block_func                      transmission_control_block_func_t;
+typedef struct transmission_control_block_agent                     transmission_control_block_agent_t;
+typedef struct transmission_control_block_agent_func                transmission_control_block_agent_func_t;
 
-typedef struct transmission_control_block_buffer            transmission_control_block_buffer_t;
-typedef struct transmission_control_block_buffer_func       transmission_control_block_buffer_func_t;
-typedef struct transmission_control_block_buffer_node       transmission_control_block_buffer_node_t;
-typedef struct transmission_control_block_buffer_node_func  transmission_control_block_buffer_node_func_t;
+typedef struct transmission_control_block_buffer_in                 transmission_control_block_buffer_in_t;
+typedef struct transmission_control_block_buffer_in_func            transmission_control_block_buffer_in_func_t;
+typedef struct transmission_control_block_buffer_in_node            transmission_control_block_buffer_in_node_t;
+typedef struct transmission_control_block_buffer_in_node_func       transmission_control_block_buffer_in_node_func_t;
 
-typedef struct transmission_control_protocol_packet         transmission_control_protocol_packet_t;
-typedef uint8_t                                             transmission_control_protocol_option_t;
+typedef struct transmission_control_block_buffer_out                transmission_control_block_buffer_out_t;
+typedef struct transmission_control_block_buffer_out_func           transmission_control_block_buffer_out_func_t;
+typedef struct transmission_control_block_buffer_out_node           transmission_control_block_buffer_out_node_t;
+typedef struct transmission_control_block_buffer_out_node_func      transmission_control_block_buffer_out_node_func_t;
 
-typedef struct transmission_control_protocol_module         transmission_control_protocol_module_t;
-typedef struct transmission_control_protocol_module_func    transmission_control_protocol_module_func_t;
-typedef struct transmission_control_protocol_context        transmission_control_protocol_context_t;
-typedef struct transmission_control_protocol_context_func   transmission_control_protocol_context_func_t;
+typedef struct transmission_control_protocol_packet                 transmission_control_protocol_packet_t;
+typedef uint8_t                                                     transmission_control_protocol_option_t;
+
+typedef struct transmission_control_protocol_module                 transmission_control_protocol_module_t;
+typedef struct transmission_control_protocol_module_func            transmission_control_protocol_module_func_t;
+typedef struct transmission_control_protocol_context                transmission_control_protocol_context_t;
+typedef struct transmission_control_protocol_context_func           transmission_control_protocol_context_func_t;
 
 struct transmission_control_protocol_packet {
     uint16_t source;
@@ -158,20 +159,22 @@ struct transmission_control_block {
     transmission_control_protocol_module_t * module;
 
     uint8_t version;
-    uint32_t state;
+    struct {
+        uint16_t prev;
+        uint16_t current;
+    } state;
     uint32_t sequence;
     uint32_t acknowledge;
+    uint16_t window;
     struct {
         uint32_t sequence;
         uint32_t acknowledge;
+        uint16_t window;
     } remote;
-    struct {
-        uint16_t remote;
-        uint16_t local;
-    } window;
 
     struct {
-        transmission_control_block_buffer_t * out;
+        transmission_control_block_buffer_in_t * in;       // HOLE 을 지원하는 버퍼를 만들고, 한 번에 SEND 하도록 혹은 버퍼 노드 교체만 이루어지도록 ,...
+        transmission_control_block_buffer_out_t * out;      // SEGMENT 크기로 자를 수 있는 버퍼, 하나의 의미 있는 IP 패킷을 담는다.
     } buffer;
     
     transmission_control_block_agent_t * agent;
@@ -187,49 +190,76 @@ struct transmission_control_block_func {
     int32_t (*listen)(transmission_control_block_t *);
 
     int32_t (*in)(transmission_control_block_t *, transmission_control_protocol_context_t *);
-    int32_t (*out)(transmission_control_block_t *, transmission_control_block_buffer_node_t *);
+    int32_t (*complete_in)(transmission_control_block_t *, transmission_control_protocol_context_t *);
+    
+    int32_t (*out)(transmission_control_block_t *, transmission_control_block_buffer_out_node_t *);
 };
 
-extern int32_t transmission_control_block_event_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_event_out_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_event_exception_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_event_complete_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_event_complete_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_event_complete_out_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_event_none_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_closed(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_listen(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_synchronize_sequence_sent(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_synchronize_sequence_recv(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_establish(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_finish_wait_first(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_finish_wait_second(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_close_wait(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_closing(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_last_acknowledge(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_time_wait(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_in_exception(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
 
-extern int32_t transmission_control_block_state_listen_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_synchronize_sequence_sent_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_synchronize_sequence_recv_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_establish_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_finish_wait_frist_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_finish_wait_second_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_close_wait_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_closing_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_last_acknowledge_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_time_wait_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_closed_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_exception_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_closed(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_listen(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_synchronize_sequence_sent(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_establish(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_finish_wait_first(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_finish_wait_second(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_close_wait(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_closing(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_last_acknowledge(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_time_wait(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_block_complete_in_exception(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_out_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_exception_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_complete_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_complete_in_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_complete_out_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_event_none_on(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
-extern int32_t transmission_control_block_state_listen_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_synchronize_sequence_sent_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_synchronize_sequence_recv_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_establish_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_finish_wait_frist_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_finish_wait_second_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_close_wait_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_closing_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_last_acknowledge_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_time_wait_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_closed_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_block_state_exception_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_listen_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_synchronize_sequence_sent_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_synchronize_sequence_recv_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_establish_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_finish_wait_frist_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_finish_wait_second_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_close_wait_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_closing_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_last_acknowledge_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_time_wait_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_closed_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_exception_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
+// extern int32_t transmission_control_block_state_listen_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_synchronize_sequence_sent_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_synchronize_sequence_recv_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_establish_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_finish_wait_frist_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_finish_wait_second_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_close_wait_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_closing_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_last_acknowledge_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_time_wait_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_closed_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+// extern int32_t transmission_control_block_state_exception_complete_in(transmission_control_block_t * block, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 #define transmission_control_window_size_init                       (65536 / 2)
 
-#define transmission_control_state_avail_in                         (0x80000000u)
-#define transmission_control_state_avail_out                        (0x40000000u)
-#define transmission_control_state_avail_accept                     (0x20000000u)
-#define transmission_control_state_finishing                        (0x10000000u)
+#define transmission_control_state_avail_in                         (0x8000u)
+#define transmission_control_state_avail_out                        (0x4000u)
+#define transmission_control_state_avail_accept                     (0x2000u)
+#define transmission_control_state_finishing                        (0x1000u)
 #define transmission_control_state_avail_io                         (transmission_control_state_avail_in | transmission_control_state_avail_out)
 
 #define transmission_control_state_closed                           (transmission_control_state_finishing    |  0)
@@ -257,12 +287,12 @@ extern int32_t transmission_control_block_state_exception_complete_in(transmissi
 
 #define transmission_control_protocol_header_len                    20
 
-extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key, transmission_control_protocol_module_t * module, transmission_control_protocol_context_t * context);
+extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key, transmission_control_protocol_module_t * module);
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
-___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t flags, uint8_t * buffer, uint64_t bufferlen);
-___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node);
+// ___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t flags, uint8_t * buffer, uint64_t bufferlen);
+// ___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node);
 
 #define transmission_control_block_sequence_set(block, v)               ((block)->sequence = v)
 #define transmission_control_block_sequence_get(block)                  ((block)->sequence)
@@ -272,15 +302,19 @@ ___implement extern int32_t transmission_control_block_func_check_window_remote(
 #define transmission_control_block_remote_sequence_get(block)           ((block)->remote.sequence)
 #define transmission_control_block_remote_acknowledge_set(block, v)     ((block)->remote.acknowledge = v)
 #define transmission_control_block_remote_acknowledge_get(block)        ((block)->remote.acknowledge)
-#define transmission_control_block_window_remote_set(block, v)          ((block)->window.remote = v)
-#define transmission_control_block_window_remote_get(block)             ((block)->window.remote)
-#define transmission_control_block_window_local_set(block, v)           ((block)->window.local = v)
-#define transmission_control_block_window_local_get(block)              ((block)->window.local)
+#define transmission_control_block_remote_window_set(block, v)          ((block)->remote.window = v)
+#define transmission_control_block_remote_window_get(block)             ((block)->remote.window)
+#define transmission_control_block_window_set(block, v)                 ((block)->window = v)
+#define transmission_control_block_window_get(block)                    ((block)->window)
 #define transmission_control_block_version_set(block, v)                ((block)->version = v)
 #define transmission_control_block_version_get(block)                   ((block)->version)
-#define transmission_control_block_state_get(block)                     ((block)->state)
-#define transmission_control_block_state_set(block, v)                  ((block)->state = v)
-#define transmission_control_block_state_has(block, v)                  ((block)->state & v)
+#define transmission_control_block_state_get(block)                     ((block)->state.current)
+#define transmission_control_block_state_set(block, v)                  ((block)->state.current = v)
+#define transmission_control_block_state_has(block, v)                  ((block)->state.current & v)
+#define transmission_control_block_state_prev_get(block)                ((block)->state.prev)
+#define transmission_control_block_state_prev_set(block, v)             ((block)->state.prev = v)
+#define transmission_control_block_state_is_changed(block)              ((block)->state.prev != (block)->state.current)
+#define transmission_control_block_path_get(block)                      ((block)->path)
 
 #define transmission_control_block_avail_io(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_io)
 #define transmission_control_block_avail_in(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_in)
@@ -295,76 +329,73 @@ ___implement extern int32_t transmission_control_block_func_check_window_remote(
 #define transmission_control_block_recv(block, context)                 ((block)->func->recv(block, context))
 #define transmission_control_block_close(block)                         ((block)->func->close(block))
 #define transmission_control_block_in(block, context)                   ((block)->func->in(block, context))
+#define transmission_control_block_complete_in(block, context)          ((block)->func->complete_in(block, context))
 #define transmission_control_block_out(block, node)                     ((block)->func->out(block, node))
 
 #define transmission_control_block_check_window_remote                  transmission_control_block_func_check_window_remote
 #define transmission_control_block_context_gen_transmit_segment         transmission_control_block_func_context_gen_transmit_segment
 
-typedef transmission_control_block_buffer_node_t * (*transmission_control_block_buffer_node_factory_t)(transmission_control_block_buffer_t *, const void *, uint64_t);
+typedef transmission_control_block_buffer_out_node_t * (*transmission_control_block_buffer_out_node_factory_t)(transmission_control_block_buffer_out_t *, const void *, uint64_t);
 
-struct transmission_control_block_buffer {
-    transmission_control_block_buffer_func_t * func;
+struct transmission_control_block_buffer_out {
+    transmission_control_block_buffer_out_func_t * func;
     sync_t * sync;
     uint64_t size;
-    transmission_control_block_buffer_node_t * head;
-    transmission_control_block_buffer_node_t * tail;
-    transmission_control_block_buffer_node_t * front;
+    transmission_control_block_buffer_out_node_t * head;
+    transmission_control_block_buffer_out_node_t * tail;
+    transmission_control_block_buffer_out_node_t * front;
 
     uint64_t page;
-    transmission_control_block_buffer_node_factory_t nodegen;
-
-    struct {
-        transmission_control_block_buffer_node_t * unprocessed;
-    } node;
+    transmission_control_block_buffer_out_node_factory_t nodegen;
 };
 
-struct transmission_control_block_buffer_func {
-    transmission_control_block_buffer_t * (*rem)(transmission_control_block_buffer_t *);
-    void (*push)(transmission_control_block_buffer_t *, const void *, uint64_t);
-    void (*pop)(transmission_control_block_buffer_t *, uint64_t);
-    void (*clear)(transmission_control_block_buffer_t *);
-    void (*shrink)(transmission_control_block_buffer_t *);
-    transmission_control_block_buffer_node_t * (*front)(transmission_control_block_buffer_t *);
-    transmission_control_block_buffer_node_t * (*back)(transmission_control_block_buffer_t *, uint64_t);
-    transmission_control_block_buffer_node_t * (*head)(transmission_control_block_buffer_t *);
+struct transmission_control_block_buffer_out_func {
+    transmission_control_block_buffer_out_t * (*rem)(transmission_control_block_buffer_out_t *);
+    void (*push)(transmission_control_block_buffer_out_t *, const void *, uint64_t);
+    void (*pop)(transmission_control_block_buffer_out_t *, uint64_t);
+    void (*clear)(transmission_control_block_buffer_out_t *);
+    void (*shrink)(transmission_control_block_buffer_out_t *);
+    transmission_control_block_buffer_out_node_t * (*front)(transmission_control_block_buffer_out_t *);
+    transmission_control_block_buffer_out_node_t * (*back)(transmission_control_block_buffer_out_t *, uint64_t);
+    transmission_control_block_buffer_out_node_t * (*head)(transmission_control_block_buffer_out_t *);
 
-    transmission_control_block_buffer_node_t * (*add)(transmission_control_block_buffer_t *, transmission_control_block_buffer_node_t *);
-    transmission_control_block_buffer_node_t * (*del)(transmission_control_block_buffer_t *, transmission_control_block_buffer_node_t *);
+    transmission_control_block_buffer_out_node_t * (*add)(transmission_control_block_buffer_out_t *, transmission_control_block_buffer_out_node_t *);
+    transmission_control_block_buffer_out_node_t * (*del)(transmission_control_block_buffer_out_t *, transmission_control_block_buffer_out_node_t *);
 };
 
-extern transmission_control_block_buffer_t * transmission_control_block_buffer_gen(transmission_control_block_buffer_node_factory_t nodegen, uint64_t page);
+extern transmission_control_block_buffer_out_t * transmission_control_block_buffer_out_gen(transmission_control_block_buffer_out_node_factory_t nodegen, uint64_t page);
 
-extern void transmission_control_block_buffer_func_transmit_on(transmission_control_block_buffer_t * buffer, transmission_control_block_buffer_node_t * node);
+extern void transmission_control_block_buffer_out_func_transmit_on(transmission_control_block_buffer_out_t * buffer, transmission_control_block_buffer_out_node_t * node);
 
-#define transmission_control_block_buffer_rem(buffer)                           ((buffer)->func->rem(buffer))
-#define transmission_control_block_buffer_push(buffer, data, n)                 ((buffer)->func->push(buffer, data, n))
-#define transmission_control_block_buffer_pop(buffer, n)                        ((buffer)->func->pop(buffer, n))
-#define transmission_control_block_buffer_clear(buffer)                         ((buffer)->func->clear(buffer))
-#define transmission_control_block_buffer_front(buffer)                         ((buffer)->func->front(buffer))
-#define transmission_control_block_buffer_back(buffer, hint)                    ((buffer)->func->back(buffer, hint))
-#define transmission_control_block_buffer_add(buffer, node)                     ((buffer)->func->add(buffer, node))
-#define transmission_control_block_buffer_del(buffer, node)                     ((buffer)->func->del(buffer, node))
+#define transmission_control_block_buffer_out_rem(buffer)                           ((buffer)->func->rem(buffer))
+#define transmission_control_block_buffer_out_push(buffer, data, n)                 ((buffer)->func->push(buffer, data, n))
+#define transmission_control_block_buffer_out_pop(buffer, n)                        ((buffer)->func->pop(buffer, n))
+#define transmission_control_block_buffer_out_clear(buffer)                         ((buffer)->func->clear(buffer))
+#define transmission_control_block_buffer_out_front(buffer)                         ((buffer)->func->front(buffer))
+#define transmission_control_block_buffer_out_back(buffer, hint)                    ((buffer)->func->back(buffer, hint))
+#define transmission_control_block_buffer_out_add(buffer, node)                     ((buffer)->func->add(buffer, node))
+#define transmission_control_block_buffer_out_del(buffer, node)                     ((buffer)->func->del(buffer, node))
 
-#define transmission_control_block_buffer_nodegen(buffer, data, n)              ((buffer)->nodegen(buffer, data, n))
+#define transmission_control_block_buffer_out_nodegen(buffer, data, n)              ((buffer)->nodegen(buffer, data, n))
 
-#define transmission_control_block_buffer_transmit_on                           transmission_control_block_buffer_func_transmit_on
+#define transmission_control_block_buffer_out_transmit_on                           transmission_control_block_buffer_func_transmit_on
 
-#define transmission_control_block_buffer_head(buffer)                          ((buffer)->head)
-#define transmission_control_block_buffer_tail(buffer)                          ((buffer)->tail)
-#define transmission_control_block_buffer_node_unprocessed_get(buffer, node)    ((buffer)->node.unprocessed ? (buffer)->node.unprocessed : ((buffer)->node.unprocessed = node))
+#define transmission_control_block_buffer_out_head(buffer)                          ((buffer)->head)
+#define transmission_control_block_buffer_out_tail(buffer)                          ((buffer)->tail)
 
-struct transmission_control_block_buffer_node {
-    transmission_control_block_buffer_node_func_t * func;
+struct transmission_control_block_buffer_out_node {
+    transmission_control_block_buffer_out_node_func_t * func;
     sync_t * sync;
     buffer_list_t * collection;
-    transmission_control_block_buffer_node_t * prev;
-    transmission_control_block_buffer_node_t * next;
+    transmission_control_block_buffer_out_node_t * prev;
+    transmission_control_block_buffer_out_node_t * next;
     uint64_t position;
     uint64_t size;
     uint64_t capacity;
     void * mem;
 
     uint32_t sequence;
+    uint32_t acknowledge;
 
     struct {
         nanosecond_t time;
@@ -374,43 +405,151 @@ struct transmission_control_block_buffer_node {
     nanosecond_t time;
 };
 
-struct transmission_control_block_buffer_node_func {
-    transmission_control_block_buffer_node_t * (*rem)(transmission_control_block_buffer_node_t *);
-    void * (*front)(transmission_control_block_buffer_node_t *);
-    void * (*back)(transmission_control_block_buffer_node_t *);
-    int32_t (*shrink)(transmission_control_block_buffer_node_t *);
-    uint64_t (*length)(transmission_control_block_buffer_node_t *);
-    uint64_t (*remain)(transmission_control_block_buffer_node_t *);
-    uint64_t (*position_get)(transmission_control_block_buffer_node_t *);
-    void (*position_set)(transmission_control_block_buffer_node_t *, uint64_t);
-    uint64_t (*size_get)(transmission_control_block_buffer_node_t *);
-    void (*size_set)(transmission_control_block_buffer_node_t *, uint64_t);
-    uint64_t (*capacity_get)(transmission_control_block_buffer_node_t *);
-    void (*capacity_set)(transmission_control_block_buffer_node_t *, uint64_t);
-    void (*clear)(transmission_control_block_buffer_node_t *);
+struct transmission_control_block_buffer_out_node_func {
+    transmission_control_block_buffer_out_node_t * (*rem)(transmission_control_block_buffer_out_node_t *);
+    void * (*front)(transmission_control_block_buffer_out_node_t *);
+    void * (*back)(transmission_control_block_buffer_out_node_t *);
+    int32_t (*shrink)(transmission_control_block_buffer_out_node_t *);
+    uint64_t (*length)(transmission_control_block_buffer_out_node_t *);
+    uint64_t (*remain)(transmission_control_block_buffer_out_node_t *);
+    uint64_t (*position_get)(transmission_control_block_buffer_out_node_t *);
+    void (*position_set)(transmission_control_block_buffer_out_node_t *, uint64_t);
+    uint64_t (*size_get)(transmission_control_block_buffer_out_node_t *);
+    void (*size_set)(transmission_control_block_buffer_out_node_t *, uint64_t);
+    uint64_t (*capacity_get)(transmission_control_block_buffer_out_node_t *);
+    void (*capacity_set)(transmission_control_block_buffer_out_node_t *, uint64_t);
+    void (*clear)(transmission_control_block_buffer_out_node_t *);
 };
 
-extern transmission_control_block_buffer_node_t * transmission_control_block_buffer_node_gen(transmission_control_block_buffer_t * buffer, const void * data, uint64_t n);
+extern transmission_control_block_buffer_out_node_t * transmission_control_block_buffer_out_node_gen(transmission_control_block_buffer_out_t * buffer, const void * data, uint64_t n);
 
-#define transmission_control_block_buffer_node_rem(node)                            ((node)->func->rem(node))
-#define transmission_control_block_buffer_node_front(node)                          ((node)->func->front(node))
-#define transmission_control_block_buffer_node_back(node)                           ((node)->func->back(node))
-#define transmission_control_block_buffer_node_shrink(node)                         ((node)->func->shrink(node))
-#define transmission_control_block_buffer_node_length(node)                         ((node) ? (node)->func->length(node) : 0)
-#define transmission_control_block_buffer_node_remain(node)                         ((node) ? (node)->func->remain(node) : 0)
-#define transmission_control_block_buffer_node_position_get(node)                   ((node)->func->position_get(node))
-#define transmission_control_block_buffer_node_position_set(node, n)                ((node)->func->position_set(node, n))
-#define transmission_control_block_buffer_node_size_get(node)                       ((node)->func->size_get(node))
-#define transmission_control_block_buffer_node_size_set(node, n)                    ((node)->func->size_set(node, n))
-#define transmission_control_block_buffer_node_capacity_get(node)                   ((node)->func->capacity_get(node))
-#define transmission_control_block_buffer_node_capacity_set(node, n)                ((node)->func->capacity_set(node, n))
-#define transmission_control_block_buffer_node_clear(node)                          ((node)->func->clear(node))
+#define transmission_control_block_buffer_out_node_rem(node)                            ((node)->func->rem(node))
+#define transmission_control_block_buffer_out_node_front(node)                          ((node)->func->front(node))
+#define transmission_control_block_buffer_out_node_back(node)                           ((node)->func->back(node))
+#define transmission_control_block_buffer_out_node_shrink(node)                         ((node)->func->shrink(node))
+#define transmission_control_block_buffer_out_node_length(node)                         ((node) ? (node)->func->length(node) : 0)
+#define transmission_control_block_buffer_out_node_remain(node)                         ((node) ? (node)->func->remain(node) : 0)
+#define transmission_control_block_buffer_out_node_position_get(node)                   ((node)->func->position_get(node))
+#define transmission_control_block_buffer_out_node_position_set(node, n)                ((node)->func->position_set(node, n))
+#define transmission_control_block_buffer_out_node_size_get(node)                       ((node)->func->size_get(node))
+#define transmission_control_block_buffer_out_node_size_set(node, n)                    ((node)->func->size_set(node, n))
+#define transmission_control_block_buffer_out_node_capacity_get(node)                   ((node)->func->capacity_get(node))
+#define transmission_control_block_buffer_out_node_capacity_set(node, n)                ((node)->func->capacity_set(node, n))
+#define transmission_control_block_buffer_out_node_clear(node)                          ((node)->func->clear(node))
 
-#define transmission_control_block_buffer_node_transmit_count_get(node)             ((node)->transmit.count)
-#define transmission_control_block_buffer_node_sequence_set(node, v)                ((node)->sequence = v)
-#define transmission_control_block_buffer_node_sequence_get(node)                   ((node)->sequence + (node)->position)
+#define transmission_control_block_buffer_out_node_transmit_count_get(node)             ((node)->transmit.count)
+#define transmission_control_block_buffer_out_node_sequence_set(node, v)                ((node)->sequence = v)
+#define transmission_control_block_buffer_out_node_sequence_get(node)                   ((node)->sequence + (uint32_t)((node)->position))
 
-#define transmission_control_block_buffer_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))
+#define transmission_control_block_buffer_out_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))
+
+typedef transmission_control_block_buffer_in_node_t * (*transmission_control_block_buffer_in_node_factory_t)(transmission_control_block_buffer_in_t *, const void *, uint64_t);
+
+struct transmission_control_block_buffer_in {
+    transmission_control_block_buffer_in_func_t * func;
+    sync_t * sync;
+    uint64_t size;
+    transmission_control_block_buffer_in_node_t * head;
+    transmission_control_block_buffer_in_node_t * tail;
+    transmission_control_block_buffer_in_node_t * front;
+
+    uint64_t page;
+    transmission_control_block_buffer_in_node_factory_t nodegen;
+};
+
+struct transmission_control_block_buffer_in_func {
+    transmission_control_block_buffer_in_t * (*rem)(transmission_control_block_buffer_in_t *);
+    void (*push)(transmission_control_block_buffer_in_t *, const void *, uint64_t);
+    void (*pop)(transmission_control_block_buffer_in_t *, uint64_t);
+    void (*clear)(transmission_control_block_buffer_in_t *);
+    void (*shrink)(transmission_control_block_buffer_in_t *);
+    transmission_control_block_buffer_in_node_t * (*front)(transmission_control_block_buffer_in_t *);
+    transmission_control_block_buffer_in_node_t * (*back)(transmission_control_block_buffer_in_t *, uint64_t);
+    transmission_control_block_buffer_in_node_t * (*head)(transmission_control_block_buffer_in_t *);
+
+    transmission_control_block_buffer_in_node_t * (*add)(transmission_control_block_buffer_in_t *, transmission_control_block_buffer_in_node_t *);
+    transmission_control_block_buffer_in_node_t * (*del)(transmission_control_block_buffer_in_t *, transmission_control_block_buffer_in_node_t *);
+};
+
+extern transmission_control_block_buffer_in_t * transmission_control_block_buffer_in_gen(transmission_control_block_buffer_in_node_factory_t nodegen, uint64_t page);
+
+extern void transmission_control_block_buffer_in_func_transmit_on(transmission_control_block_buffer_in_t * buffer, transmission_control_block_buffer_in_node_t * node);
+
+#define transmission_control_block_buffer_in_rem(buffer)                           ((buffer)->func->rem(buffer))
+#define transmission_control_block_buffer_in_push(buffer, data, n)                 ((buffer)->func->push(buffer, data, n))
+#define transmission_control_block_buffer_in_pop(buffer, n)                        ((buffer)->func->pop(buffer, n))
+#define transmission_control_block_buffer_in_clear(buffer)                         ((buffer)->func->clear(buffer))
+#define transmission_control_block_buffer_in_front(buffer)                         ((buffer)->func->front(buffer))
+#define transmission_control_block_buffer_in_back(buffer, hint)                    ((buffer)->func->back(buffer, hint))
+#define transmission_control_block_buffer_in_add(buffer, node)                     ((buffer)->func->add(buffer, node))
+#define transmission_control_block_buffer_in_del(buffer, node)                     ((buffer)->func->del(buffer, node))
+
+#define transmission_control_block_buffer_in_nodegen(buffer, data, n)              ((buffer)->nodegen(buffer, data, n))
+
+#define transmission_control_block_buffer_in_transmit_on                           transmission_control_block_buffer_func_transmit_on
+
+#define transmission_control_block_buffer_in_head(buffer)                          ((buffer)->head)
+#define transmission_control_block_buffer_in_tail(buffer)                          ((buffer)->tail)
+
+struct transmission_control_block_buffer_in_node {
+    transmission_control_block_buffer_in_node_func_t * func;
+    sync_t * sync;
+    buffer_list_t * collection;
+    transmission_control_block_buffer_in_node_t * prev;
+    transmission_control_block_buffer_in_node_t * next;
+    uint64_t position;
+    uint64_t size;
+    uint64_t capacity;
+    void * mem;
+
+    uint32_t sequence;
+    uint32_t acknowledge;
+
+    struct {
+        nanosecond_t time;
+        uint8_t count;
+    } transmit;
+
+    nanosecond_t time;
+};
+
+struct transmission_control_block_buffer_in_node_func {
+    transmission_control_block_buffer_in_node_t * (*rem)(transmission_control_block_buffer_in_node_t *);
+    void * (*front)(transmission_control_block_buffer_in_node_t *);
+    void * (*back)(transmission_control_block_buffer_in_node_t *);
+    int32_t (*shrink)(transmission_control_block_buffer_in_node_t *);
+    uint64_t (*length)(transmission_control_block_buffer_in_node_t *);
+    uint64_t (*remain)(transmission_control_block_buffer_in_node_t *);
+    uint64_t (*position_get)(transmission_control_block_buffer_in_node_t *);
+    void (*position_set)(transmission_control_block_buffer_in_node_t *, uint64_t);
+    uint64_t (*size_get)(transmission_control_block_buffer_in_node_t *);
+    void (*size_set)(transmission_control_block_buffer_in_node_t *, uint64_t);
+    uint64_t (*capacity_get)(transmission_control_block_buffer_in_node_t *);
+    void (*capacity_set)(transmission_control_block_buffer_in_node_t *, uint64_t);
+    void (*clear)(transmission_control_block_buffer_in_node_t *);
+};
+
+extern transmission_control_block_buffer_in_node_t * transmission_control_block_buffer_in_node_gen(transmission_control_block_buffer_in_t * buffer, const void * data, uint64_t n);
+
+#define transmission_control_block_buffer_in_node_rem(node)                            ((node)->func->rem(node))
+#define transmission_control_block_buffer_in_node_front(node)                          ((node)->func->front(node))
+#define transmission_control_block_buffer_in_node_back(node)                           ((node)->func->back(node))
+#define transmission_control_block_buffer_in_node_shrink(node)                         ((node)->func->shrink(node))
+#define transmission_control_block_buffer_in_node_length(node)                         ((node) ? (node)->func->length(node) : 0)
+#define transmission_control_block_buffer_in_node_remain(node)                         ((node) ? (node)->func->remain(node) : 0)
+#define transmission_control_block_buffer_in_node_position_get(node)                   ((node)->func->position_get(node))
+#define transmission_control_block_buffer_in_node_position_set(node, n)                ((node)->func->position_set(node, n))
+#define transmission_control_block_buffer_in_node_size_get(node)                       ((node)->func->size_get(node))
+#define transmission_control_block_buffer_in_node_size_set(node, n)                    ((node)->func->size_set(node, n))
+#define transmission_control_block_buffer_in_node_capacity_get(node)                   ((node)->func->capacity_get(node))
+#define transmission_control_block_buffer_in_node_capacity_set(node, n)                ((node)->func->capacity_set(node, n))
+#define transmission_control_block_buffer_in_node_clear(node)                          ((node)->func->clear(node))
+
+#define transmission_control_block_buffer_in_node_transmit_count_get(node)             ((node)->transmit.count)
+#define transmission_control_block_buffer_in_node_sequence_set(node, v)                ((node)->sequence = v)
+#define transmission_control_block_buffer_in_node_sequence_get(node)                   ((node)->sequence + (uint32_t)((node)->position))
+
+#define transmission_control_block_buffer_in_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))
 
 typedef int32_t (*transmission_control_protocol_context_handler_t)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
 
@@ -435,18 +574,16 @@ struct transmission_control_protocol_module_func {
     void (*debug)(transmission_control_protocol_module_t *, FILE *, transmission_control_protocol_context_t *);
     int32_t (*in)(transmission_control_protocol_module_t *, protocol_packet_t *, uint64_t, internet_protocol_context_t *, transmission_control_protocol_context_t **);
     int32_t (*out)(transmission_control_protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
+
     transmission_control_protocol_context_t * (*context_gen)(transmission_control_protocol_module_t *, protocol_path_node_t *, protocol_context_t *);
     transmission_control_protocol_context_t * (*reply_gen)(transmission_control_protocol_module_t *, transmission_control_protocol_context_t *);
-
-    int32_t (*blockon)(transmission_control_protocol_module_t *, uint32_t, internet_protocol_context_t *, transmission_control_protocol_context_t *);
     uint32_t (*sequence_gen)(transmission_control_protocol_module_t *, internet_protocol_context_t *, transmission_control_protocol_context_t *);
 };
 
 extern transmission_control_protocol_module_t * transmission_control_protocol_module_gen(protocol_module_map_t * map, transmission_control_protocol_context_handler_t on);
-extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-extern int32_t transmission_control_protocol_module_func_blockon(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
-
 extern uint32_t transmission_control_protocol_module_func_sequence_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+
+extern int32_t transmission_control_protocol_module_func_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
 
 #define transmission_control_protocol_module_addrlen_get(module)                                                ((module)->addrlen)
 #define transmission_control_protocol_module_number_get(module)                                                 ((module)->type)
@@ -459,10 +596,7 @@ extern uint32_t transmission_control_protocol_module_func_sequence_gen(transmiss
 #define transmission_control_protocol_module_out(module, node, child)                                           ((module)->func->out(module, node, child))
 #define transmission_control_protocol_module_context_gen(module, node, child)                                   ((module)->func->context_gen(module, node, child))
 #define transmission_control_protocol_module_reply_gen(module, request)                                         ((module)->func->reply_gen(module, request))
-
-#define transmission_control_protocol_module_blockon(module, type, parent, context)                             ((module)->func->blockon(module, type, parent, context))
 #define transmission_control_protocol_module_seqeuence_gen(module, parent, context)                             ((module)->func->sequence_gen(module, parent, context))
-// #define transmission_control_protocol_module_blockon(module, parent, context)                                   ((module)->func->blockon(module, parent, context))
 
 #define transmission_control_protocol_module_on(module, type, parent, context)                                  ((module)->on(module, type, parent, context))
 

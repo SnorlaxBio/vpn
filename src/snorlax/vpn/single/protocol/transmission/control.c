@@ -35,42 +35,42 @@ static int32_t transmission_control_protocol_module_func_vpn_single_on_in(transm
 
     snorlaxdbg(transmission_control_protocol_context_key_has(context) == false, false, "critical", "");
 
-    if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
-        snorlaxdbg(false, true, "check", "");
-        return fail;
-    }
+    // if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
+    //     snorlaxdbg(false, true, "check", "");
+    //     return fail;
+    // }
 
-    snorlaxdbg(context->block == nil, false, "check", "");
+    // snorlaxdbg(context->block == nil, false, "check", "");
 
-    uint8_t version = internet_protocol_context_version_get(context->parent);
-    transmission_control_block_agent_single_t * agent = (transmission_control_block_agent_single_t *) (context->block->agent);
+    // uint8_t version = internet_protocol_context_version_get(context->parent);
+    // transmission_control_block_agent_single_t * agent = (transmission_control_block_agent_single_t *) (context->block->agent);
 
-    if(context->block->agent == nil) {
-        char str[128];
+    // if(context->block->agent == nil) {
+    //     char str[128];
 
-        snorlaxdbg(false, true, "debug", "source: %s:%u", internet_protocol_address_to_string(version, str, internet_protocol_context_source_get(context->parent)), transmission_control_protocol_context_source_get(context));
-        snorlaxdbg(false, true, "debug", "destination: %s:%u", internet_protocol_address_to_string(version, str, internet_protocol_context_destination_get(context->parent)), transmission_control_protocol_context_destination_get(context));
+    //     snorlaxdbg(false, true, "debug", "source: %s:%u", internet_protocol_address_to_string(version, str, internet_protocol_context_source_get(context->parent)), transmission_control_protocol_context_source_get(context));
+    //     snorlaxdbg(false, true, "debug", "destination: %s:%u", internet_protocol_address_to_string(version, str, internet_protocol_context_destination_get(context->parent)), transmission_control_protocol_context_destination_get(context));
 
-        snorlaxdbg(transmission_control_block_state_get(context->block) != transmission_control_state_synchronize_sequence_recv, false, "critical", "");
+    //     snorlaxdbg(transmission_control_block_state_get(context->block) != transmission_control_state_synchronize_sequence_recv, false, "critical", "");
 
-        context->block->agent = (transmission_control_block_agent_t *) (agent = transmission_control_block_agent_single_gen(context->block));
+    //     context->block->agent = (transmission_control_block_agent_t *) (agent = transmission_control_block_agent_single_gen(context->block));
         
-        vpn_single_app_t * app = vpn_single_app_get();
-        event_engine_t * engine = app->engine;
+    //     vpn_single_app_t * app = vpn_single_app_get();
+    //     event_engine_t * engine = app->engine;
 
-        if(agent->client == nil) {
-            uint8_t * addr = internet_protocol_context_destination_get(context->parent);
-            uint16_t port = transmission_control_protocol_context_destination_get(context);
+    //     if(agent->client == nil) {
+    //         uint8_t * addr = internet_protocol_context_destination_get(context->parent);
+    //         uint16_t port = transmission_control_protocol_context_destination_get(context);
 
-            agent->client = (version == 4 ? vpn_client_tcp4_gen(*((uint32_t *) addr), port) : vpn_client_tcp6_gen(addr, port));
-        }
+    //         agent->client = (version == 4 ? vpn_client_tcp4_gen(*((uint32_t *) addr), port) : vpn_client_tcp6_gen(addr, port));
+    //     }
 
-        if(agent->subscription == nil) {
-            transmission_control_block_agent_single_meta_t * meta = transmission_control_block_agent_single_meta_gen(context->block);
+    //     if(agent->subscription == nil) {
+    //         transmission_control_block_agent_single_meta_t * meta = transmission_control_block_agent_single_meta_gen(context->block);
             
-            agent->subscription = event_engine_socket_client_sub(engine, (socket_client_t *) agent->client, transmission_control_protocol_client_handler_get(), nil, (event_subscription_meta_t *) meta);
-        }
-    }
+    //         agent->subscription = event_engine_socket_client_sub(engine, (socket_client_t *) agent->client, transmission_control_protocol_client_handler_get(), nil, (event_subscription_meta_t *) meta);
+    //     }
+    // }
 
     return success;
 }
@@ -113,13 +113,13 @@ static int32_t transmission_control_protocol_module_func_vpn_single_on_complete_
 
     snorlaxdbg(false, true, "debug", "");
 
-    snorlaxdbg(transmission_control_protocol_context_key_has(context) == false, false, "critical", "");
+    // snorlaxdbg(transmission_control_protocol_context_key_has(context) == false, false, "critical", "");
 
-    if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
-        snorlaxdbg(false, true, "check", "");
+    // if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
+    //     snorlaxdbg(false, true, "check", "");
 
-        return fail;
-    }
+    //     return fail;
+    // }
 
     // if(transmission_control_block_state_get(context->block) == transmission_control_state_syn_rcvd) {
 

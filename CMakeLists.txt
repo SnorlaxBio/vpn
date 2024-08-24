@@ -199,8 +199,12 @@ set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol.c
                                 src/snorlax/protocol/internet/transmission/control/context.c
                                 src/snorlax/protocol/internet/transmission/control/block.c
                                 src/snorlax/protocol/internet/transmission/control/block/on.c
-                                src/snorlax/protocol/internet/transmission/control/block/buffer.c
-                                src/snorlax/protocol/internet/transmission/control/block/buffer/node.c
+                                src/snorlax/protocol/internet/transmission/control/block/buffer/in.c
+                                src/snorlax/protocol/internet/transmission/control/block/buffer/out.c
+                                src/snorlax/protocol/internet/transmission/control/block/buffer/in/node.c
+                                src/snorlax/protocol/internet/transmission/control/block/buffer/out/node.c
+                                src/snorlax/protocol/internet/transmission/control/block/in.c
+                                src/snorlax/protocol/internet/transmission/control/block/complete/in.c
                                 src/snorlax/protocol/internet/transmission/control/block/state/in.c
                                 src/snorlax/protocol/internet/transmission/control/block/state/complete/in.c)
 
