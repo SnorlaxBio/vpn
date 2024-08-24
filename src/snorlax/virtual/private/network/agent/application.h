@@ -18,6 +18,7 @@
 #include <snorlax/network/netlink.h>
 #include <snorlax/network/tun.h>
 #include <snorlax/descriptor/event/subscription.h>
+#include <snorlax/socket/event/subscription.h>
 
 #include <snorlax/protocol/internet.h>
 #include <snorlax/protocol/internet/version4.h>
@@ -34,31 +35,32 @@ typedef struct virtual_private_network_application_agent            virtual_priv
 typedef struct virtual_private_network_application_agent_func       virtual_private_network_application_agent_func_t;
 
 struct virtual_private_network_application_agent {
-    virtual_private_network_application_agent_func_t * func;
-    sync_t * sync;
-    virtual_private_network_application_config_t * config;
+    ___reference virtual_private_network_application_agent_func_t *     func;
+    sync_t *                                                            sync;
+    ___reference virtual_private_network_application_config_t *         config;
 
-    event_engine_t * engine;
+    event_engine_t *                                                    engine;
 
-    descriptor_event_subscription_t *   tun;
-    socket_event_subscription_t *       netlink;
+    descriptor_event_subscription_t *                                   tun;
+    socket_event_subscription_t *                                       netlink;
 
-    struct {
-        internet_protocol_module_t *                                internet;
+    internet_protocol_module_t *                                        InternetProtocol;
+    transmission_control_protocol_module_t *                            TransmissionControlProtocol;
+    user_datagram_protocol_module_t *                                   UserDatagramProtocol;
+    internet_protocol_version6_extension_hopbyhop_module_t *            InternetProtocolVersion6ExtensionHopbyhop;
+    internet_protocol_version6_extension_routing_module_t *             InternetProtocolVersion6ExtensionRouting;
+    internet_protocol_version6_extension_fragment_module_t *            InternetProtocolVersion6ExtensionFragment;
+    internet_protocol_version6_extension_destination_module_t *         InternetProtocolVersion6ExtensionDestination;
+    internet_control_message_protocol_version4_module_t *               InternetControlMessageProtocolVersion4;
+    internet_control_message_protocol_version6_module_t *               InternetControlMessageProtocolVersion6;
 
-        user_datagram_protocol_module_t *                           user_datagram;
-        transmission_control_protocol_module_t *                    transmission_control;
-        internet_protocol_version6_extension_hopbyhop_module_t *    internet_protocol_version6_extension_hopbyhop;
-        internet_protocol_version6_extension_routing_module_t *     internet_protocol_version6_extension_routing;
-        internet_protocol_version6_extension_fragment_module_t *    internet_protocol_version6_extension_fragment;
-        internet_protocol_version6_extension_destination_module_t * internet_protocol_version6_extension_destination;
-        internet_control_message_protocol_version4_module_t *       internet_control_message_protocol_version4;
-        internet_control_message_protocol_version6_module_t *       internet_control_message_protocol_version6;
-    } protocol;
+    protocol_module_map_t *                                             TransportLayer;
 
-    struct {
-        protocol_module_map_t *         transport;
-    } protocolmap;
+    char                                                                ifname[16];
+
+    uint32_t                                                            InternetProtocolAddressVersion4;
+    uint8_t                                                             InternetProtocolAddressVersion6[16];
+
 };
 
 struct virtual_private_network_application_agent_func {
