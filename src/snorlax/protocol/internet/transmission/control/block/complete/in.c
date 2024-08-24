@@ -50,7 +50,7 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
         uint8_t  buffer[protocol_packet_max];
         uint64_t bufferlen = protocol_packet_max;
 
-        transmission_control_protocol_context_t * response = transmission_control_protocol_context_gen(block->module, nil, buffer - protocol_packet_max, 0, address_of(bufferlen));
+        transmission_control_protocol_context_t * response = transmission_control_protocol_context_gen(block->module, nil, (transmission_control_protocol_packet_t *) (buffer - protocol_packet_max), 0, address_of(bufferlen));
 
         snorlaxdbg(response == nil, false, "critical", "");
 

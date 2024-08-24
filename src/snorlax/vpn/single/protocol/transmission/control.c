@@ -1,4 +1,7 @@
 #include <arpa/inet.h>
+#include <string.h>
+#include <stdlib.h>
+#include <errno.h>
 
 #include "control.h"
 
@@ -34,6 +37,37 @@ static int32_t transmission_control_protocol_module_func_vpn_single_on_in(transm
     snorlaxdbg(false, true, "debug", "");
 
     snorlaxdbg(transmission_control_protocol_context_key_has(context) == false, false, "critical", "");
+    snorlaxdbg(context->block == nil, false, "critical", "");
+
+    transmission_control_block_t * block = context->block;
+
+    if(type == protocol_event_in) {
+        if(transmission_control_block_state_is_changed(block)) {
+            if(transmission_control_block_state_get(block) == transmission_control_state_synchronize_sequence_recv) {
+                snorlaxdbg(block->agent != nil, false, "critical", "");
+
+                transmission_control_block_agent_single_t * agent = transmission_control_block_agent_single_gen(block);
+
+                transmission_control_block_agent_set(block, (transmission_control_block_agent_t *) agent);
+
+                if(transmission_control_block_agent_single_open(agent) == fail) {
+                    transmission_control_protocol_context_error_set(context, EIO);
+                    return fail;
+                }
+
+                return success;
+            }
+        }
+    }
+
+    snorlaxdbg(false, true, "debug", "");
+
+    return success;
+
+    
+
+
+
 
     // if(transmission_control_protocol_module_blockon(module, type, parent, context) == fail) {
     //     snorlaxdbg(false, true, "check", "");

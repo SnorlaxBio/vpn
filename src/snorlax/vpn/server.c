@@ -1,5 +1,9 @@
 #include "server.h"
 
+/**
+ * TODO: REMOVE ...
+ */
+
 // typedef void (*socket_server_event_subscription_handler_t)(___notnull socket_server_event_subscription_t *, uint32_t, event_subscription_event_t *);
 
 static void onSubscription(___notnull socket_server_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node);

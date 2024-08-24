@@ -1,6 +1,6 @@
 /**
  * @file        snorlax/vpn/protocol.h
- * @brief       
+ * @brief       Virtual Private Network <sup>VPN</sup>
  * @details
  * 
  * @author      snorlax <ceo@snorlax.bio>

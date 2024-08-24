@@ -1,5 +1,9 @@
 #include "session.h"
 
+/**
+ * TODO: REMOVE ...
+ */
+
 static void onSubscription(___notnull socket_session_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node);
 static void onOpen(___notnull socket_session_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node);
 static void onRead(___notnull socket_session_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node);

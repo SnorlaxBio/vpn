@@ -315,6 +315,8 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 #define transmission_control_block_state_prev_set(block, v)             ((block)->state.prev = v)
 #define transmission_control_block_state_is_changed(block)              ((block)->state.prev != (block)->state.current)
 #define transmission_control_block_path_get(block)                      ((block)->path)
+#define transmission_control_block_agent_set(block, v)                  ((block)->agent = v)
+#define transmission_control_block_agent_get(block)                     ((block)->agent)
 
 #define transmission_control_block_avail_io(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_io)
 #define transmission_control_block_avail_in(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_in)
@@ -609,7 +611,7 @@ struct transmission_control_protocol_context {
     int32_t error;
     transmission_control_protocol_packet_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
@@ -634,7 +636,7 @@ struct transmission_control_protocol_context_func {
     void (*checksum_build)(transmission_control_protocol_context_t *, const uint8_t *, uint64_t);
 };
 
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen, uint64_t bufferlen);
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen, uint64_t * bufferlen);
 
 extern int32_t transmission_control_protocol_context_key_gen(transmission_control_protocol_context_t * context);
 extern uint32_t transmission_control_protocol_direction_cal(transmission_control_protocol_context_t * context);

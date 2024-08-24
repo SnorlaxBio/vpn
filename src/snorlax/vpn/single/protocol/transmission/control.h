@@ -43,7 +43,7 @@ struct transmission_control_block_agent_single_func {
     int32_t (*close)(transmission_control_block_agent_single_t *);
 };
 
-extern transmission_control_block_agent_single_t * transmission_control_block_agent_single_gen(___notnull transmission_control_block_t * block);
+extern transmission_control_block_agent_single_t * transmission_control_block_agent_single_gen(___notnull transmission_control_block_t * block, transmission_control_protocol_context_t * context);
 
 #define transmission_control_block_agent_single_rem(agent)                      ((agent)->func->rem(agent))
 
@@ -52,7 +52,7 @@ extern transmission_control_block_agent_single_t * transmission_control_block_ag
 #define transmission_control_block_agent_single_recv(agent)                     ((agent)->func->recv(agent))
 #define transmission_control_block_agent_single_close(agent)                    ((agent)->func->close(agent))
 
-extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context);
+extern int32_t transmission_control_protocol_module_func_vpn_single_on(transmission_control_protocol_module_t * module, uint32_t type, internet_protocol_context_t * parent);
 
 extern socket_client_event_subscription_handler_t * transmission_control_protocol_client_handler_get(void);
 

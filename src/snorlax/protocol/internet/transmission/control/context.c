@@ -20,7 +20,7 @@ static transmission_control_protocol_context_func_t func = {
     transmission_control_protocol_context_func_checksum_build
 };
 
-extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen, uint64_t bufferlen) {
+extern transmission_control_protocol_context_t * transmission_control_protocol_context_gen(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_packet_t * packet, uint64_t packetlen, uint64_t * bufferlen) {
     transmission_control_protocol_context_t * context = (transmission_control_protocol_context_t *) calloc(1, sizeof(transmission_control_protocol_context_t));
 
     context->func = address_of(func);
@@ -158,7 +158,7 @@ extern int32_t transmission_control_protocol_context_is_connect_syn(transmission
     uint8_t flags = transmission_control_protocol_context_flags_get(context);
 
     if(flags == transmission_control_flag_control_syn) {
-        if(context->block == nil || transmission_control_block_state_get(context->block) == transmission_control_state_synchronize_sequence_recv) {
+        if(context->block == nil || (transmission_control_block_state_get(context->block) == transmission_control_state_closed)) {
             return true;
         }
     }

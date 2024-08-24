@@ -12,6 +12,10 @@
 
 #include <snorlax/socket/server.h>
 
+/**
+ * TODO: REMOVE ...
+ */
+
 extern socket_server_event_subscription_handler_t * vpn_server_event_subscription_handler_get(void);
 
 #endif // __SNORLAX__VPN_SERVER__H__

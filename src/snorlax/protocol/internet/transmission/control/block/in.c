@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <string.h>
+#include <arpa/inet.h>
+
 #include "../../control.h"
 
 extern int32_t transmission_control_block_in_closed(transmission_control_block_t * block, transmission_control_protocol_context_t * context) {
@@ -6,35 +10,39 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
     snorlaxdbg(context == nil, false, "critical", "");
     snorlaxdbg(transmission_control_protocol_context_is_connect_syn(context) == false, false, "critical", "");
 #endif // RELEASE
+
     transmission_control_block_state_prev_set(block, transmission_control_block_state_get(block));
 
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_cwr)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_cwr), false, "critical", "");
-    }
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ece)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ece), false, "critical", "");
-    }
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_urg)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_urg), false, "critical", "");
-    }
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack), false, "critical", "");
-    }
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh), false, "critical", "");
-    }
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst), false, "critical", "");
-    }
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_fin)) {
-        snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_fin), false, "critical", "");
-    }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_cwr)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_cwr), false, "critical", "");
+    // }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ece)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ece), false, "critical", "");
+    // }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_urg)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_urg), false, "critical", "");
+    // }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack), false, "critical", "");
+    // }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh), false, "critical", "");
+    // }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_rst), false, "critical", "");
+    // }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_fin)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_fin), false, "critical", "");
+    // }
 
-    if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_syn)) {
-        transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
-    }
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_syn)) {
+    //     transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
+    // }
 
     transmission_control_block_state_set(block, transmission_control_state_synchronize_sequence_recv);
+
+    transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
+
     transmission_control_block_version_set(block, internet_protocol_context_version_get(context->parent));
     transmission_control_block_sequence_set(block, transmission_control_protocol_module_seqeuence_gen(context->module, context->parent, context));
     transmission_control_block_remote_window_set(block, transmission_control_protocol_context_window_get(context));

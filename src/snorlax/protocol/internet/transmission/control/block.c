@@ -213,8 +213,6 @@ static int32_t transmission_control_block_func_complete_in(transmission_control_
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "refactor",  "");
-
     switch(transmission_control_block_state_get(block)) {
         case transmission_control_state_closed:                         return transmission_control_block_complete_in_closed(block, context);
         case transmission_control_state_listen:                         return transmission_control_block_complete_in_listen(block, context);
@@ -235,8 +233,6 @@ static int32_t transmission_control_block_func_in(transmission_control_block_t *
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
-
-    snorlaxdbg(true, false, "refactor",  "");
 
     switch(transmission_control_block_state_get(block)) {
         case transmission_control_state_closed:                         return transmission_control_block_in_closed(block, context);
