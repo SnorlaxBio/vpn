@@ -78,8 +78,12 @@ struct virtual_private_network_application_agent_func {
 extern virtual_private_network_application_agent_t * virtual_private_network_application_agent_get(void);
 extern network_tun_t * virtual_private_network_application_agent_tun_get(virtual_private_network_application_agent_t * application);
 
+extern void virtual_private_network_application_agent_interface_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
+extern void virtual_private_network_application_agent_network_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response);
+
 struct virtual_private_network_application_config {
     uint16_t port;
+    char ifname[32];
 };
 
 #endif // __SNORLAX__VIRTUAL_PRIVATE_NETWORK_AGENT_APPLICATION__H__

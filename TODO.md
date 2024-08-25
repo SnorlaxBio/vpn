@@ -1,5 +1,9 @@
 ### 20240825 | [PROTOCOL] MODULE ON/OFF 함수를 만들자.
 
+### 20240825 | (network_netlink_request_t *) buffer_head(buffer->out)) 에서 형변환을 하는데, 문장이 길다. 매크로를 호출할 때 현 변환을 하게 하자. | OK
+
+  `buffer_head(buffer->out)` 를 `network_netlink_message_t` 혹은 `network_netlink_request_t` 로 변경해야 한다. 하나의 타임만 나오면 상관이 없지만,
+  여러 타입을 가질 수 있기 때문에 적당한 이름은 없다.
 
 -----------------------------------------------------------------------------------------
 

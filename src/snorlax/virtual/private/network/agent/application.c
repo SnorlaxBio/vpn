@@ -1,3 +1,7 @@
+#include <string.h>
+
+#include <snorlax/network/if.h>
+
 #include "application.h"
 
 #include "protocol/transmission/control.h"
@@ -38,6 +42,7 @@ static virtual_private_network_application_agent_func_t func = {
 
 static virtual_private_network_application_config_t config = {
     .port = 6207,
+    .ifname = "tun0"
 };
 
 static virtual_private_network_application_agent_t * virtual_private_network_application_agent_gen(virtual_private_network_application_config_t * config);
@@ -73,7 +78,7 @@ static protocol_module_t * virtual_private_network_application_agent_transport_p
 
 static virtual_private_network_application_agent_t * virtual_private_network_application_agent_gen(virtual_private_network_application_config_t * config) {
 #ifndef   RELEASE
-    snorlaxdbg(application == nil, false, "critical", "");
+    snorlaxdbg(application != nil, false, "critical", "");
 #endif // RELEASE
 
     virtual_private_network_application_agent_t * o = application;
@@ -87,6 +92,8 @@ static virtual_private_network_application_agent_t * virtual_private_network_app
 
         o->config = config;
 
+        strcpy(o->config->ifname, config->ifname);
+
         o->TransmissionControlProtocol                  = transmission_control_protocol_module_gen(nil, virtual_private_network_agent_transmission_control_protocol_on);
         o->UserDatagramProtocol                         = user_datagram_protocol_module_gen(nil, virtual_private_network_agent_user_datagram_protocol_on);
         o->InternetProtocolVersion6ExtensionDestination = internet_protocol_version6_extension_destination_module_gen(virtual_private_network_agent_internet_protocol_version6_extension_destination_on);
@@ -97,14 +104,14 @@ static virtual_private_network_application_agent_t * virtual_private_network_app
         o->InternetControlMessageProtocolVersion6       = internet_control_message_protocol_version6_module_gen(virtual_private_network_agent_internet_control_message_protocol_version6_on);
 
         protocol_module_t * modules[] = {
-            (protocol_module_t *) application->TransmissionControlProtocol,
-            (protocol_module_t *) application->UserDatagramProtocol,
-            (protocol_module_t *) application->InternetProtocolVersion6ExtensionHopbyhop,
-            (protocol_module_t *) application->InternetControlMessageProtocolVersion4,
-            (protocol_module_t *) application->InternetProtocolVersion6ExtensionRouting,
-            (protocol_module_t *) application->InternetProtocolVersion6ExtensionFragment,
-            (protocol_module_t *) application->InternetProtocolVersion6ExtensionDestination,
-            (protocol_module_t *) application->InternetControlMessageProtocolVersion6
+            (protocol_module_t *) o->TransmissionControlProtocol,
+            (protocol_module_t *) o->UserDatagramProtocol,
+            (protocol_module_t *) o->InternetProtocolVersion6ExtensionHopbyhop,
+            (protocol_module_t *) o->InternetControlMessageProtocolVersion4,
+            (protocol_module_t *) o->InternetProtocolVersion6ExtensionRouting,
+            (protocol_module_t *) o->InternetProtocolVersion6ExtensionFragment,
+            (protocol_module_t *) o->InternetProtocolVersion6ExtensionDestination,
+            (protocol_module_t *) o->InternetControlMessageProtocolVersion6
         };
 
         o->TransportLayer = protocol_module_map_gen(modules, sizeof(modules) / sizeof(protocol_module_t *), virtual_private_network_application_agent_transport_protocol_map_get);
@@ -213,4 +220,22 @@ static int32_t virtual_private_network_application_agent_func_run(virtual_privat
 #endif // RELEASE
 
     return event_engine_run(o->engine);
+}
+
+extern void virtual_private_network_application_agent_interface_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
+    snorlaxdbg(false, true, "debug", "");
+
+    if(state == network_netlink_request_state_done) {
+        if(network_if_addr_get(application->ifname, address_of(application->InternetProtocolAddressVersion4), application->InternetProtocolAddressVersion6) == fail) {
+            snorlaxdbg(false, true, "warning", "");
+        }
+    }
+}
+
+extern void virtual_private_network_application_agent_network_on(struct nlmsghdr * request, uint32_t state, struct nlmsghdr * response) {
+    snorlaxdbg(false, true, "debug", "");
+
+    /**
+     * 모든 기능이 작동할 때 필요한 코드가 있으면 여기에 정의한다.
+     */
 }
