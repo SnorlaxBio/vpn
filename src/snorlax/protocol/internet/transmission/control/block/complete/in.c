@@ -54,6 +54,8 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 
         snorlaxdbg(response == nil, false, "critical", "");
 
+        transmission_control_protocol_context_block_set(response, block);
+
         snorlaxdbg(false, true, "implement", "option");
 
         protocol_path_node_t * path = protocol_path_begin(block->path);

@@ -1,3 +1,5 @@
+#include <errno.h>
+
 #include "handler.h"
 
 #include "../../../application.h"
@@ -64,6 +66,41 @@ static void onRead(___notnull descriptor_event_subscription_t * subscription, ui
 #endif // RELEASE
 
     snorlaxdbg(false, true, "debug", "");
+
+    virtual_private_network_application_agent_t * application = virtual_private_network_application_agent_get();
+    internet_protocol_module_t * module = application->InternetProtocol;
+
+    descriptor_buffer_t * buffer = descriptor_event_subscription_buffer_get(subscription);
+    buffer_node_t * in = nil;
+    uint8_t * datagram = nil;
+    uint64_t datagramlen = 0;
+    
+    while((datagramlen = buffer_node_length(in = buffer_front(buffer->in))) > 0) {
+        datagram = (uint8_t *) buffer_node_front(in);
+
+        internet_protocol_context_t * context = nil;
+
+        if(internet_protocol_module_in(module, datagram, datagramlen, nil, &context) == success) {
+            uint64_t length = internet_protocol_context_packetlen_get(context);
+            context = internet_protocol_version4_context_rem(context);
+            buffer_node_position_set(in, buffer_node_position_get(in) + length);
+            buffer_shrink(buffer->in);
+        } else {
+            int32_t err = internet_protocol_context_error_get(context);
+            if(err == EAGAIN) {
+                /**
+                 * 더 많은 데이터그램 패킷이 필요하다.
+                 */
+                context = internet_protocol_version4_context_rem(context);
+                return;
+            } else {
+                uint64_t length = internet_protocol_context_packetlen_get(context);
+                context = internet_protocol_version4_context_rem(context);
+                buffer_node_position_set(in, buffer_node_position_get(in) + length);
+                buffer_shrink(buffer->in);
+            } 
+        }
+    }
 }
 
 static void onWrite(___notnull descriptor_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {

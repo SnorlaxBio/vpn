@@ -18,7 +18,6 @@ extern int32_t virtual_private_network_agent_internet_protocol_on(internet_proto
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
     switch(type) {
         case protocol_event_in:             return virtual_private_network_agent_internet_protocol_on_event_in(module, parent, context);
         case protocol_event_out:            return virtual_private_network_agent_internet_protocol_on_event_out(module, parent, context);

@@ -89,7 +89,11 @@ static int32_t transmission_control_block_client_func_open(transmission_control_
 
         snorlaxdbg(descriptor == nil, false, "critical", "");
 
-        agent->subscription = event_engine_socket_client_sub(engine, descriptor, transmission_control_block_client_handler_get(), agent->block->module->client.pool, agent);
+        descriptor->meta = (event_object_meta_t *) agent;
+        
+        // TODO: 메타 데이터를 지울 수 있는 곳을 찾아야 한다.
+
+        agent->subscription = event_engine_socket_client_sub(engine, descriptor, transmission_control_block_client_handler_get(), agent->block->module->client.pool);
 
         return success;
     }

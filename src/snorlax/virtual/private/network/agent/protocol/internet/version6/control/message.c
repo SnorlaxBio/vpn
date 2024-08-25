@@ -7,7 +7,7 @@ extern int32_t virtual_private_network_agent_internet_control_message_protocol_v
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
+    snorlaxdbg(false, true, "implement", "");
 
-    return fail;
+    return success;
 }

@@ -186,8 +186,8 @@ static int32_t virtual_private_network_application_agent_func_on(virtual_private
             snorlaxdbg(true, false, "critical", "");
         }
 
-        o->netlink = event_engine_socket_sub(o->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), virtual_private_network_agent_netlink_event_subscription_handler_get(), nil);
-        o->tun = event_engine_descriptor_sub(o->engine, (descriptor_t *) network_tun_gen(), virtual_private_network_agent_tun_event_subscription_handler_get(), nil);
+        o->netlink = event_engine_socket_sub(o->engine, (socket_t *) network_netlink_gen(NETLINK_GENERIC), virtual_private_network_agent_netlink_event_subscription_handler_get());
+        o->tun = event_engine_descriptor_sub(o->engine, (descriptor_t *) network_tun_gen(), virtual_private_network_agent_tun_event_subscription_handler_get());
     }
 
     return success;

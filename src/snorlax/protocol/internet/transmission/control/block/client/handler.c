@@ -23,10 +23,10 @@ extern socket_client_event_subscription_handler_t * transmission_control_block_c
 static void onSubscription(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(subscription == nil, false, "critical", "");
-    snorlaxdbg(subscription->meta == nil, false, "critical", "");
+    snorlaxdbg(subscription->descriptor->meta == nil, false, "critical", "");
 #endif // RELEASE
 
-    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->meta;
+    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->descriptor->meta;
 
     snorlaxdbg(false, true, "debug", "");
 
@@ -37,10 +37,10 @@ static void onSubscription(___notnull socket_client_event_subscription_t * subsc
 static void onOpen(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(subscription == nil, false, "critical", "");
-    snorlaxdbg(subscription->meta == nil, false, "critical", "");
+    snorlaxdbg(subscription->descriptor->meta == nil, false, "critical", "");
 #endif // RELEASE
 
-    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->meta;
+    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->descriptor->meta;
 
     snorlaxdbg(false, true, "debug", "");
 
@@ -50,10 +50,10 @@ static void onOpen(___notnull socket_client_event_subscription_t * subscription,
 static void onRead(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(subscription == nil, false, "critical", "");
-    snorlaxdbg(subscription->meta == nil, false, "critical", "");
+    snorlaxdbg(subscription->descriptor->meta == nil, false, "critical", "");
 #endif // RELEASE
 
-    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->meta;
+    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->descriptor->meta;
 
     snorlaxdbg(false, true, "debug", "");
 
@@ -63,10 +63,10 @@ static void onRead(___notnull socket_client_event_subscription_t * subscription,
 static void onWrite(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(subscription == nil, false, "critical", "");
-    snorlaxdbg(subscription->meta == nil, false, "critical", "");
+    snorlaxdbg(subscription->descriptor->meta == nil, false, "critical", "");
 #endif // RELEASE
 
-    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->meta;
+    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->descriptor->meta;
 
     snorlaxdbg(false, true, "debug", "");
 
@@ -76,10 +76,10 @@ static void onWrite(___notnull socket_client_event_subscription_t * subscription
 static void onClose(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(subscription == nil, false, "critical", "");
-    snorlaxdbg(subscription->meta == nil, false, "critical", "");
+    snorlaxdbg(subscription->descriptor->meta == nil, false, "critical", "");
 #endif // RELEASE
 
-    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->meta;
+    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->descriptor->meta;
 
     snorlaxdbg(false, true, "debug", "");
 
@@ -89,10 +89,10 @@ static void onClose(___notnull socket_client_event_subscription_t * subscription
 static void onException(___notnull socket_client_event_subscription_t * subscription, uint32_t type, event_subscription_event_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(subscription == nil, false, "critical", "");
-    snorlaxdbg(subscription->meta == nil, false, "critical", "");
+    snorlaxdbg(subscription->descriptor->meta == nil, false, "critical", "");
 #endif // RELEASE
 
-    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->meta;
+    transmission_control_block_client_t * agent = (transmission_control_block_client_t *) subscription->descriptor->meta;
 
     snorlaxdbg(false, true, "debug", "");
 

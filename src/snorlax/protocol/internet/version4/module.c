@@ -297,6 +297,8 @@ static internet_protocol_version4_context_t * internet_protocol_version4_module_
 #endif // RELEASE
     internet_protocol_version4_context_t * context = internet_protocol_version4_context_gen(module, nil, (internet_protocol_version4_packet_t *) child->packet, child->packetlen, child->bufferlen);
 
+    protocol_context_parent_set(child, context);
+
     protocol_context_array_push(context->children, child);
     internet_protocol_version4_context_segment_set(context, child->packet);
     internet_protocol_version4_context_segmentlen_set(context, child->packetlen);

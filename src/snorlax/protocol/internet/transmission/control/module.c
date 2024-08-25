@@ -152,6 +152,7 @@ static int32_t transmission_control_protocol_module_func_in(transmission_control
         }
 
         block = transmission_control_block_gen(key, module);
+        block->path = protocol_path_gen((protocol_context_t *) *context, 128);
         transmission_control_protocol_context_block_set(*context, block);
     }
 

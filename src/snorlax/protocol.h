@@ -148,8 +148,8 @@ ___pure extern void protocol_context_func_checksum_build(protocol_context_t * co
 #define protocol_context_source_node_set(context, v)                                    ((context)->source = v)
 #define protocol_context_destination_node_get(context)                                  ((context)->destination)
 #define protocol_context_destination_node_set(context, v)                               ((context)->destination = v)
-
-
+#define protocol_context_parent_set(context, v)                                         ((context)->parent = ((protocol_context_t *) v))
+#define protocol_context_parent_get(context)                                            ((context)->parent)
 
 struct protocol_module_map {
     protocol_module_map_func_t * func;
