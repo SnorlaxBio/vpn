@@ -7,7 +7,7 @@ extern int32_t virtual_private_network_agent_internet_protocol_version4_on(inter
     snorlaxdbg(context == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
+    snorlaxdbg(false, true, "debug", "");
 
-    return fail;
+    return internet_protocol_module_on(module->parent, type, parent, (internet_protocol_context_t *) context);
 }

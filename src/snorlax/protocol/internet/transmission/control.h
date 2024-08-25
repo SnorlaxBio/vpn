@@ -16,10 +16,17 @@
 #include <snorlax/protocol.h>
 #include <snorlax/protocol/internet.h>
 
+#include <snorlax/socket.h>
+#include <snorlax/socket/event/subscription.h>
+#include <snorlax/socket/client.h>
+#include <snorlax/socket/client/event/subscription.h>
+
 struct transmission_control_block;
 struct transmission_control_block_func;
 struct transmission_control_block_agent;
 struct transmission_control_block_agent_func;
+struct transmission_control_block_client;
+struct transmission_control_block_client_func;
 struct transmission_control_block_buffer_in;
 struct transmission_control_block_buffer_in_func;
 struct transmission_control_block_buffer_in_node;
@@ -42,7 +49,8 @@ typedef struct transmission_control_block                           transmission
 typedef struct transmission_control_block_func                      transmission_control_block_func_t;
 typedef struct transmission_control_block_agent                     transmission_control_block_agent_t;
 typedef struct transmission_control_block_agent_func                transmission_control_block_agent_func_t;
-
+typedef struct transmission_control_block_client                    transmission_control_block_client_t;
+typedef struct transmission_control_block_client_func               transmission_control_block_client_func_t;
 typedef struct transmission_control_block_buffer_in                 transmission_control_block_buffer_in_t;
 typedef struct transmission_control_block_buffer_in_func            transmission_control_block_buffer_in_func_t;
 typedef struct transmission_control_block_buffer_in_node            transmission_control_block_buffer_in_node_t;
@@ -121,28 +129,93 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
 
 #define transmission_control_protocol_to_port(addr)                         (*((uint16_t *) (addr)))
 
+#define transmission_control_block_agent_event_type_subscription    0
+#define transmission_control_block_agent_event_type_open            1
+#define transmission_control_block_agent_event_type_read            2
+#define transmission_control_block_agent_event_type_write           3
+#define transmission_control_block_agent_event_type_close           4
+#define transmission_control_block_agent_event_type_exception       5
+#define transmission_control_block_agent_event_type_in              6
+#define transmission_control_block_agent_event_type_out             7
+#define transmission_control_block_agent_event_type_max             8
+
+typedef void (*transmission_control_block_agent_handler_t)(transmission_control_block_agent_t *, uint32_t, void *);
+
 struct transmission_control_block_agent {
     transmission_control_block_agent_func_t * func;
     sync_t * sync;
-
     ___reference transmission_control_block_t * block;
+    socket_event_subscription_t * subscription;
+    transmission_control_block_agent_handler_t on;
 };
 
+/**
+ * TODO: ### 20240825 | transmission_control_block_agent::open
+ * TODO: ### 20240825 | transmission_control_block_agent::recv
+ * TODO: ### 20240825 | transmission_control_block_agent::close
+ * TODO: ### 20240825 | transmission_control_block_agent::shutdown
+ * TODO: ### 20240825 | transmission_control_block_agent::in
+ * TODO: ### 20240825 | transmission_control_block_agent::out
+ */
 struct transmission_control_block_agent_func {
     transmission_control_block_agent_t * (*rem)(transmission_control_block_agent_t *);
 
     int32_t (*open)(transmission_control_block_agent_t *);
-    int32_t (*send)(transmission_control_block_agent_t *, uint8_t *, uint64_t);
-    int32_t (*recv)(transmission_control_block_agent_t *);
+    int64_t (*send)(transmission_control_block_agent_t *, transmission_control_block_buffer_out_node_t *, transmission_control_block_buffer_out_node_t *);
+    int64_t (*recv)(transmission_control_block_agent_t *);
     int32_t (*close)(transmission_control_block_agent_t *);
+    int32_t (*shutdown)(transmission_control_block_agent_t *, uint32_t);
+
+    int32_t (*in)(transmission_control_block_agent_t *, transmission_control_protocol_context_t *);
+    int32_t (*out)(transmission_control_block_agent_t *);
 };
 
-#define transmission_control_block_agent_rem(agent)                         ((agent)->func->rem(agent))
-#define transmission_control_block_agent_open(agent)                        ((agent)->func->open(agent))
-#define transmission_control_block_agent_send(agent, data, datalen)         ((agent)->func->send(agent, data, datalen))
+#define transmission_control_block_agent_rem(agent)                 ((agent)->func->rem(agent))
+#define transmission_control_block_agent_open(agent)                ((agent)->func->open(agent))
+#define transmission_control_block_agent_send(agent)                ((agent)->func->send(agent))
+#define transmission_control_block_agent_recv(agent)                ((agent)->func->recv(agent))
+#define transmission_control_block_agent_close(agent)               ((agent)->func->close(agent))
+#define transmission_control_block_agent_shutdown(agent, how)       ((agent)->func->shutdown(agent, how))
+#define transmission_control_block_agent_in(agent, context)         ((agent)->func->in(agent, context))
 
-#define transmission_control_block_agent_recv(agent)                        ((agent)->func->recv(agent))
-#define transmission_control_block_agent_close(agent)                       ((agent)->func->close(agent))
+typedef socket_client_t * (*socket_client_factory_t)(int32_t, int32_t, int32_t, void *, uint64_t);    // TODO: MOVE 
+typedef void (*transmission_control_block_client_handler_t)(transmission_control_block_client_t *, uint32_t, void *);
+
+struct transmission_control_block_client {
+    transmission_control_block_client_func_t * func;
+    sync_t * sync;
+    ___reference transmission_control_block_t * block;
+    socket_client_event_subscription_t * subscription;
+    transmission_control_block_client_handler_t on;
+};
+
+struct transmission_control_block_client_func {
+    transmission_control_block_client_t * (*rem)(transmission_control_block_client_t *);
+
+    int32_t (*open)(transmission_control_block_client_t *, socket_client_factory_t, event_engine_t *);
+    int64_t (*send)(transmission_control_block_client_t *, transmission_control_block_buffer_out_node_t *, transmission_control_block_buffer_out_node_t *);
+    int64_t (*recv)(transmission_control_block_client_t *);
+    int32_t (*close)(transmission_control_block_client_t *);
+    int32_t (*shutdown)(transmission_control_block_client_t *, uint32_t);
+
+    int32_t (*in)(transmission_control_block_client_t *, transmission_control_protocol_context_t *);
+    int32_t (*out)(transmission_control_block_client_t *);
+};
+
+
+extern socket_client_event_subscription_handler_t * transmission_control_block_client_handler_get(void);
+
+extern transmission_control_block_client_t * transmission_control_block_client_gen(___notnull transmission_control_block_t * block, transmission_control_block_client_handler_t on);
+
+#define transmission_control_block_client_rem(agent)                    ((agent)->func->rem(agent))
+#define transmission_control_block_client_open(agent, gen, engine)      ((agent)->func->open(agent, gen, engine))
+#define transmission_control_block_client_send(agent)                   ((agent)->func->send(agent))
+#define transmission_control_block_client_recv(agent)                   ((agent)->func->recv(agent))
+#define transmission_control_block_client_close(agent)                  ((agent)->func->close(agent))
+#define transmission_control_block_client_shutdown(agent, how)          ((agent)->func->shutdown(agent, how))
+#define transmission_control_block_client_in(agent, context)            ((agent)->func->in(agent, context))
+
+#define transmission_control_block_client_on(agent, type, node)         ((agent)->on ? ((agent)->on(agent, type, node), success) : ((agent)->on(agent, type, node), fail))
 
 /**
  * Inherited hashtable_node_t
@@ -565,6 +638,9 @@ struct transmission_control_protocol_module {
     transmission_control_protocol_context_handler_t on;
 
     hashtable_t * block;
+    struct {
+        socket_client_event_subscription_pool_t * pool;
+    } client;
 
     uint16_t max_segment_size;
 };

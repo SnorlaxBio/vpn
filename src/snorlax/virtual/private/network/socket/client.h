@@ -49,6 +49,8 @@ struct virtual_private_network_socket_client_func {
 
 extern virtual_private_network_socket_client_t * virtual_private_network_socket_client_gen(int32_t domain, int32_t type, int32_t protocol, void * addr, uint64_t addrlen);
 
+#define virutal_private_network_socket_client_factory                       ((socket_client_factory_t) virtual_private_network_socket_client_gen)
+
 extern virtual_private_network_socket_client_t * virtual_private_network_socket_client_gen_tcp4(const uint8_t * destination, uint16_t port);
 extern virtual_private_network_socket_client_t * virtual_private_network_socket_client_gen_tcp6(const uint8_t * destination, uint16_t port);
 

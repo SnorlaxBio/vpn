@@ -200,6 +200,8 @@ set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol.c
                                 src/snorlax/protocol/internet/transmission/control/module.c
                                 src/snorlax/protocol/internet/transmission/control/context.c
                                 src/snorlax/protocol/internet/transmission/control/block.c
+                                src/snorlax/protocol/internet/transmission/control/block/client.c
+                                src/snorlax/protocol/internet/transmission/control/block/client/handler.c
                                 src/snorlax/protocol/internet/transmission/control/block/on.c
                                 src/snorlax/protocol/internet/transmission/control/block/buffer/in.c
                                 src/snorlax/protocol/internet/transmission/control/block/buffer/out.c
@@ -243,7 +245,9 @@ set(SNORLAX_VPN_AGENT_SOURCE    src/snorlax/virtual/private/network/agent/applic
                                 src/snorlax/virtual/private/network/agent/protocol/internet/version6/extension/hopbyhop.c
                                 src/snorlax/virtual/private/network/agent/protocol/internet/version6/extension/routing.c
                                 src/snorlax/virtual/private/network/agent/protocol/transmission/control.c
-                                src/snorlax/virtual/private/network/agent/protocol/user/datagram.c)
+                                src/snorlax/virtual/private/network/agent/protocol/transmission/control/block.c
+                                src/snorlax/virtual/private/network/agent/protocol/user/datagram.c
+                                src/snorlax/virtual/private/network/agent/transmission/control/block/client.c)
 
 set(SNORLAX_VPN_AGENT_HEADER    src/snorlax/virtual/private/network/agent/application.h
                                 src/snorlax/virtual/private/network/agent/netlink/event/subscription/handler.h
@@ -258,7 +262,9 @@ set(SNORLAX_VPN_AGENT_HEADER    src/snorlax/virtual/private/network/agent/applic
                                 src/snorlax/virtual/private/network/agent/protocol/internet/version6/extension/hopbyhop.h
                                 src/snorlax/virtual/private/network/agent/protocol/internet/version6/extension/routing.h
                                 src/snorlax/virtual/private/network/agent/protocol/transmission/control.h
-                                src/snorlax/virtual/private/network/agent/protocol/user/datagram.h)
+                                src/snorlax/virtual/private/network/agent/protocol/transmission/control/block.h
+                                src/snorlax/virtual/private/network/agent/protocol/user/datagram.h
+                                src/snorlax/virtual/private/network/agent/transmission/control/block/client.h)
 
 add_library(snorlax-protocol                ${SNORLAX_PROTOCOL_SOURCE} ${SNORLAX_PROTOCOL_HEADER})
 target_compile_options(snorlax-protocol     PUBLIC "-ffile-prefix-map=${CMAKE_SOURCE_DIR}=.")
