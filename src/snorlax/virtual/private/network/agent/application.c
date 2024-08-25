@@ -16,6 +16,9 @@
 #include "protocol/internet/version6/extension/hopbyhop.h"
 #include "protocol/internet/version6/extension/routing.h"
 
+#include "tun/event/subscription/handler.h"
+#include "netlink/event/subscription/handler.h"
+
 static virtual_private_network_application_agent_t * application = nil;
 
 static virtual_private_network_application_agent_t * virtual_private_network_application_agent_func_rem(virtual_private_network_application_agent_t * o);
@@ -24,6 +27,7 @@ static int32_t virtual_private_network_application_agent_func_off(virtual_privat
 static int32_t virtual_private_network_application_agent_func_run(virtual_private_network_application_agent_t * o);
 
 static protocol_module_t * virtual_private_network_application_agent_transport_protocol_map_get(protocol_module_map_t * map, uint64_t no);
+static void virtual_private_network_application_agent_event_engine_cancel(___notnull const event_engine_t * engine);
 
 static virtual_private_network_application_agent_func_t func = {
     virtual_private_network_application_agent_func_rem,
@@ -67,7 +71,7 @@ static protocol_module_t * virtual_private_network_application_agent_transport_p
     }
 }
 
-___implement static virtual_private_network_application_agent_t * virtual_private_network_application_agent_gen(virtual_private_network_application_config_t * config) {
+static virtual_private_network_application_agent_t * virtual_private_network_application_agent_gen(virtual_private_network_application_config_t * config) {
 #ifndef   RELEASE
     snorlaxdbg(application == nil, false, "critical", "");
 #endif // RELEASE
@@ -119,7 +123,7 @@ extern virtual_private_network_application_agent_t * virtual_private_network_app
 }
 
 extern virtual_private_network_application_t * virtual_private_network_application_get(void) {
-    return (virtual_private_network_application_agent_t *) application;
+    return (virtual_private_network_application_t *) application;
 }
 
 extern network_tun_t * virtual_private_network_application_tun_get(virtual_private_network_application_t * o) {
@@ -135,7 +139,7 @@ extern network_tun_t * virtual_private_network_application_agent_tun_get(virtual
     return (network_tun_t *) o->tun->descriptor;
 }
 
-___implement static virtual_private_network_application_agent_t * virtual_private_network_application_agent_func_rem(virtual_private_network_application_agent_t * o) {
+static virtual_private_network_application_agent_t * virtual_private_network_application_agent_func_rem(virtual_private_network_application_agent_t * o) {
 #ifndef   RELEASE
     snorlaxdbg(o == nil, false, "critical", "");
 #endif // RELEASE
@@ -163,7 +167,7 @@ ___implement static virtual_private_network_application_agent_t * virtual_privat
     return nil;
 }
 
-___implement static int32_t virtual_private_network_application_agent_func_on(virtual_private_network_application_agent_t * o) {
+static int32_t virtual_private_network_application_agent_func_on(virtual_private_network_application_agent_t * o) {
 #ifndef   RELEASE
     snorlaxdbg(o == nil, false, "critical", "");
 #endif // RELEASE
@@ -182,10 +186,31 @@ ___implement static int32_t virtual_private_network_application_agent_func_on(vi
     return success;
 }
 
-___implement static int32_t virtual_private_network_application_agent_func_off(virtual_private_network_application_agent_t * o) {
+static int32_t virtual_private_network_application_agent_func_off(virtual_private_network_application_agent_t * o) {
+#ifndef   RELEASE
+    snorlaxdbg(o == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(o == nil) {
+        if(o->engine) event_engine_off(o->engine, virtual_private_network_application_agent_event_engine_cancel);
+    }
+
     return fail;
 }
 
-___implement static int32_t virtual_private_network_application_agent_func_run(virtual_private_network_application_agent_t * o) {
-    return fail;
+___implement static void virtual_private_network_application_agent_event_engine_cancel(___notnull const event_engine_t * engine) {
+#ifndef   RELEASE
+    snorlaxdbg(engine == nil, false, "critical", "");
+#endif // RELEASE
+
+    snorlaxdbg(false, true, "must implement", "");
+}
+
+static int32_t virtual_private_network_application_agent_func_run(virtual_private_network_application_agent_t * o) {
+#ifndef   RELEASE
+    snorlaxdbg(o == nil, false, "critical", "");
+    snorlaxdbg(o->engine == nil, false, "critical", "");
+#endif // RELEASE
+
+    return event_engine_run(o->engine);
 }

@@ -6,6 +6,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+#include <snorlax/buffer/mem.h>
+
 #include "client.h"
 
 #include "../application.h"
