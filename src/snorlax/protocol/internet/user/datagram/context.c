@@ -14,12 +14,13 @@ static user_datagram_protocol_context_func_t func = {
     user_datagram_protocol_context_func_checksum_build
 };
 
-extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen) {
+extern user_datagram_protocol_context_t * user_datagram_protocol_context_gen(user_datagram_protocol_module_t * module, internet_protocol_context_t * parent, user_datagram_protocol_packet_t * packet, uint64_t packetlen, uint64_t * bufferlen) {
     user_datagram_protocol_context_t * context = (user_datagram_protocol_context_t *) calloc(1, sizeof(user_datagram_protocol_context_t));
 
     context->func = address_of(func);
     context->module = module;
-    context->children = protocol_context_array_gen();
+    context->children = nil;
+    context->bufferlen = bufferlen;
 
     return context;
 }

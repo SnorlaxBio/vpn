@@ -122,7 +122,7 @@ struct protocol_context {
     int32_t error;
     ___reference protocol_packet_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 };
 
 struct protocol_context_func {

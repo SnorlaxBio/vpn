@@ -13,7 +13,7 @@ static internet_control_message_protocol_version6_context_packet_too_big_func_t 
     (internet_control_message_protocol_version6_context_packet_too_big_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
-extern internet_control_message_protocol_version6_context_packet_too_big_t * internet_control_message_protocol_version6_context_packet_too_big_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_too_big_t * packet, uint64_t packetlen, uint64_t bufferlen) {
+extern internet_control_message_protocol_version6_context_packet_too_big_t * internet_control_message_protocol_version6_context_packet_too_big_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_too_big_t * packet, uint64_t packetlen, uint64_t * bufferlen) {
     internet_control_message_protocol_version6_context_packet_too_big_t * context = (internet_control_message_protocol_version6_context_packet_too_big_t *) calloc(1, sizeof(internet_control_message_protocol_version6_context_packet_too_big_t));
 
     context->func = address_of(func);

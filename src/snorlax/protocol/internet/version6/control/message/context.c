@@ -13,7 +13,7 @@ static internet_control_message_protocol_version6_context_func_t func = {
     (internet_control_message_protocol_version6_context_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
-extern internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_t * packet, uint64_t packetlen, uint64_t bufferlen) {
+extern internet_control_message_protocol_version6_context_t * internet_control_message_protocol_version6_context_gen(internet_control_message_protocol_version6_module_t * module, internet_protocol_version6_context_t * parent, internet_control_message_protocol_version6_packet_t * packet, uint64_t packetlen, uint64_t * bufferlen) {
     
 
     if(internet_control_message_protocol_version6_length_min <= packetlen) {

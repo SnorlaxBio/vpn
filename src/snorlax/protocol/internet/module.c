@@ -71,7 +71,7 @@ static int32_t internet_protocol_module_func_deserialize(internet_protocol_modul
     } else if(version == 6) {
         return internet_protocol_version6_module_deserialize(module->version6, packet, packetlen, parent, (internet_protocol_version6_context_t **) context);
     } else {
-        if(*context == nil) *context = internet_protocol_context_gen(module, parent, (internet_protocol_packet_t *) packet, packetlen);
+        if(*context == nil) *context = internet_protocol_context_gen(module, parent, (internet_protocol_packet_t *) packet, packetlen, nil);
 
         internet_protocol_context_error_set(*context, EIO);
 
@@ -127,7 +127,7 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
 #endif // RELEASE
 
     if(packetlen == 0) {
-        if(*context == nil) *context = internet_protocol_context_gen(module, parent, nil, packetlen);
+        if(*context == nil) *context = internet_protocol_context_gen(module, parent, nil, packetlen, nil);
 
         internet_protocol_context_error_set(*context, EAGAIN);
 
@@ -166,7 +166,7 @@ static int32_t internet_protocol_module_func_in(internet_protocol_module_t * mod
 
         return success;
     } else {
-        if(*context == nil) *context = internet_protocol_context_gen(module, parent, nil, packetlen);
+        if(*context == nil) *context = internet_protocol_context_gen(module, parent, nil, packetlen, nil);
 
         internet_protocol_context_error_set(*context, EIO);
 

@@ -369,7 +369,7 @@ struct internet_protocol_version6_context {
     int32_t error;
     ___reference internet_protocol_version6_packet_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 
     internet_protocol_version6_pseudo_t * pseudo;
     uint64_t pseudolen;
@@ -386,7 +386,7 @@ struct internet_protocol_version6_context_func {
     void (*checksum_build)(internet_protocol_version6_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_version6_context_t * internet_protocol_version6_context_gen(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
+extern internet_protocol_version6_context_t * internet_protocol_version6_context_gen(internet_protocol_version6_module_t * module, protocol_context_t * parent, internet_protocol_version6_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen);
 
 #define internet_protocol_version6_context_rem(context)                                     ((context)->func->rem(context))
 #define internet_protocol_version6_context_valid(context)                                   ((context)->func->valid(context))
@@ -472,7 +472,7 @@ struct internet_protocol_version6_extension_context {
     int32_t error;
     ___reference internet_protocol_version6_extension_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 };
 
 struct internet_protocol_version6_extension_context_func {
@@ -543,7 +543,7 @@ struct internet_protocol_version6_extension_hopbyhop_context {
     int32_t error;
     ___reference internet_protocol_version6_extension_hopbyhop_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 
     internet_protocol_version6_option_t ** option;
     uint64_t optionlen;
@@ -556,7 +556,7 @@ struct internet_protocol_version6_extension_hopbyhop_context_func {
     void (*checksum_build)(internet_protocol_version6_extension_hopbyhop_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
+extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen);
 
 #define internet_protocol_version6_extension_hopbyhop_context_option_begin(context)                             (&((uint8_t *) ((context)->packet))[2])
 #define internet_protocol_version6_extension_hopbyhop_context_option_end(context)                               (&((uint8_t *) ((context)->packet))[(context)->packetlen])
@@ -620,7 +620,7 @@ struct internet_protocol_version6_extension_routing_context {
     int32_t error;
     ___reference internet_protocol_version6_extension_routing_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 };
 
 struct internet_protocol_version6_extension_routing_context_func {
@@ -630,7 +630,7 @@ struct internet_protocol_version6_extension_routing_context_func {
     void (*checksum_build)(internet_protocol_version6_extension_routing_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_gen(internet_protocol_version6_extension_routing_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
+extern internet_protocol_version6_extension_routing_context_t * internet_protocol_version6_extension_routing_context_gen(internet_protocol_version6_extension_routing_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen);
 
 #define internet_protocol_version6_extension_routing_context_rem(context)                                   ((context)->func->rem(context))
 #define internet_protocol_version6_extension_routing_context_valid(context)                                 ((context)->func->valid(context))
@@ -691,7 +691,7 @@ struct internet_protocol_version6_extension_fragment_context {
     int32_t error;
     ___reference internet_protocol_version6_extension_fragment_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 };
 
 struct internet_protocol_version6_extension_fragment_context_func {
@@ -701,7 +701,7 @@ struct internet_protocol_version6_extension_fragment_context_func {
     void (*checksum_build)(internet_protocol_version6_extension_fragment_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_version6_extension_fragment_context_t * internet_protocol_version6_extension_fragment_context_gen(internet_protocol_version6_extension_fragment_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
+extern internet_protocol_version6_extension_fragment_context_t * internet_protocol_version6_extension_fragment_context_gen(internet_protocol_version6_extension_fragment_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen);
 
 #define internet_protocol_version6_extension_fragment_context_rem(context)                                      ((context)->func->rem(context))
 #define internet_protocol_version6_extension_fragment_context_valid(context)                                    ((context)->func->valid(context))
@@ -762,7 +762,7 @@ struct internet_protocol_version6_extension_destination_context {
     int32_t error;
     ___reference internet_protocol_version6_extension_destination_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
@@ -775,7 +775,7 @@ struct internet_protocol_version6_extension_destination_context_func {
     void (*checksum_build)(internet_protocol_version6_extension_destination_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_version6_extension_destination_context_t * internet_protocol_version6_extension_destination_context_gen(internet_protocol_version6_extension_destination_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
+extern internet_protocol_version6_extension_destination_context_t * internet_protocol_version6_extension_destination_context_gen(internet_protocol_version6_extension_destination_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen);
 
 #define internet_protocol_version6_extension_destination_context_option_begin(context)                          (&((uint8_t *) ((context)->packet))[2])
 #define internet_protocol_version6_extension_destination_context_option_end(context)                            (&((uint8_t *) ((context)->packet))[(context)->packetlen])

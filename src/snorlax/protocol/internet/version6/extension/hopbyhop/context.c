@@ -13,7 +13,7 @@ static internet_protocol_version6_extension_hopbyhop_context_func_t func = {
     (internet_protocol_version6_extension_hopbyhop_context_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
-extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen) {
+extern internet_protocol_version6_extension_hopbyhop_context_t * internet_protocol_version6_extension_hopbyhop_context_gen(internet_protocol_version6_extension_hopbyhop_module_t * module, internet_protocol_version6_context_t * parent, protocol_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen) {
 #ifndef   RELEASE
     snorlaxdbg(parent == nil, false, "critical", "");
     snorlaxdbg(datagram == nil, false, "critical", "");

@@ -58,7 +58,7 @@ static int32_t user_datagram_protocol_module_func_deserialize(user_datagram_prot
 
     user_datagram_protocol_packet_t * datagram = (user_datagram_protocol_packet_t *) packet;
 
-    if(*context == nil) *context = user_datagram_protocol_context_gen(module, parent, datagram, packetlen);
+    if(*context == nil) *context = user_datagram_protocol_context_gen(module, parent, datagram, packetlen, nil);
 
     if(packetlen < user_datagram_protocol_packet_length_min) {
         user_datagram_protocol_context_error_set(*context, EAGAIN);
@@ -119,7 +119,7 @@ static int32_t user_datagram_protocol_module_func_in(user_datagram_protocol_modu
 
     user_datagram_protocol_packet_t * datagram = (user_datagram_protocol_packet_t *) packet;
 
-    if(*context == nil) *context = user_datagram_protocol_context_gen(module, parent, datagram, packetlen);
+    if(*context == nil) *context = user_datagram_protocol_context_gen(module, parent, datagram, packetlen, nil);
 
     if(user_datagram_protocol_module_deserialize(module, packet, packetlen, parent, context) == fail) {
         user_datagram_protocol_module_on(module, protocol_event_exception, parent, *context);

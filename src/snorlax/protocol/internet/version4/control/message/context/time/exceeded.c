@@ -12,7 +12,7 @@ static internet_control_message_protocol_version4_context_time_exceeded_func_t f
     (internet_control_message_protocol_version4_context_time_exceeded_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
-extern internet_control_message_protocol_version4_context_time_exceeded_t * internet_control_message_protocol_version4_context_time_exceeded_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_time_exceeded_t * packet, uint64_t packetlen, uint64_t bufferlen) {
+extern internet_control_message_protocol_version4_context_time_exceeded_t * internet_control_message_protocol_version4_context_time_exceeded_gen(internet_control_message_protocol_version4_module_t * module, internet_protocol_version4_context_t * parent, internet_control_message_protocol_version4_time_exceeded_t * packet, uint64_t packetlen, uint64_t * bufferlen) {
     internet_control_message_protocol_version4_context_time_exceeded_t * context = (internet_control_message_protocol_version4_context_time_exceeded_t *) calloc(1, sizeof(internet_control_message_protocol_version4_context_time_exceeded_t));
 
     context->func = address_of(func);

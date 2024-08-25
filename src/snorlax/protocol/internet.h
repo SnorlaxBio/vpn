@@ -119,7 +119,7 @@ struct internet_protocol_context {
     int32_t error;
     ___reference internet_protocol_packet_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 
     internet_protocol_pseudo_t * pseudo;
     uint64_t pseudolen;
@@ -132,7 +132,7 @@ struct internet_protocol_context_func {
     void (*checksum_build)(internet_protocol_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen);
+extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen, uint64_t * bufferlen);
 extern uint8_t * internet_protocol_context_source_get(internet_protocol_context_t * context);
 extern uint8_t * internet_protocol_context_destination_get(internet_protocol_context_t * context);
 

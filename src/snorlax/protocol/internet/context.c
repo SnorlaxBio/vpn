@@ -18,7 +18,7 @@ static internet_protocol_context_func_t func = {
     (internet_protocol_context_func_checksum_build_t) protocol_context_func_checksum_build
 };
 
-extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen) {
+extern internet_protocol_context_t * internet_protocol_context_gen(internet_protocol_module_t * module, protocol_context_t * parent, internet_protocol_packet_t * packet, uint64_t packetlen, uint64_t * bufferlen) {
     internet_protocol_context_t * context = (internet_protocol_context_t *) calloc(1, sizeof(internet_protocol_context_t));
 
     context->func = address_of(func);
@@ -28,6 +28,7 @@ extern internet_protocol_context_t * internet_protocol_context_gen(internet_prot
     context->parent = parent;
     context->packet = packet;
     context->packetlen = packetlen;
+    context->bufferlen = bufferlen;
 
     return context;
 }

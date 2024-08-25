@@ -35,7 +35,7 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(context->block == nil, false, "critical", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_in(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_in(module, parent, context, context->block) : success;
 }
 
 static int32_t virtual_private_network_agent_transmission_control_protocol_on_event_out(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -47,7 +47,7 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(false, true, "debug", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_out(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_out(module, parent, context, context->block) : success;
 }
 
 static int32_t virtual_private_network_agent_transmission_control_protocol_on_event_exception(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -59,7 +59,7 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(false, true, "debug", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_exception(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_exception(module, parent, context, context->block) : success;
 }
 
 static int32_t virtual_private_network_agent_transmission_control_protocol_on_event_complete(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -71,7 +71,7 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(false, true, "debug", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_complete(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_complete(module, parent, context, context->block) : success;
 }
 
 static int32_t virtual_private_network_agent_transmission_control_protocol_on_event_complete_in(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -83,7 +83,7 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(false, true, "debug", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_complete_in(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_complete_in(module, parent, context, context->block) : success;
 }
 
 static int32_t virtual_private_network_agent_transmission_control_protocol_on_event_complete_out(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -95,7 +95,7 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(false, true, "debug", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_complete_out(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_complete_out(module, parent, context, context->block) : success;
 }
 
 static int32_t virtual_private_network_agent_transmission_control_protocol_on_event_none(transmission_control_protocol_module_t * module, internet_protocol_context_t * parent, transmission_control_protocol_context_t * context) {
@@ -107,5 +107,5 @@ static int32_t virtual_private_network_agent_transmission_control_protocol_on_ev
 
     snorlaxdbg(true, false, "critical", "");
 
-    return virtual_private_network_agent_transmission_control_protocol_block_on_event_none(module, parent, context, context->block);
+    return context->block ? virtual_private_network_agent_transmission_control_protocol_block_on_event_none(module, parent, context, context->block) : success;
 }

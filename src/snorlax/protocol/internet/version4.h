@@ -196,7 +196,7 @@ struct internet_protocol_version4_context {
     int32_t error;
     ___reference internet_protocol_version4_packet_t * packet;
     uint64_t packetlen;
-    uint64_t bufferlen;
+    uint64_t * bufferlen;
 
     internet_protocol_version4_pseudo_t * pseudo;
     uint64_t pseudolen;
@@ -214,7 +214,7 @@ struct internet_protocol_version4_context_func {
     void (*checksum_build)(internet_protocol_version4_context_t *, const uint8_t *, uint64_t);
 };
 
-extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen, uint64_t bufferlen);
+extern internet_protocol_version4_context_t * internet_protocol_version4_context_gen(internet_protocol_version4_module_t * module, protocol_context_t * parent, internet_protocol_version4_packet_t * datagram, uint64_t datagramlen, uint64_t * bufferlen);
 
 #define internet_protocol_version4_context_rem(context)                                     ((context)->func->rem(context))
 #define internet_protocol_version4_context_valid(context)                                   ((context)->func->valid(context))
