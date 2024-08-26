@@ -41,11 +41,7 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 #endif // RELEASE
 
     if(transmission_control_block_state_is_changed(block)) {
-        snorlaxdbg(transmission_control_block_state_prev_get(block) != transmission_control_state_closed, false, "critical", "");
-
-        uint32_t acknowledge = transmission_control_block_remote_sequence_get(block) + 1;
-
-        transmission_control_block_acknowledge_set(block, acknowledge);
+        transmission_control_block_acknowledge_set(block, transmission_control_block_remote_sequence_get(block) + 1);
 
         uint8_t  buffer[protocol_packet_max];
         uint64_t bufferlen = protocol_packet_max;
@@ -56,14 +52,13 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 
         transmission_control_protocol_context_block_set(response, block);
 
+        snorlaxdbg(false, true, "implement", "data");
         snorlaxdbg(false, true, "implement", "option");
 
         protocol_path_node_t * path = protocol_path_begin(block->path);
 
         transmission_control_protocol_context_buffer_reversal_reserve(response, transmission_control_protocol_packet_length_min);
         transmission_control_protocol_context_headerlen_add(response, transmission_control_protocol_packet_length_min);
-
-        snorlaxdbg(false, true, "refactor", "transmission_control_protocol_to_port => transmission_control_protocol_address_to_port");
 
         transmission_control_protocol_context_source_set(response, ntohs(transmission_control_protocol_to_port(protocol_path_node_destination_get(path))));
         transmission_control_protocol_context_destination_set(response, ntohs(transmission_control_protocol_to_port(protocol_path_node_source_get(path))));
@@ -77,6 +72,7 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
         transmission_control_protocol_module_debug(block->module, stdout, response);
 
         protocol_path_node_t * parent = protocol_path_node_next(path);
+        uint8_t * packet = buffer + bufferlen;
 
         if(protocol_module_out(parent->module, parent, (protocol_context_t *) response) == fail) {
             snorlaxdbg(false, true, "debug", "fail to protocol_module_out(...)");
@@ -90,29 +86,16 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 
         transmission_control_block_buffer_out_node_t * node = transmission_control_block_buffer_out_node_gen(out, (buffer + bufferlen), (protocol_packet_max - bufferlen));
 
-        node->sequence = transmission_control_block_sequence_get(block);
-        node->acknowledge = node->sequence + 1;
-    
-        return success;
+        transmission_control_block_buffer_out_node_segment_set(node, packet);
+
+        transmission_control_block_state_prev_set(block, transmission_control_block_state_get(block));
     } else {
-        snorlaxdbg(transmission_control_block_state_is_changed(block) == false, false, "implement", "");
-        /**
-         * 정책을 정하면 구현을 하자.
-         * 
-         * RETRANSMIT OR DROP PACKET
-         * 
-         * 아직은 정책이 정해지지 않았지만,
-         * 이 상태는 아직은 변경되지 않아서, SYN 을 받은 것이다.
-         * 그래서 이전에 받은 패킷이 존재해야 한다.
-         * 그렇다면, 바로 RETRANSMIT 을 하고 타이머를 업데이트할 것인가?
-         * 아니면 RETRANSMIT 타이머대로 동작하도록 할 것인가?
-         * DDOS 가 오면, 타이머에 맞기는 것이 맞다. 패킷 드롭
-         * 하지만, 타이머의 비용은 ????
-         */
+        snorlaxdbg(false, true, "warning", "packet drop & retransmission synack packet");
 
-        return fail;
+        // if(transmission_control_protocol_context_flags_get(context) & )
+
+        return success;
     }
-
 }
 
 extern int32_t transmission_control_block_complete_in_establish(transmission_control_block_t * block, transmission_control_protocol_context_t * context) {
@@ -120,7 +103,13 @@ extern int32_t transmission_control_block_complete_in_establish(transmission_con
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
+    if(transmission_control_block_state_is_changed(block)) {
+        snorlaxdbg(transmission_control_block_buffer_out_head(block->buffer.out), false, "implement", "");
+
+        snorlaxdbg(false, true, "implement", "");
+    } else {
+        snorlaxdbg(true, false, "implement", "");
+    }
 
     return fail;
 }

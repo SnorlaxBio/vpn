@@ -362,6 +362,8 @@ extern int32_t transmission_control_block_complete_in_exception(transmission_con
 
 extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key, transmission_control_protocol_module_t * module);
 
+extern int32_t transmission_control_block_func_number_update(uint32_t * field, uint32_t no, uint32_t n);        // @deprecated
+
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
 // ___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t flags, uint8_t * buffer, uint64_t bufferlen);
@@ -371,6 +373,7 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 #define transmission_control_block_sequence_get(block)                  ((block)->sequence)
 #define transmission_control_block_acknowledge_set(block, v)            ((block)->acknowledge = v)
 #define transmission_control_block_acknowledge_get(block)               ((block)->acknowledge)
+
 #define transmission_control_block_remote_sequence_set(block, v)        ((block)->remote.sequence = v)
 #define transmission_control_block_remote_sequence_get(block)           ((block)->remote.sequence)
 #define transmission_control_block_remote_acknowledge_set(block, v)     ((block)->remote.acknowledge = v)
@@ -387,6 +390,7 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 #define transmission_control_block_state_prev_get(block)                ((block)->state.prev)
 #define transmission_control_block_state_prev_set(block, v)             ((block)->state.prev = v)
 #define transmission_control_block_state_is_changed(block)              ((block)->state.prev != (block)->state.current)
+#define transmission_control_block_path_set(block, v)                   ((block)->path = v)
 #define transmission_control_block_path_get(block)                      ((block)->path)
 #define transmission_control_block_agent_set(block, v)                  ((block)->agent = v)
 #define transmission_control_block_agent_get(block)                     ((block)->agent)
@@ -469,8 +473,9 @@ struct transmission_control_block_buffer_out_node {
     uint64_t capacity;
     void * mem;
 
-    uint32_t sequence;
-    uint32_t acknowledge;
+    ___reference uint8_t * segment;
+    uint32_t sequence;              // @deprecated
+    uint32_t acknowledge;           // @deprecated
 
     struct {
         nanosecond_t time;
@@ -513,7 +518,13 @@ extern transmission_control_block_buffer_out_node_t * transmission_control_block
 #define transmission_control_block_buffer_out_node_clear(node)                          ((node)->func->clear(node))
 
 #define transmission_control_block_buffer_out_node_transmit_count_get(node)             ((node)->transmit.count)
+
+#define transmission_control_block_buffer_out_node_segment_set(node, v)                 ((node)->segment = v)
+#define transmission_control_block_buffer_out_node_segment_get(node)                    ((node)->segment)
+
+// @deprecated
 #define transmission_control_block_buffer_out_node_sequence_set(node, v)                ((node)->sequence = v)
+// @deprecated
 #define transmission_control_block_buffer_out_node_sequence_get(node)                   ((node)->sequence + (uint32_t)((node)->position))
 
 #define transmission_control_block_buffer_out_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))

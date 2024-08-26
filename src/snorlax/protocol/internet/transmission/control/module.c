@@ -151,10 +151,13 @@ static int32_t transmission_control_protocol_module_func_in(transmission_control
             return fail;
         }
 
-        block = transmission_control_block_gen(key, module);
-        block->path = protocol_path_gen((protocol_context_t *) *context, 128);
-        transmission_control_protocol_context_block_set(*context, block);
+        hashtable_set(module->block, (hashtable_node_t *) (block = transmission_control_block_gen(key, module)));
+
+        transmission_control_block_path_set(block, protocol_path_gen((protocol_context_t *) *context, 128));
+        transmission_control_block_version_set(block, internet_protocol_context_version_get(parent));
     }
+
+    transmission_control_protocol_context_block_set(*context, block);
 
     if(transmission_control_block_in(block, *context) == fail) {
         transmission_control_protocol_module_on(module, protocol_event_exception, parent, *context);

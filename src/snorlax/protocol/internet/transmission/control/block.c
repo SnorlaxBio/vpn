@@ -465,3 +465,14 @@ ___implement extern int32_t transmission_control_block_func_check_window_remote(
 
     // return true;
 }
+
+// @deprecated
+extern int32_t transmission_control_block_func_number_update(uint32_t * field, uint32_t no, uint32_t n) {
+#ifndef   RELEASE
+    snorlaxdbg(field == nil, false, "critical", "");
+#endif // RELEASE
+
+
+
+    return false;
+}
