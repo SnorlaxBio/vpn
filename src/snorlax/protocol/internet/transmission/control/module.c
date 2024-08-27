@@ -37,7 +37,9 @@ extern transmission_control_protocol_module_t * transmission_control_protocol_mo
     module->block = hashtable_gen(transmission_control_block_func_hash);
     module->addrlen = sizeof(uint16_t);
     module->type = transmission_control_protocol_no;
-    module->max_segment_size = transmission_control_protocol_default_max_segment_size;
+    module->maximum.segment = transmission_control_protocol_module_maximum_segment_size;
+    module->scale = transmission_control_protocol_module_scale_factor;
+    module->window = transmission_control_protocol_module_window_size;
 
     return module;
 }

@@ -26,13 +26,35 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
     if((transmission_control_protocol_context_flags_get(context) & transmission_control_block_in_closed_flags_must) == transmission_control_block_in_closed_flags_must) {
         transmission_control_block_state_prev_set(block, transmission_control_block_state_get(block));
 
-        uint8_t flags = transmission_control_protocol_context_flags_get(context);
+        snorlaxdbg(block->buffer.in  != nil, false, "critical", "");
+        snorlaxdbg(block->buffer.out != nil, false, "critical", "");
+
+        block->buffer.in  = transmission_control_block_segment_gen(nil, transmission_control_protocol_module_maximum_segment_get(block->module));
+        block->buffer.out = transmission_control_block_segment_gen(nil, transmission_control_protocol_module_maximum_segment_get(block->module));
+
+        /**
+         * @see     [RFC9293 / 3.1. Header Format](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#31-header-format)
+         * @see     [RFC7323 / 2. TCP Window Scale Option](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC7323/TCPWindowScaleOption.md)
+         */
+        for(transmission_control_protocol_option_t * option = transmission_control_protocol_context_option_begin(context); !transmission_control_protocol_context_option_end(context, option); option = transmission_control_protocol_context_option_next(option)) {
+            switch(*option) {
+                case transmission_control_protocol_option_type_maximum_segment_size:    transmission_control_block_remote_maximum_segment_set(block, uint16_of((option + 2)));      break;
+                case transmission_control_protocol_option_type_no_operation:                                                                                                        break;
+                case transmission_control_protocol_option_type_window_scale:            transmission_control_block_remote_window_scale_set(block, uint8_of((option + 2)));          break;
+                default:                                                                snorlaxdbg(false, true, "check", "");                                                       break;
+            }
+        }
+
+        snorlaxdbg(false, transmission_control_block_remote_maximum_segment_get(block) == 0, "critical", "");
+
+        transmission_control_block_window_set(block, transmission_control_protocol_module_window_get(block->module));
+        transmission_control_block_window_scale_set(block, transmission_control_protocol_module_scale_get(block->module));
+        transmission_control_block_sequence_set(block, transmission_control_protocol_module_func_sequence_gen(block->module, context->parent, context));
+        transmission_control_block_acknowledge_set(block, transmission_control_protocol_context_sequence_get(context) + 1);
 
         transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
         transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
-
-        transmission_control_block_sequence_set(block, transmission_control_protocol_module_func_sequence_gen(block->module, context->parent, context));
-        transmission_control_block_acknowledge_set(block, transmission_control_protocol_context_sequence_get(context) + 1);
+        transmission_control_block_remote_window_set(block, transmission_control_protocol_context_window_get(context));
         
         transmission_control_block_state_set(block, transmission_control_state_synchronize_sequence_recv);
 
@@ -111,7 +133,7 @@ extern int32_t transmission_control_block_in_synchronize_sequence_recv(transmiss
             snorlaxdbg(transmission_control_protocol_context_sequence_get(context) != transmission_control_block_acknowledge_get(block), false, "critical", "%u / %u", transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block));
             snorlaxdbg(transmission_control_protocol_context_acknowledge_get(context) != transmission_control_block_sequence_get(block) + 1, false, "critical", "");
 
-            transmission_control_block_buffer_out_t * out = block->buffer.out;
+            // transmission_control_block_buffer_out_t * out = block->buffer.out;
             // uint8_t flags = 
 
             // TODO: TRANSMISSION CONTROL BLOCK ACKNOWLEDGE UPDATE
