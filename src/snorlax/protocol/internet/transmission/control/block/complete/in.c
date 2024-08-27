@@ -41,6 +41,28 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 #endif // RELEASE
 
     if(transmission_control_block_state_is_changed(block)) {
+        uint8_t  buffer[protocol_packet_max];
+        uint64_t bufferlen = protocol_packet_max;
+
+        transmission_control_protocol_context_t * response = transmission_control_protocol_context_gen(block->module, nil, (transmission_control_protocol_packet_t *) (buffer - protocol_packet_max), 0, address_of(bufferlen));
+
+        snorlaxdbg(response == nil, false, "critical", "");
+
+        transmission_control_protocol_context_block_set(response, block);
+
+        snorlaxdbg(false, true, "implement", "data");
+        snorlaxdbg(false, true, "implement", "option");
+
+        transmission_control_protocol_option_maximum_segment_size_t mss = { .kind = 2, .length = 4, .size = transmission_control_block_segment_maximum_size_get(block) };
+
+    //         uint8_t kind;
+    // uint8_t length;
+    // uint16_t size;
+
+        transmission_control_protocol_context_buffer_reversal_push(block, transmission_control_protocol_option_maximum_segment_size_get(), transmission_control_protocol_option_maximum_segment_size_length_get());
+        transmission_control_protocol_context_buffer_reversal_push(block, transmission_control_protocol_option_maximum_segment_size_get(), transmission_control_protocol_option_maximum_segment_size_length_get());
+
+
         // uint8_t  buffer[protocol_packet_max];
         // uint64_t bufferlen = protocol_packet_max;
 
