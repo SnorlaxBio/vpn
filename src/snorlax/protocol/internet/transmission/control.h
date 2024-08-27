@@ -366,6 +366,8 @@ extern int32_t transmission_control_block_func_number_update(uint32_t * field, u
 
 extern transmission_control_protocol_context_t * transmission_control_block_context_gen_connect_synack(transmission_control_block_t * block, uint8_t * buffer, uint64_t bufferlen);
 
+extern int32_t transmission_control_block_remote_sequence_update(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
+
 // ___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t flags, uint8_t * buffer, uint64_t bufferlen);
 // ___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node);
 

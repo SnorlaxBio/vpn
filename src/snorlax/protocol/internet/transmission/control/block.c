@@ -476,3 +476,29 @@ extern int32_t transmission_control_block_func_number_update(uint32_t * field, u
 
     return false;
 }
+
+extern int32_t transmission_control_block_remote_sequence_update(transmission_control_block_t * block, transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(block == nil, false, "critical", "");
+    snorlaxdbg(context == nil, false, "critical", "");
+#endif // RELEASE
+    // acknowledge = 3560048157
+    // remote sequence = 3560048156
+    // remote window = 
+    uint32_t sequence = 0;
+        // transmission_control_block_remote_sequence_get(block) + transmission_control_protocol_context_datalen_get(context) + (transmission_control_protocol_context_flags_get(context) & (transmission_control_flag_control_fin | transmission_control_flag_control_syn) ? 1 : 0);
+    uint32_t window = transmission_control_block_remote_window_get(block);
+    uint32_t acknowledge = transmission_control_block_acknowledge_get(block);
+
+    uint32_t value = transmission_control_protocol_context_sequence_get(context);
+    
+    
+    //  + transmission_control_protocol_context_datalen_get(context) + (transmission_control_protocol_context_flags_get(context) & (transmission_control_flag_control_fin | transmission_control_flag_control_syn) ? 1 : 0);
+
+    // overflow compare 
+
+
+
+
+    return false;
+}

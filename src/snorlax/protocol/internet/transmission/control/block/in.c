@@ -26,10 +26,13 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
     if((transmission_control_protocol_context_flags_get(context) & transmission_control_block_in_closed_flags_must) == transmission_control_block_in_closed_flags_must) {
         transmission_control_block_state_prev_set(block, transmission_control_block_state_get(block));
 
+        uint8_t flags = transmission_control_protocol_context_flags_get(context);
+
         transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
         transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
 
         transmission_control_block_sequence_set(block, transmission_control_protocol_module_func_sequence_gen(block->module, context->parent, context));
+        transmission_control_block_acknowledge_set(block, transmission_control_protocol_context_sequence_get(context) + 1);
         
         transmission_control_block_state_set(block, transmission_control_state_synchronize_sequence_recv);
 
@@ -108,20 +111,42 @@ extern int32_t transmission_control_block_in_synchronize_sequence_recv(transmiss
             snorlaxdbg(transmission_control_protocol_context_sequence_get(context) != transmission_control_block_acknowledge_get(block), false, "critical", "%u / %u", transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block));
             snorlaxdbg(transmission_control_protocol_context_acknowledge_get(context) != transmission_control_block_sequence_get(block) + 1, false, "critical", "");
 
-            transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
-            transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
-
             transmission_control_block_buffer_out_t * out = block->buffer.out;
-            transmission_control_block_buffer_out_node_t * front = transmission_control_block_buffer_out_head(out);
-            snorlaxdbg(front == nil, false, "critical", "");
-            front = transmission_control_block_buffer_out_del(out, front);
-            snorlaxdbg(false, true, "implement", "remove retransmission timer");
+            // uint8_t flags = 
 
-            transmission_control_block_sequence_set(block, transmission_control_block_remote_acknowledge_get(block));
+            // TODO: TRANSMISSION CONTROL BLOCK ACKNOWLEDGE UPDATE
+            // if(transmission_control_block_acknowledge_update(block, transmission_control_protocol_context_sequence_get(context), out)) {
+            //     transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
+            // } else {
+            //     snorlaxdbg(false, true, "notice", "packet drop");
+            // }
 
-            snorlaxdbg(false, true, "check", "window check");
 
-            transmission_control_block_state_set(block, transmission_control_state_establish);
+            // if(transmission_control_block_acknowledge_get(block) <= transmission_control_protocol_context_sequence_get(context)) {
+            //     if(transmission_control_block_remote_sequence_update(block, transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block))) {
+            //         transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
+            //     }
+            // }
+
+            // if(transmission_control_block_remote_sequence_update(block, transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block))) {
+            //     transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
+            // }
+
+            // if(transmission_control_block_remote_acknowledge_update(block, transmission_control_protocol_context_acknowledge_get(context), ))
+            
+            // transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
+
+            // transmission_control_block_buffer_out_t * out = block->buffer.out;
+            // transmission_control_block_buffer_out_node_t * front = transmission_control_block_buffer_out_head(out);
+            // snorlaxdbg(front == nil, false, "critical", "");
+            // front = transmission_control_block_buffer_out_del(out, front);
+            // snorlaxdbg(false, true, "implement", "remove retransmission timer");
+
+            // transmission_control_block_sequence_set(block, transmission_control_block_remote_acknowledge_get(block));
+
+            // snorlaxdbg(false, true, "check", "window check");
+
+            // transmission_control_block_state_set(block, transmission_control_state_establish);
 
             return success;
         }
@@ -130,53 +155,60 @@ extern int32_t transmission_control_block_in_synchronize_sequence_recv(transmiss
     snorlaxdbg(true, false, "critical", "");
 
     return fail;
-
-    if(transmission_control_block_state_has(block, transmission_control_flag_control_ack) == false) {
-        snorlaxdbg(false, true, "notice", "packet drop");
-
-        transmission_control_protocol_context_error_set(context, EPERM);
-        // TODO: IMPLEMENT OR CHECK PACKET DROP
-        return fail;
-    }
-
-    snorlaxdbg(transmission_control_block_state_has(block, transmission_control_flag_control_ack) == false, false, "exception", "");
-    snorlaxdbg(transmission_control_block_sequence_get(block) + 1 != transmission_control_protocol_context_sequence_get(context), false, "exception", "");
-
-    transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
-    transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
-
-    
-    // // 2. VALID SYN & ACK
-    // if(transmission_control_block_sequence_get(block) + 1 != transmission_control_protocol_context_sequence_get(context)) {
-    //     snorlaxdbg(transmission_control_block_sequence_get(block) + 1 != transmission_control_protocol_context_sequence_get(context), false, "critical", "");
-
-    //     transmission_control_protocol_context_error_set(context, EINVAL);
-    //     return fail;
-    // }
-    // // 2. VALID SYN & ACK
-    // if(transmission_control_block_remote_sequence_get(block) != transmission_control_protocol_context_sequence_get(context)) {
-    //     snorlaxdbg(transmission_control_block_remote_sequence_get(block) != transmission_control_protocol_context_sequence_get(context), false, "critical", "");
-
-    //     transmission_control_protocol_context_error_set(context, EINVAL);
-    //     return fail;
-    // }
-    // if(transmission_control_block)
-
-
-
-    transmission_control_block_acknowledge_set(block, transmission_control_protocol_context_sequence_get(context) + 1);
-
-    transmission_control_block_state_set(block, transmission_control_state_establish);
-
-    return success;
 }
+
+// #define transmission_control_flag_control_cwr                       (0x01u << 7u)
+// #define transmission_control_flag_control_ece                       (0x01u << 6u)
+// #define transmission_control_flag_control_urg                       (0x01u << 5u)
+// #define transmission_control_flag_control_ack                       (0x01u << 4u)
+// #define transmission_control_flag_control_psh                       (0x01u << 3u)
+// #define transmission_control_flag_control_rst                       (0x01u << 2u)
+// #define transmission_control_flag_control_syn                       (0x01u << 1u)
+// #define transmission_control_flag_control_fin                       (0x01u << 0u)
+
+#define transmission_control_block_in_establish_flags_must              (0)
+#define transmission_control_block_in_establish_flags_duplicate         (0)
+#define transmission_control_block_in_establish_flags_finish            (transmission_control_flag_control_rst | transmission_control_flag_control_fin)
+#define transmission_control_block_in_establish_flags_allow             (0xFF)
+#define transmission_control_block_in_establish_flags_disallow          (transmission_control_flag_control_syn)
+#define transmission_control_block_in_establish_flags_check             (transmission_control_flag_control_cwr | transmission_control_flag_control_ece | transmission_control_flag_control_urg | transmission_control_flag_control_psh)
 
 extern int32_t transmission_control_block_in_establish(transmission_control_block_t * block, transmission_control_protocol_context_t * context) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-    snorlaxdbg(true, false, "implement", "");
+    // ALL ALLOW ...
+
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_ack)) {
+    //     /**
+    //      * TODO: transmission_control_block_remote_acknowledge_update
+    //      * 
+    //      * 오버플로우에 조심해서 개발하자.
+    //      */
+    //     if(transmission_control_block_remote_acknowledge_update(block, transmission_control_protocol_context_acknowledge_get(context))) {
+    //         transmission_control_block_buffer_out_erase(block->buffer.out, transmission_control_block_remote_acknowledge_get(block));
+    //         /**
+    //          * SYN 은 어떻게 풀어야 할까? 여기서 업데이트 하는 것이 맞을까?
+    //          */
+    //         transmission_control_block_sequence_set(block, transmission_control_block_remote_acknowledge_get(block));
+
+    //     }
+    // }
+
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_syn)) {
+    //     snorlaxdbg(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_syn), false, "implement", "");
+    //     if(transmission_control_block_remote_sequence_update(block, transmission_control_block_remote_sequence_get(block))) {
+
+    //     }
+        
+    // }
+
+    // if(transmission_control_protocol_context_flags_has(context, transmission_control_flag_control_psh)) {
+    //     // UPDATE MY BUFFER ... 
+    // }
+
+    // snorlaxdbg(true, false, "implement", "");
 
     return fail;
 }

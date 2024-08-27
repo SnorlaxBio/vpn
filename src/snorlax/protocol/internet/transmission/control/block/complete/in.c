@@ -41,8 +41,6 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 #endif // RELEASE
 
     if(transmission_control_block_state_is_changed(block)) {
-        transmission_control_block_acknowledge_set(block, transmission_control_block_remote_sequence_get(block) + 1);
-
         uint8_t  buffer[protocol_packet_max];
         uint64_t bufferlen = protocol_packet_max;
 
@@ -63,7 +61,7 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
         transmission_control_protocol_context_source_set(response, ntohs(transmission_control_protocol_to_port(protocol_path_node_destination_get(path))));
         transmission_control_protocol_context_destination_set(response, ntohs(transmission_control_protocol_to_port(protocol_path_node_source_get(path))));
         transmission_control_protocol_context_sequence_set(response, transmission_control_block_sequence_get(block));
-        transmission_control_protocol_context_acknowledge_set(response, transmission_control_block_acknowledge_get(block));
+        transmission_control_protocol_context_acknowledge_set(response, transmission_control_block_acknowledge_get(block) + 1);
         transmission_control_protocol_context_offset_set(response, transmission_control_protocol_context_headerlen_get(response) / 4);
         transmission_control_protocol_context_flags_set(response, transmission_control_flag_control_synack);
         transmission_control_protocol_context_window_set(response, transmission_control_block_window_get(block));
