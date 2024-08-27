@@ -29,8 +29,8 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
         snorlaxdbg(block->buffer.in  != nil, false, "critical", "");
         snorlaxdbg(block->buffer.out != nil, false, "critical", "");
 
-        block->buffer.in  = transmission_control_block_segment_gen(nil, transmission_control_protocol_module_maximum_segment_get(block->module));
-        block->buffer.out = transmission_control_block_segment_gen(nil, transmission_control_protocol_module_maximum_segment_get(block->module));
+        block->buffer.in  = transmission_control_block_buffer_gen(transmission_control_block_buffer_in_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
+        block->buffer.out = transmission_control_block_buffer_gen(transmission_control_block_buffer_out_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
 
         /**
          * @see     [RFC9293 / 3.1. Header Format](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#31-header-format)

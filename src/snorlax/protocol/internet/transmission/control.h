@@ -22,6 +22,7 @@
 #include <snorlax/socket/client/event/subscription.h>
 
 struct transmission_control_protocol_option_maximum_segment_size;
+struct transmission_control_protocol_option_window_scale;
 
 struct transmission_control_block;
 struct transmission_control_block_func;
@@ -88,6 +89,7 @@ typedef transmission_control_block_buffer_node_t                    transmission
 typedef struct transmission_control_protocol_packet                         transmission_control_protocol_packet_t;
 typedef uint8_t                                                             transmission_control_protocol_option_t;
 typedef struct transmission_control_protocol_option_maximum_segment_size    transmission_control_protocol_option_maximum_segment_size_t;
+typedef struct transmission_control_protocol_option_window_scale            transmission_control_protocol_option_window_scale_t;
 
 typedef struct transmission_control_protocol_module                         transmission_control_protocol_module_t;
 typedef struct transmission_control_protocol_module_func                    transmission_control_protocol_module_func_t;
@@ -334,6 +336,9 @@ struct transmission_control_block_buffer_node_func {
 
 extern transmission_control_block_buffer_node_t * transmission_control_block_buffer_node(transmission_control_block_buffer_t * buffer, const void * data, uint64_t n);
 
+#define transmission_control_block_buffer_in_gen                            transmission_control_block_buffer_node
+#define transmission_control_block_buffer_out_gen                           transmission_control_block_buffer_node
+
 #define transmission_control_block_buffer_node_rem(node)                    ((node)->func->rem(node))
 #define transmission_control_block_buffer_node_front(node)                  ((node)->func->front(node))
 #define transmission_control_block_buffer_node_back(node)                   ((node)->func->back(node))
@@ -347,6 +352,11 @@ extern transmission_control_block_buffer_node_t * transmission_control_block_buf
 #define transmission_control_block_buffer_node_capacity_get(node)           ((node)->func->capacity_get(node))
 #define transmission_control_block_buffer_node_capacity_set(node, n)        ((node)->func->capacity_set(node, n))
 #define transmission_control_block_buffer_node_clear(node)                  ((node)->func->clear(node))
+#define transmission_control_block_buffer_node_segment_get(node)            ((node)->segment)
+#define transmission_control_block_buffer_node_segment_set(node, p)         ((node)->segment = p)
+
+#define transmission_control_block_buffer_out_segment_get(node)             ((node)->segment)
+#define transmission_control_block_buffer_out_segment_set(node, p)          ((node)->segment = p)
 
 /**
  * Inherited hashtable_node_t
@@ -965,6 +975,11 @@ struct transmission_control_protocol_option_maximum_segment_size {
     uint16_t size;
 };
 
-
+struct transmission_control_protocol_option_window_scale {
+    uint8_t kind;
+    uint8_t length;
+    uint8_t size;
+    uint8_t pad;
+};
 
 #endif // __SNORLAX__PROTOCOL_INTERNET_TRANSMISSION_CONTROL__H__
