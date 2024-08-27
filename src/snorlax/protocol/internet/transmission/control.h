@@ -33,14 +33,20 @@ struct transmission_control_block_segment_func;
 struct transmission_control_block_segment_node;
 struct transmission_control_block_segment_node_func;
 
-struct transmission_control_block_buffer_in;
-struct transmission_control_block_buffer_in_func;
-struct transmission_control_block_buffer_in_node;
-struct transmission_control_block_buffer_in_node_func;
-struct transmission_control_block_buffer_out;
-struct transmission_control_block_buffer_out_func;
-struct transmission_control_block_buffer_out_node;
-struct transmission_control_block_buffer_out_node_func;
+// struct transmission_control_block_segment_out;
+// struct transmission_control_block_segment_out_func;
+
+// struct transmission_control_block_segment_in;
+// struct transmission_control_block_segment_in_func;
+
+// struct transmission_control_block_buffer_in;
+// struct transmission_control_block_buffer_in_func;
+// struct transmission_control_block_buffer_in_node;
+// struct transmission_control_block_buffer_in_node_func;
+// struct transmission_control_block_buffer_out;
+// struct transmission_control_block_buffer_out_func;
+// struct transmission_control_block_buffer_out_node;
+// struct transmission_control_block_buffer_out_node_func;
 
 typedef hashtable_t transmission_control_block_map_t;
 
@@ -64,15 +70,18 @@ typedef struct transmission_control_block_segment_func              transmission
 typedef struct transmission_control_block_segment_node              transmission_control_block_segment_node_t;
 typedef struct transmission_control_block_segment_node_func         transmission_control_block_segment_node_func_t;
 
-typedef struct transmission_control_block_buffer_in                 transmission_control_block_buffer_in_t;
-typedef struct transmission_control_block_buffer_in_func            transmission_control_block_buffer_in_func_t;
-typedef struct transmission_control_block_buffer_in_node            transmission_control_block_buffer_in_node_t;
-typedef struct transmission_control_block_buffer_in_node_func       transmission_control_block_buffer_in_node_func_t;
+typedef transmission_control_block_segment_node_t                   transmission_control_block_segment_in_t;
+typedef transmission_control_block_segment_node_t                   transmission_control_block_segment_out_t;
 
-typedef struct transmission_control_block_buffer_out                transmission_control_block_buffer_out_t;
-typedef struct transmission_control_block_buffer_out_func           transmission_control_block_buffer_out_func_t;
-typedef struct transmission_control_block_buffer_out_node           transmission_control_block_buffer_out_node_t;
-typedef struct transmission_control_block_buffer_out_node_func      transmission_control_block_buffer_out_node_func_t;
+// typedef struct transmission_control_block_buffer_in                 transmission_control_block_buffer_in_t;
+// typedef struct transmission_control_block_buffer_in_func            transmission_control_block_buffer_in_func_t;
+// typedef struct transmission_control_block_buffer_in_node            transmission_control_block_buffer_in_node_t;
+// typedef struct transmission_control_block_buffer_in_node_func       transmission_control_block_buffer_in_node_func_t;
+
+// typedef struct transmission_control_block_buffer_out                transmission_control_block_buffer_out_t;
+// typedef struct transmission_control_block_buffer_out_func           transmission_control_block_buffer_out_func_t;
+// typedef struct transmission_control_block_buffer_out_node           transmission_control_block_buffer_out_node_t;
+// typedef struct transmission_control_block_buffer_out_node_func      transmission_control_block_buffer_out_node_func_t;
 
 typedef struct transmission_control_protocol_packet                 transmission_control_protocol_packet_t;
 typedef uint8_t                                                     transmission_control_protocol_option_t;
@@ -175,7 +184,7 @@ struct transmission_control_block_agent_func {
     transmission_control_block_agent_t * (*rem)(transmission_control_block_agent_t *);
 
     int32_t (*open)(transmission_control_block_agent_t *);
-    int64_t (*send)(transmission_control_block_agent_t *, transmission_control_block_buffer_out_node_t *, transmission_control_block_buffer_out_node_t *);
+    int64_t (*send)(transmission_control_block_agent_t *, transmission_control_block_segment_out_t *, transmission_control_block_segment_out_t *);
     int64_t (*recv)(transmission_control_block_agent_t *);
     int32_t (*close)(transmission_control_block_agent_t *);
     int32_t (*shutdown)(transmission_control_block_agent_t *, uint32_t);
@@ -207,7 +216,7 @@ struct transmission_control_block_client_func {
     transmission_control_block_client_t * (*rem)(transmission_control_block_client_t *);
 
     int32_t (*open)(transmission_control_block_client_t *, socket_client_factory_t, event_engine_t *);
-    int64_t (*send)(transmission_control_block_client_t *, transmission_control_block_buffer_out_node_t *, transmission_control_block_buffer_out_node_t *);
+    int64_t (*send)(transmission_control_block_client_t *, transmission_control_block_segment_out_t *, transmission_control_block_segment_out_t *);
     int64_t (*recv)(transmission_control_block_client_t *);
     int32_t (*close)(transmission_control_block_client_t *);
     int32_t (*shutdown)(transmission_control_block_client_t *, uint32_t);
@@ -289,6 +298,7 @@ extern transmission_control_block_segment_t * transmission_control_block_segment
 #define transmission_control_block_segment_maximum_size_set(buffer, v)              ((buffer)->page = v)
 #define transmission_control_block_segment_maximum_size_get(buffer)                 ((uint16_t)((buffer)->page))
 
+___extend(buffer_list_t)
 struct transmission_control_block_segment_node {
     transmission_control_block_segment_node_func_t *    func;
     sync_t *                                            sync;
@@ -314,6 +324,15 @@ struct transmission_control_block_segment_node {
 };
 
 struct transmission_control_block_segment_node_func {
+
+};
+
+___extend(transmission_control_block_segment_node_t)
+struct transmission_control_block_segment_out {
+
+};
+
+struct transmission_control_block_segment_out_func {
 
 };
 
@@ -357,7 +376,7 @@ struct transmission_control_block_func {
     int32_t (*in)(transmission_control_block_t *, transmission_control_protocol_context_t *);
     int32_t (*complete_in)(transmission_control_block_t *, transmission_control_protocol_context_t *);
     
-    int32_t (*out)(transmission_control_block_t *, transmission_control_block_buffer_out_node_t *);
+    int32_t (*out)(transmission_control_block_t *, transmission_control_block_segment_out_t *);
 };
 
 extern int32_t transmission_control_block_in_closed(transmission_control_block_t * block, transmission_control_protocol_context_t * context);

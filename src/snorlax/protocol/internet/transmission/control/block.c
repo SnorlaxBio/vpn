@@ -22,7 +22,7 @@ static int32_t transmission_control_block_func_close(transmission_control_block_
 ___implement static int32_t transmission_control_block_func_listen(transmission_control_block_t * block);
 static int32_t transmission_control_block_func_in(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
 static int32_t transmission_control_block_func_complete_in(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
-static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_buffer_out_node_t * node);
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_segment_out_t * node);
 
 static transmission_control_block_func_t func = {
     transmission_control_block_func_rem,
@@ -313,7 +313,7 @@ ___implement static int32_t transmission_control_block_func_listen(transmission_
 }
 
 ___implement
-extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_out_node_t * data, uint8_t flags, uint8_t * buffer, uint64_t bufferlen) {
+extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_segment_out_t * data, uint8_t flags, uint8_t * buffer, uint64_t bufferlen) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
     snorlaxdbg(data == nil, false, "critical", "");
@@ -400,7 +400,7 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
     // return context;
 }
 
-static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_buffer_out_node_t * node) {
+static int32_t transmission_control_block_func_out(transmission_control_block_t * block, transmission_control_block_segment_out_t * node) {
 #ifndef   RELEASE
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
@@ -450,7 +450,7 @@ static int32_t transmission_control_block_func_out(transmission_control_block_t 
     // return transmission_control_block_is_finishing(block) ? fail : success;
 }
 
-___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_out_node_t * node) {
+___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_segment_out_t * node) {
 #ifndef   RELEASE
         snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
