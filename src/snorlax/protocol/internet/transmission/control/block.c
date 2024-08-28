@@ -304,7 +304,35 @@ static int32_t transmission_control_block_func_in(transmission_control_block_t *
     // return fail;
 }
 
+// #define transmission_control_state_closed                           (transmission_control_state_finishing    |  0)
+// #define transmission_control_state_listen                           (transmission_control_state_avail_accept |  1)
+// #define transmission_control_state_synchronize_sequence_sent        (transmission_control_state_avail_io     |  2)
+// #define transmission_control_state_synchronize_sequence_recv        (transmission_control_state_avail_io     |  3)
+// #define transmission_control_state_establish                        (transmission_control_state_avail_io     |  4)
+// #define transmission_control_state_finish_wait_first                (transmission_control_state_finishing    |  5)
+// #define transmission_control_state_finish_wait_second               (transmission_control_state_finishing    |  6)
+// #define transmission_control_state_close_wait                       (transmission_control_state_finishing    |  7)
+// #define transmission_control_state_closing                          (transmission_control_state_finishing    |  8)
+// #define transmission_control_state_last_acknowledge                 (transmission_control_state_finishing    |  9)
+// #define transmission_control_state_time_wait                        (transmission_control_state_finishing    | 10)
 ___implement static int32_t transmission_control_block_func_close(transmission_control_block_t * block) {
+#ifndef   RELEASE
+    snorlaxdbg(block == nil, false, "critical", "");
+#endif // RELEASE
+
+    if(transmission_control_block_state_get(block) & transmission_control_state_finishing) {
+        snorlaxdbg(false, transmission_control_block_state_get(block) & transmission_control_state_finishing, "notice", "");
+        return success;
+    }
+
+    /**
+     * FINISH 를 수행한다.
+     */
+    // snorlaxdbg(___must);
+    // snorlaxdbg(___should);
+    // snorlaxdbg(___may);
+
+
     return fail;
 }
 

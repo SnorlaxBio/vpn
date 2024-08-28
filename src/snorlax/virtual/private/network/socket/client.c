@@ -107,6 +107,7 @@ extern int32_t virtual_private_network_socket_client_func_open(___notnull virtua
                 descriptor->status = descriptor->status & (~descriptor_state_close);
                 return success;
             }
+
 #ifndef   RELEASE
                 snorlaxdbg(false, true, "warning", "fail to connect => %d", errno);
 #endif // RELEASE

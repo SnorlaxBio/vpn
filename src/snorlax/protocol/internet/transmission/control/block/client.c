@@ -1,5 +1,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -61,7 +62,7 @@ static int32_t transmission_control_block_client_func_open(transmission_control_
     snorlaxdbg(engine == nil, false, "critical", "");
 #endif // RELEASE
 
-    if(agent->subscription = nil) {
+    if(agent->subscription == nil) {
         socket_client_t * descriptor = nil;
 
         protocol_path_node_t * node = protocol_path_begin(agent->block->path);
@@ -73,6 +74,8 @@ static int32_t transmission_control_block_client_func_open(transmission_control_
             addr.sin_family = AF_INET;
             addr.sin_addr.s_addr = uint32_of(protocol_path_node_source_get(next));
             addr.sin_port = uint16_of(protocol_path_node_source_get(node));
+
+            snorlaxdbg(false, true, "check", "%s:%u", inet_ntoa(addr.sin_addr), ntohs(addr.sin_port));
 
             descriptor = gen(AF_INET, SOCK_STREAM, IPPROTO_TCP, address_of(addr), sizeof(struct sockaddr_in));
         } else if(agent->block->version == 6) {

@@ -41,6 +41,7 @@ static void transmission_control_block_agent_event_type_open_on(___notnull trans
     snorlaxdbg(agent == nil, false, "critical", "");
 #endif // RELEASE
 
+    snorlaxdbg(true, false, "debug", "");
     snorlaxdbg(false, true, "debug", "");
 }
 

@@ -122,6 +122,8 @@ extern int32_t transmission_control_block_complete_in_establish(transmission_con
 
     if(transmission_control_block_state_is_changed(block)) {
         snorlaxdbg(false, true, "state", "establish");
+
+        // TODO: TCP AGENT CONNECT ... 
         // snorlaxdbg(transmission_control_block_buffer_out_head(block->buffer.out), false, "implement", "");
 
         snorlaxdbg(false, true, "implement", "");
