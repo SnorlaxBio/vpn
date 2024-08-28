@@ -36,7 +36,7 @@ static transmission_control_block_buffer_node_func_t func = {
 extern transmission_control_block_buffer_node_t * transmission_control_block_buffer_node(transmission_control_block_buffer_t * collection, const void * data, uint64_t n) {
     transmission_control_block_buffer_node_t * node = (transmission_control_block_buffer_node_t *) calloc(1, sizeof(transmission_control_block_buffer_node_t));
 
-    node->func = address_of(node);
+    node->func = address_of(func);
 
     if(data) {
         if(n > 0) {

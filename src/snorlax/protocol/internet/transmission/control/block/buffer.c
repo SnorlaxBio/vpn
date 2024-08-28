@@ -33,16 +33,16 @@ static transmission_control_block_buffer_func_t func = {
     (transmission_control_block_buffer_func_del_t) buffer_list_func_del
 };
 
-extern transmission_control_block_buffer_t * transmission_control_block_segment_gen(transmission_control_block_buffer_node_factory_t nodegen, uint64_t mss) {
+extern transmission_control_block_buffer_t * transmission_control_block_buffer_gen(transmission_control_block_buffer_node_factory_t nodegen, uint64_t mss) {
 #ifndef   RELEASE
     snorlaxdbg(nodegen == nil, false, "critical", "");
     snorlaxdbg(mss == 0, false, "critical", "");
 #endif // RELEASE
-    transmission_control_block_buffer_t * segment = (transmission_control_block_buffer_t *) calloc(1, sizeof(transmission_control_block_buffer_t));
+    transmission_control_block_buffer_t * buffer = (transmission_control_block_buffer_t *) calloc(1, sizeof(transmission_control_block_buffer_t));
 
-    segment->func    = address_of(func);
-    segment->page    = mss;
-    segment->nodegen = nodegen;
+    buffer->func    = address_of(func);
+    buffer->page    = mss;
+    buffer->nodegen = nodegen;
 
-    return segment;
+    return buffer;
 }
