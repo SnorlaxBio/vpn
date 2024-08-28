@@ -59,8 +59,17 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
         transmission_control_protocol_context_buffer_reversal_push(block, (uint8_t *) address_of(mss), sizeof(transmission_control_protocol_option_maximum_segment_size_t));
         headerlen = headerlen + sizeof(transmission_control_protocol_option_maximum_segment_size_t);
 
-        transmission_control_protocol_option_window_scale_t ws = { .kind = 2, .length = 3, .size = transmission_control_block_window_scale_get(block), .pad = 1 };
-        transmission_control_protocol_context_buffer_reversal_push(block, (uint8_t *) address_of(ws), sizeof(transmission_control_protocol_option_window_scale_t));
+        /**
+         * Upon receiving a SYN segment with a Window Scale option containing `shift.cnt = S`, a TCP must set `Snd.Wind.Shift` to `S` and must sete `Rcv.Wind.Shift` to `R`;
+         * otherwise, it must set both `Snd.Wind.Shift` and `Rcv.Wind.Shift` to zero.
+         * 
+         * @see     [2.3. Using the Window Scale Option](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC7323/TCPWindowScaleOption.md#23-using-the-window-scale-option)
+         */
+        if(transmission_control_block_window_scale_get(block) > 0) {
+            transmission_control_protocol_option_window_scale_t ws = { .kind = 2, .length = 3, .size = transmission_control_block_window_scale_get(block), .pad = 1 };
+            transmission_control_protocol_context_buffer_reversal_push(block, (uint8_t *) address_of(ws), sizeof(transmission_control_protocol_option_window_scale_t));
+        }
+
         headerlen = headerlen + sizeof(transmission_control_protocol_option_window_scale_t);
 
         protocol_path_node_t * path = protocol_path_begin(block->path);
@@ -92,10 +101,10 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 
         snorlaxdbg(bufferlen == protocol_packet_max, false, "critical", "");
 
-        transmission_control_block_buffer_t * out = block->buffer.out;
-        transmission_control_block_buffer_out_t * node = transmission_control_block_buffer_out_gen(out, (buffer + bufferlen), (protocol_packet_max - bufferlen));
+        transmission_control_buffer_t * out = block->buffer.out;
+        transmission_control_buffer_out_t * node = transmission_control_buffer_out_gen(out, (buffer + bufferlen), (protocol_packet_max - bufferlen));
 
-        transmission_control_block_buffer_out_segment_set(node, packet);
+        transmission_control_buffer_out_segment_set(node, packet);
 
         transmission_control_block_state_prev_set(block, transmission_control_block_state_get(block));
     } else {

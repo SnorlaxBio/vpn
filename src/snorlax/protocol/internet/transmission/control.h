@@ -30,26 +30,10 @@ struct transmission_control_block_agent;
 struct transmission_control_block_agent_func;
 struct transmission_control_block_client;
 struct transmission_control_block_client_func;
-
-struct transmission_control_block_buffer;
-struct transmission_control_block_buffer_func;
-struct transmission_control_block_buffer_node;
-struct transmission_control_block_buffer_node_func;
-
-// struct transmission_control_block_segment_out;
-// struct transmission_control_block_segment_out_func;
-
-// struct transmission_control_block_segment_in;
-// struct transmission_control_block_segment_in_func;
-
-// struct transmission_control_block_buffer_in;
-// struct transmission_control_block_buffer_in_func;
-// struct transmission_control_block_buffer_in_node;
-// struct transmission_control_block_buffer_in_node_func;
-// struct transmission_control_block_buffer_out;
-// struct transmission_control_block_buffer_out_func;
-// struct transmission_control_block_buffer_out_node;
-// struct transmission_control_block_buffer_out_node_func;
+struct transmission_control_buffer;
+struct transmission_control_buffer_func;
+struct transmission_control_buffer_node;
+struct transmission_control_buffer_node_func;
 
 typedef hashtable_t transmission_control_block_map_t;
 
@@ -60,41 +44,32 @@ struct transmission_control_protocol_module_func;
 struct transmission_control_protocol_context;
 struct transmission_control_protocol_context_func;
 
-typedef struct transmission_control_block                           transmission_control_block_t;
-typedef struct transmission_control_block_func                      transmission_control_block_func_t;
-typedef struct transmission_control_block_agent                     transmission_control_block_agent_t;
-typedef struct transmission_control_block_agent_func                transmission_control_block_agent_func_t;
-typedef struct transmission_control_block_client                    transmission_control_block_client_t;
-typedef struct transmission_control_block_client_func               transmission_control_block_client_func_t;
+typedef struct transmission_control_block                               transmission_control_block_t;
+typedef struct transmission_control_block_func                          transmission_control_block_func_t;
+typedef struct transmission_control_block_agent                         transmission_control_block_agent_t;
+typedef struct transmission_control_block_agent_func                    transmission_control_block_agent_func_t;
+typedef struct transmission_control_block_client                        transmission_control_block_client_t;
+typedef struct transmission_control_block_client_func                   transmission_control_block_client_func_t;
+typedef struct transmission_control_buffer                              transmission_control_buffer_t;
+typedef struct transmission_control_buffer_func                         transmission_control_buffer_func_t;
+typedef struct transmission_control_buffer_node                         transmission_control_buffer_node_t;
+typedef struct transmission_control_buffer_node_func                    transmission_control_buffer_node_func_t;
 
-typedef struct transmission_control_block_buffer                    transmission_control_block_buffer_t;
-typedef struct transmission_control_block_buffer_func               transmission_control_block_buffer_func_t;
-
-typedef struct transmission_control_block_buffer_node               transmission_control_block_buffer_node_t;
-typedef struct transmission_control_block_buffer_node_func          transmission_control_block_buffer_node_func_t;
-
-typedef transmission_control_block_buffer_node_t                    transmission_control_block_buffer_in_t;
-typedef transmission_control_block_buffer_node_t                    transmission_control_block_buffer_out_t;
-
-// typedef struct transmission_control_block_buffer_in                 transmission_control_block_buffer_in_t;
-// typedef struct transmission_control_block_buffer_in_func            transmission_control_block_buffer_in_func_t;
-// typedef struct transmission_control_block_buffer_in_node            transmission_control_block_buffer_in_node_t;
-// typedef struct transmission_control_block_buffer_in_node_func       transmission_control_block_buffer_in_node_func_t;
-
-// typedef struct transmission_control_block_buffer_out                transmission_control_block_buffer_out_t;
-// typedef struct transmission_control_block_buffer_out_func           transmission_control_block_buffer_out_func_t;
-// typedef struct transmission_control_block_buffer_out_node           transmission_control_block_buffer_out_node_t;
-// typedef struct transmission_control_block_buffer_out_node_func      transmission_control_block_buffer_out_node_func_t;
+typedef transmission_control_buffer_node_t                    transmission_control_buffer_in_t;
+typedef transmission_control_buffer_node_t                    transmission_control_buffer_out_t;
 
 typedef struct transmission_control_protocol_packet                         transmission_control_protocol_packet_t;
 typedef uint8_t                                                             transmission_control_protocol_option_t;
 typedef struct transmission_control_protocol_option_maximum_segment_size    transmission_control_protocol_option_maximum_segment_size_t;
 typedef struct transmission_control_protocol_option_window_scale            transmission_control_protocol_option_window_scale_t;
 
-typedef struct transmission_control_protocol_module                         transmission_control_protocol_module_t;
-typedef struct transmission_control_protocol_module_func                    transmission_control_protocol_module_func_t;
-typedef struct transmission_control_protocol_context                        transmission_control_protocol_context_t;
-typedef struct transmission_control_protocol_context_func                   transmission_control_protocol_context_func_t;
+typedef struct transmission_control_protocol_module                                 transmission_control_protocol_module_t;
+typedef struct transmission_control_protocol_module_func                            transmission_control_protocol_module_func_t;
+typedef struct transmission_control_protocol_context                                transmission_control_protocol_context_t;
+typedef struct transmission_control_protocol_context_func                           transmission_control_protocol_context_func_t;
+
+#define transmission_control_protocol_window_cal(window, shift)                     ((uint32_t)(window) * (uint32_t)(shift))
+#define transmission_control_protocol_maximum_window_cal(window, factor)            (transmission_control_protocol_window_cal(window, 1u << (factor)))
 
 struct transmission_control_protocol_packet {
     uint16_t source;
@@ -157,15 +132,15 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
 
 #define transmission_control_protocol_to_port(addr)                         (*((uint16_t *) (addr)))
 
-#define transmission_control_block_agent_event_type_subscription    0
-#define transmission_control_block_agent_event_type_open            1
-#define transmission_control_block_agent_event_type_read            2
-#define transmission_control_block_agent_event_type_write           3
-#define transmission_control_block_agent_event_type_close           4
-#define transmission_control_block_agent_event_type_exception       5
-#define transmission_control_block_agent_event_type_in              6
-#define transmission_control_block_agent_event_type_out             7
-#define transmission_control_block_agent_event_type_max             8
+#define transmission_control_block_agent_event_type_subscription            0
+#define transmission_control_block_agent_event_type_open                    1
+#define transmission_control_block_agent_event_type_read                    2
+#define transmission_control_block_agent_event_type_write                   3
+#define transmission_control_block_agent_event_type_close                   4
+#define transmission_control_block_agent_event_type_exception               5
+#define transmission_control_block_agent_event_type_in                      6
+#define transmission_control_block_agent_event_type_out                     7
+#define transmission_control_block_agent_event_type_max                     8
 
 typedef void (*transmission_control_block_agent_handler_t)(transmission_control_block_agent_t *, uint32_t, void *);
 
@@ -177,19 +152,11 @@ struct transmission_control_block_agent {
     transmission_control_block_agent_handler_t on;
 };
 
-/**
- * TODO: ### 20240825 | transmission_control_block_agent::open
- * TODO: ### 20240825 | transmission_control_block_agent::recv
- * TODO: ### 20240825 | transmission_control_block_agent::close
- * TODO: ### 20240825 | transmission_control_block_agent::shutdown
- * TODO: ### 20240825 | transmission_control_block_agent::in
- * TODO: ### 20240825 | transmission_control_block_agent::out
- */
 struct transmission_control_block_agent_func {
     transmission_control_block_agent_t * (*rem)(transmission_control_block_agent_t *);
 
     int32_t (*open)(transmission_control_block_agent_t *);
-    int64_t (*send)(transmission_control_block_agent_t *, transmission_control_block_buffer_out_t *, transmission_control_block_buffer_out_t *);
+    int64_t (*send)(transmission_control_block_agent_t *, transmission_control_buffer_out_t *, transmission_control_buffer_out_t *);
     int64_t (*recv)(transmission_control_block_agent_t *);
     int32_t (*close)(transmission_control_block_agent_t *);
     int32_t (*shutdown)(transmission_control_block_agent_t *, uint32_t);
@@ -209,6 +176,7 @@ struct transmission_control_block_agent_func {
 typedef socket_client_t * (*socket_client_factory_t)(int32_t, int32_t, int32_t, void *, uint64_t);    // TODO: MOVE 
 typedef void (*transmission_control_block_client_handler_t)(transmission_control_block_client_t *, uint32_t, void *);
 
+___extend(transmission_control_block_agent_t)
 struct transmission_control_block_client {
     transmission_control_block_client_func_t * func;
     sync_t * sync;
@@ -221,7 +189,7 @@ struct transmission_control_block_client_func {
     transmission_control_block_client_t * (*rem)(transmission_control_block_client_t *);
 
     int32_t (*open)(transmission_control_block_client_t *, socket_client_factory_t, event_engine_t *);
-    int64_t (*send)(transmission_control_block_client_t *, transmission_control_block_buffer_out_t *, transmission_control_block_buffer_out_t *);
+    int64_t (*send)(transmission_control_block_client_t *, transmission_control_buffer_out_t *, transmission_control_buffer_out_t *);
     int64_t (*recv)(transmission_control_block_client_t *);
     int32_t (*close)(transmission_control_block_client_t *);
     int32_t (*shutdown)(transmission_control_block_client_t *, uint32_t);
@@ -245,118 +213,119 @@ extern transmission_control_block_client_t * transmission_control_block_client_g
 
 #define transmission_control_block_client_on(agent, type, node)         ((agent)->on ? ((agent)->on(agent, type, node), success) : ((agent)->on(agent, type, node), fail))
 
-typedef transmission_control_block_buffer_node_t * (*transmission_control_block_buffer_node_factory_t)(transmission_control_block_buffer_t *, const void *, uint64_t);
+typedef transmission_control_buffer_node_t * (*transmission_control_buffer_node_factory_t)(transmission_control_buffer_t *, const void *, uint64_t);
 
-struct transmission_control_block_buffer {
-    transmission_control_block_buffer_func_t *          func;
-    sync_t *                                            sync;
-    uint64_t                                            size;
-    transmission_control_block_buffer_node_t *          head;
-    transmission_control_block_buffer_node_t *          tail;
-    transmission_control_block_buffer_node_t *          front;
-    uint64_t                                            page;               // maximum segment size
-    transmission_control_block_buffer_node_factory_t    nodegen;
+struct transmission_control_buffer {
+    transmission_control_buffer_func_t *        func;
+    sync_t *                                    sync;
+    uint64_t                                    size;
+    transmission_control_buffer_node_t *        head;
+    transmission_control_buffer_node_t *        tail;
+    transmission_control_buffer_node_t *        front;
+    uint64_t                                    page;               // maximum segment size
+    transmission_control_buffer_node_factory_t  nodegen;
 
-    uint32_t                                            sequence;
-    uint32_t                                            acknowledge;
-    uint16_t                                            window;
-    uint8_t                                             scale;
+    uint32_t                                    sequence;
+    uint32_t                                    acknowledge;
+    uint16_t                                    window;
+    uint8_t                                     scale;
+    uint16_t                                    shift;
 };
 
-struct transmission_control_block_buffer_func {
-    transmission_control_block_buffer_t * (*rem)(transmission_control_block_buffer_t *);
-    void (*push)(transmission_control_block_buffer_t *, const void *, uint64_t);
-    void (*pop)(transmission_control_block_buffer_t *, uint64_t);
-    void (*clear)(transmission_control_block_buffer_t *);
-    void (*shrink)(transmission_control_block_buffer_t *);
-    transmission_control_block_buffer_node_t * (*front)(transmission_control_block_buffer_t *);
-    transmission_control_block_buffer_node_t * (*back)(transmission_control_block_buffer_t *, uint64_t);
-    transmission_control_block_buffer_node_t * (*head)(transmission_control_block_buffer_t *);
-    transmission_control_block_buffer_node_t * (*add)(transmission_control_block_buffer_t *, transmission_control_block_buffer_node_t *);
-    transmission_control_block_buffer_node_t * (*del)(transmission_control_block_buffer_t *, transmission_control_block_buffer_node_t *);
+struct transmission_control_buffer_func {
+    transmission_control_buffer_t * (*rem)(transmission_control_buffer_t *);
+    void (*push)(transmission_control_buffer_t *, const void *, uint64_t);
+    void (*pop)(transmission_control_buffer_t *, uint64_t);
+    void (*clear)(transmission_control_buffer_t *);
+    void (*shrink)(transmission_control_buffer_t *);
+    transmission_control_buffer_node_t * (*front)(transmission_control_buffer_t *);
+    transmission_control_buffer_node_t * (*back)(transmission_control_buffer_t *, uint64_t);
+    transmission_control_buffer_node_t * (*head)(transmission_control_buffer_t *);
+    transmission_control_buffer_node_t * (*add)(transmission_control_buffer_t *, transmission_control_buffer_node_t *);
+    transmission_control_buffer_node_t * (*del)(transmission_control_buffer_t *, transmission_control_buffer_node_t *);
 };
 
-extern transmission_control_block_buffer_t * transmission_control_block_buffer_gen(transmission_control_block_buffer_node_factory_t nodegen, uint64_t mss);
+extern transmission_control_buffer_t * transmission_control_buffer_gen(transmission_control_buffer_node_factory_t nodegen, uint64_t mss);
 
+#define transmission_control_buffer_window_cal(buffer)                      ((uint32_t) ((buffer)->window)) * (1u << ((buffer)->scale)))
 
-#define transmission_control_block_buffer_rem(buffer)                               ((buffer)->func->rem(buffer))
-#define transmission_control_block_buffer_push(buffer, data, n)                     ((buffer)->func->push(buffer, data, n))
-#define transmission_control_block_buffer_pop(buffer, n)                            ((buffer)->func->pop(buffer, n))
-#define transmission_control_block_buffer_clear(buffer)                             ((buffer)->func->clear(buffer))
-#define transmission_control_block_buffer_front(buffer)                             ((buffer)->func->front(buffer))
-#define transmission_control_block_buffer_back(buffer, hint)                        ((buffer)->func->back(buffer, hint))
-#define transmission_control_block_buffer_add(buffer, node)                         ((buffer)->func->add(buffer, node))
-#define transmission_control_block_buffer_del(buffer, node)                         ((buffer)->func->del(buffer, node))
+#define transmission_control_buffer_rem(buffer)                             ((buffer)->func->rem(buffer))
+#define transmission_control_buffer_push(buffer, data, n)                   ((buffer)->func->push(buffer, data, n))
+#define transmission_control_buffer_pop(buffer, n)                          ((buffer)->func->pop(buffer, n))
+#define transmission_control_buffer_clear(buffer)                           ((buffer)->func->clear(buffer))
+#define transmission_control_buffer_front(buffer)                           ((buffer)->func->front(buffer))
+#define transmission_control_buffer_back(buffer, hint)                      ((buffer)->func->back(buffer, hint))
+#define transmission_control_buffer_add(buffer, node)                       ((buffer)->func->add(buffer, node))
+#define transmission_control_buffer_del(buffer, node)                       ((buffer)->func->del(buffer, node))
 
-#define transmission_control_block_buffer_out_nodegen(buffer, data, n)              ((buffer)->nodegen(buffer, data, n))
+#define transmission_control_buffer_out_nodegen(buffer, data, n)            ((buffer)->nodegen(buffer, data, n))
 
-#define transmission_control_block_buffer_maximum_size_set(buffer, v)               ((buffer)->page = v)
-#define transmission_control_block_buffer_maximum_size_get(buffer)                  ((uint16_t)((buffer)->page))
+#define transmission_control_buffer_maximum_size_set(buffer, v)             ((buffer)->page = v)
+#define transmission_control_buffer_maximum_size_get(buffer)                ((uint16_t)((buffer)->page))
 
 ___extend(buffer_list_t)
-struct transmission_control_block_buffer_node {
-    transmission_control_block_buffer_node_func_t *     func;
-    sync_t *                                            sync;
-    buffer_list_t *                                     collection;
-    transmission_control_block_buffer_node_t *          prev;
-    transmission_control_block_buffer_node_t *          next;
-    uint64_t                                            position;
-    uint64_t                                            size;
-    uint64_t                                            capacity;
-    void *                                              mem;
+struct transmission_control_buffer_node {
+    transmission_control_buffer_node_func_t *   func;
+    sync_t *                                    sync;
+    buffer_list_t *                             collection;
+    transmission_control_buffer_node_t *        prev;
+    transmission_control_buffer_node_t *        next;
+    uint64_t                                    position;
+    uint64_t                                    size;
+    uint64_t                                    capacity;
+    void *                                      mem;
 
-    ___reference uint8_t *                              segment;
-    nanosecond_t                                        time;
-
+    ___reference uint8_t *                      segment;
+    nanosecond_t                                time;
 
     struct {
-        nanosecond_t                                    time;
-        uint8_t                                         count;
+        nanosecond_t                            time;
+        uint8_t                                 count;
     } transmit;
 
-    uint32_t                                            sequence;              // @deprecated
-    uint32_t                                            acknowledge;           // @deprecated
+    uint32_t                                    sequence;
+    uint32_t                                    acknowledge;
 };
 
-struct transmission_control_block_buffer_node_func {
-    transmission_control_block_buffer_node_t * (*rem)(transmission_control_block_buffer_node_t *);
-    void * (*front)(transmission_control_block_buffer_node_t *);
-    void * (*back)(transmission_control_block_buffer_node_t *);
-    int32_t (*shrink)(transmission_control_block_buffer_node_t *);
-    uint64_t (*length)(transmission_control_block_buffer_node_t *);
-    uint64_t (*remain)(transmission_control_block_buffer_node_t *);
-    uint64_t (*position_get)(transmission_control_block_buffer_node_t *);
-    void (*position_set)(transmission_control_block_buffer_node_t *, uint64_t);
-    uint64_t (*size_get)(transmission_control_block_buffer_node_t *);
-    void (*size_set)(transmission_control_block_buffer_node_t *, uint64_t);
-    uint64_t (*capacity_get)(transmission_control_block_buffer_node_t *);
-    void (*capacity_set)(transmission_control_block_buffer_node_t *, uint64_t);
-    void (*clear)(transmission_control_block_buffer_node_t *);
+struct transmission_control_buffer_node_func {
+    transmission_control_buffer_node_t * (*rem)(transmission_control_buffer_node_t *);
+    void * (*front)(transmission_control_buffer_node_t *);
+    void * (*back)(transmission_control_buffer_node_t *);
+    int32_t (*shrink)(transmission_control_buffer_node_t *);
+    uint64_t (*length)(transmission_control_buffer_node_t *);
+    uint64_t (*remain)(transmission_control_buffer_node_t *);
+    uint64_t (*position_get)(transmission_control_buffer_node_t *);
+    void (*position_set)(transmission_control_buffer_node_t *, uint64_t);
+    uint64_t (*size_get)(transmission_control_buffer_node_t *);
+    void (*size_set)(transmission_control_buffer_node_t *, uint64_t);
+    uint64_t (*capacity_get)(transmission_control_buffer_node_t *);
+    void (*capacity_set)(transmission_control_buffer_node_t *, uint64_t);
+    void (*clear)(transmission_control_buffer_node_t *);
 };
 
-extern transmission_control_block_buffer_node_t * transmission_control_block_buffer_node(transmission_control_block_buffer_t * buffer, const void * data, uint64_t n);
+extern transmission_control_buffer_node_t * transmission_control_buffer_node(transmission_control_buffer_t * buffer, const void * data, uint64_t n);
 
-#define transmission_control_block_buffer_in_gen                            transmission_control_block_buffer_node
-#define transmission_control_block_buffer_out_gen                           transmission_control_block_buffer_node
+#define transmission_control_buffer_in_gen                              transmission_control_buffer_node
+#define transmission_control_buffer_out_gen                             transmission_control_buffer_node
 
-#define transmission_control_block_buffer_node_rem(node)                    ((node)->func->rem(node))
-#define transmission_control_block_buffer_node_front(node)                  ((node)->func->front(node))
-#define transmission_control_block_buffer_node_back(node)                   ((node)->func->back(node))
-#define transmission_control_block_buffer_node_shrink(node)                 ((node)->func->shrink(node))
-#define transmission_control_block_buffer_node_length(node)                 ((node) ? (node)->func->length(node) : 0)
-#define transmission_control_block_buffer_node_remain(node)                 ((node) ? (node)->func->remain(node) : 0)
-#define transmission_control_block_buffer_node_position_get(node)           ((node)->func->position_get(node))
-#define transmission_control_block_buffer_node_position_set(node, n)        ((node)->func->position_set(node, n))
-#define transmission_control_block_buffer_node_size_get(node)               ((node)->func->size_get(node))
-#define transmission_control_block_buffer_node_size_set(node, n)            ((node)->func->size_set(node, n))
-#define transmission_control_block_buffer_node_capacity_get(node)           ((node)->func->capacity_get(node))
-#define transmission_control_block_buffer_node_capacity_set(node, n)        ((node)->func->capacity_set(node, n))
-#define transmission_control_block_buffer_node_clear(node)                  ((node)->func->clear(node))
-#define transmission_control_block_buffer_node_segment_get(node)            ((node)->segment)
-#define transmission_control_block_buffer_node_segment_set(node, p)         ((node)->segment = p)
+#define transmission_control_buffer_node_rem(node)                      ((node)->func->rem(node))
+#define transmission_control_buffer_node_front(node)                    ((node)->func->front(node))
+#define transmission_control_buffer_node_back(node)                     ((node)->func->back(node))
+#define transmission_control_buffer_node_shrink(node)                   ((node)->func->shrink(node))
+#define transmission_control_buffer_node_length(node)                   ((node) ? (node)->func->length(node) : 0)
+#define transmission_control_buffer_node_remain(node)                   ((node) ? (node)->func->remain(node) : 0)
+#define transmission_control_buffer_node_position_get(node)             ((node)->func->position_get(node))
+#define transmission_control_buffer_node_position_set(node, n)          ((node)->func->position_set(node, n))
+#define transmission_control_buffer_node_size_get(node)                 ((node)->func->size_get(node))
+#define transmission_control_buffer_node_size_set(node, n)              ((node)->func->size_set(node, n))
+#define transmission_control_buffer_node_capacity_get(node)             ((node)->func->capacity_get(node))
+#define transmission_control_buffer_node_capacity_set(node, n)          ((node)->func->capacity_set(node, n))
+#define transmission_control_buffer_node_clear(node)                    ((node)->func->clear(node))
+#define transmission_control_buffer_node_segment_get(node)              ((node)->segment)
+#define transmission_control_buffer_node_segment_set(node, p)           ((node)->segment = p)
 
-#define transmission_control_block_buffer_out_segment_get(node)             ((node)->segment)
-#define transmission_control_block_buffer_out_segment_set(node, p)          ((node)->segment = p)
+#define transmission_control_buffer_out_segment_get(node)               ((node)->segment)
+#define transmission_control_buffer_out_segment_set(node, p)            ((node)->segment = p)
 
 /**
  * Inherited hashtable_node_t
@@ -380,8 +349,8 @@ struct transmission_control_block {
     } state;
 
     struct {
-        transmission_control_block_buffer_t * in;      // HOLE 을 지원하는 버퍼를 만들고, 한 번에 SEND 하도록 혹은 버퍼 노드 교체만 이루어지도록 ,...
-        transmission_control_block_buffer_t * out;     // SEGMENT 크기로 자를 수 있는 버퍼, 하나의 의미 있는 IP 패킷을 담는다.
+        transmission_control_buffer_t * in;      // HOLE 을 지원하는 버퍼를 만들고, 한 번에 SEND 하도록 혹은 버퍼 노드 교체만 이루어지도록 ,...
+        transmission_control_buffer_t * out;     // SEGMENT 크기로 자를 수 있는 버퍼, 하나의 의미 있는 IP 패킷을 담는다.
     } buffer;
     
     transmission_control_block_agent_t * agent;
@@ -399,7 +368,7 @@ struct transmission_control_block_func {
     int32_t (*in)(transmission_control_block_t *, transmission_control_protocol_context_t *);
     int32_t (*complete_in)(transmission_control_block_t *, transmission_control_protocol_context_t *);
     
-    int32_t (*out)(transmission_control_block_t *, transmission_control_block_buffer_out_t *);
+    int32_t (*out)(transmission_control_block_t *, transmission_control_buffer_out_t *);
 };
 
 extern int32_t transmission_control_block_in_closed(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
@@ -469,9 +438,6 @@ extern transmission_control_protocol_context_t * transmission_control_block_cont
 
 extern int32_t transmission_control_block_remote_sequence_update(transmission_control_block_t * block, transmission_control_protocol_context_t * context);
 
-// ___implement extern transmission_control_protocol_context_t * transmission_control_block_func_context_gen_transmit_segment(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node, uint8_t flags, uint8_t * buffer, uint64_t bufferlen);
-// ___implement extern int32_t transmission_control_block_func_check_window_remote(transmission_control_block_t * block, transmission_control_block_buffer_node_t * node);
-
 #define transmission_control_block_sequence_set(block, v)               ((block)->buffer.out->sequence = v)
 #define transmission_control_block_sequence_get(block)                  ((block)->buffer.out->sequence)
 
@@ -501,17 +467,18 @@ extern int32_t transmission_control_block_remote_sequence_update(transmission_co
 
 #define transmission_control_block_window_set(block, v)                     ((block)->buffer.out->window = v)
 #define transmission_control_block_window_get(block)                        ((block)->buffer.out->window)
+// #define transmission_control_block_window_cal(block)                        ()
 #define transmission_control_block_remote_window_set(block, v)              ((block)->buffer.in->window = v)
 #define transmission_control_block_remote_window_get(block)                 ((block)->buffer.in->window)
 
-#define transmission_control_block_maximum_segment_set(block, v)            (transmission_control_block_buffer_maximum_size_set((block)->buffer.out, v))
-#define transmission_control_block_maximum_segment_get(block)               (transmission_control_block_buffer_maximum_size_get((block)->buffer.out))
-#define transmission_control_block_remote_maximum_segment_set(block, v)     (transmission_control_block_buffer_maximum_size_set((block)->buffer.in, v))
-#define transmission_control_block_remote_maximum_segment_get(block)        (transmission_control_block_buffer_maximum_size_get((block)->buffer.in))
+#define transmission_control_block_maximum_segment_set(block, v)            (transmission_control_buffer_maximum_size_set((block)->buffer.out, v))
+#define transmission_control_block_maximum_segment_get(block)               (transmission_control_buffer_maximum_size_get((block)->buffer.out))
+#define transmission_control_block_remote_maximum_segment_set(block, v)     (transmission_control_buffer_maximum_size_set((block)->buffer.in, v))
+#define transmission_control_block_remote_maximum_segment_get(block)        (transmission_control_buffer_maximum_size_get((block)->buffer.in))
 
-#define transmission_control_block_window_scale_set(block, v)               ((block)->buffer.out->scale = ((v) > 14 ? 14 : ((v)) == 0 ? 1 : (v)))
+#define transmission_control_block_window_scale_set(block, v)               ((block)->buffer.out->scale = ((v) > 14 ? 14 : (v)))
 #define transmission_control_block_window_scale_get(block)                  ((block)->buffer.out->scale)
-#define transmission_control_block_remote_window_scale_set(block, v)        ((block)->buffer.in->scale = ((v) > 14 ? 14 : ((v)) == 0 ? 1 : (v)))
+#define transmission_control_block_remote_window_scale_set(block, v)        ((block)->buffer.in->scale = ((v) > 14 ? 14 : (v)))
 #define transmission_control_block_remote_window_scale_get(block)           ((block)->buffer.in->scale)
 
 #define transmission_control_block_version_set(block, v)                ((block)->version = v)
@@ -526,8 +493,6 @@ extern int32_t transmission_control_block_remote_sequence_update(transmission_co
 #define transmission_control_block_path_get(block)                      ((block)->path)
 #define transmission_control_block_agent_set(block, v)                  ((block)->agent = v)
 #define transmission_control_block_agent_get(block)                     ((block)->agent)
-
-
 
 #define transmission_control_block_avail_io(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_io)
 #define transmission_control_block_avail_in(block)                      (transmission_control_block_state_get(block) & transmission_control_state_avail_in)
@@ -547,231 +512,6 @@ extern int32_t transmission_control_block_remote_sequence_update(transmission_co
 
 #define transmission_control_block_check_window_remote                  transmission_control_block_func_check_window_remote
 #define transmission_control_block_context_gen_transmit_segment         transmission_control_block_func_context_gen_transmit_segment
-
-
-
-// typedef transmission_control_block_buffer_out_node_t * (*transmission_control_block_buffer_out_node_factory_t)(transmission_control_block_buffer_out_t *, const void *, uint64_t);
-
-// struct transmission_control_block_buffer_out {
-//     transmission_control_block_buffer_out_func_t * func;
-//     sync_t * sync;
-//     uint64_t size;
-//     transmission_control_block_buffer_out_node_t * head;
-//     transmission_control_block_buffer_out_node_t * tail;
-//     transmission_control_block_buffer_out_node_t * front;
-
-//     uint64_t page;
-//     transmission_control_block_buffer_out_node_factory_t nodegen;
-// };
-
-// struct transmission_control_block_buffer_out_func {
-//     transmission_control_block_buffer_out_t * (*rem)(transmission_control_block_buffer_out_t *);
-//     void (*push)(transmission_control_block_buffer_out_t *, const void *, uint64_t);
-//     void (*pop)(transmission_control_block_buffer_out_t *, uint64_t);
-//     void (*clear)(transmission_control_block_buffer_out_t *);
-//     void (*shrink)(transmission_control_block_buffer_out_t *);
-//     transmission_control_block_buffer_out_node_t * (*front)(transmission_control_block_buffer_out_t *);
-//     transmission_control_block_buffer_out_node_t * (*back)(transmission_control_block_buffer_out_t *, uint64_t);
-//     transmission_control_block_buffer_out_node_t * (*head)(transmission_control_block_buffer_out_t *);
-
-//     transmission_control_block_buffer_out_node_t * (*add)(transmission_control_block_buffer_out_t *, transmission_control_block_buffer_out_node_t *);
-//     transmission_control_block_buffer_out_node_t * (*del)(transmission_control_block_buffer_out_t *, transmission_control_block_buffer_out_node_t *);
-// };
-
-// extern transmission_control_block_buffer_out_t * transmission_control_block_buffer_out_gen(transmission_control_block_buffer_out_node_factory_t nodegen, uint64_t page);
-
-// extern void transmission_control_block_buffer_out_func_transmit_on(transmission_control_block_buffer_out_t * buffer, transmission_control_block_buffer_out_node_t * node);
-
-// #define transmission_control_block_buffer_out_rem(buffer)                           ((buffer)->func->rem(buffer))
-// #define transmission_control_block_buffer_out_push(buffer, data, n)                 ((buffer)->func->push(buffer, data, n))
-// #define transmission_control_block_buffer_out_pop(buffer, n)                        ((buffer)->func->pop(buffer, n))
-// #define transmission_control_block_buffer_out_clear(buffer)                         ((buffer)->func->clear(buffer))
-// #define transmission_control_block_buffer_out_front(buffer)                         ((buffer)->func->front(buffer))
-// #define transmission_control_block_buffer_out_back(buffer, hint)                    ((buffer)->func->back(buffer, hint))
-// #define transmission_control_block_buffer_out_add(buffer, node)                     ((buffer)->func->add(buffer, node))
-// #define transmission_control_block_buffer_out_del(buffer, node)                     ((buffer)->func->del(buffer, node))
-
-// #define transmission_control_block_buffer_out_nodegen(buffer, data, n)              ((buffer)->nodegen(buffer, data, n))
-
-// #define transmission_control_block_buffer_out_transmit_on                           transmission_control_block_buffer_func_transmit_on
-
-// #define transmission_control_block_buffer_out_head(buffer)                          ((buffer)->head)
-// #define transmission_control_block_buffer_out_tail(buffer)                          ((buffer)->tail)
-
-// struct transmission_control_block_buffer_out_node {
-//     transmission_control_block_buffer_out_node_func_t * func;
-//     sync_t * sync;
-//     buffer_list_t * collection;
-//     transmission_control_block_buffer_out_node_t * prev;
-//     transmission_control_block_buffer_out_node_t * next;
-//     uint64_t position;
-//     uint64_t size;
-//     uint64_t capacity;
-//     void * mem;
-
-//     ___reference uint8_t * segment;
-//     uint32_t sequence;              // @deprecated
-//     uint32_t acknowledge;           // @deprecated
-
-//     struct {
-//         nanosecond_t time;
-//         uint8_t count;
-//     } transmit;
-
-//     nanosecond_t time;
-// };
-
-// struct transmission_control_block_buffer_out_node_func {
-//     transmission_control_block_buffer_out_node_t * (*rem)(transmission_control_block_buffer_out_node_t *);
-//     void * (*front)(transmission_control_block_buffer_out_node_t *);
-//     void * (*back)(transmission_control_block_buffer_out_node_t *);
-//     int32_t (*shrink)(transmission_control_block_buffer_out_node_t *);
-//     uint64_t (*length)(transmission_control_block_buffer_out_node_t *);
-//     uint64_t (*remain)(transmission_control_block_buffer_out_node_t *);
-//     uint64_t (*position_get)(transmission_control_block_buffer_out_node_t *);
-//     void (*position_set)(transmission_control_block_buffer_out_node_t *, uint64_t);
-//     uint64_t (*size_get)(transmission_control_block_buffer_out_node_t *);
-//     void (*size_set)(transmission_control_block_buffer_out_node_t *, uint64_t);
-//     uint64_t (*capacity_get)(transmission_control_block_buffer_out_node_t *);
-//     void (*capacity_set)(transmission_control_block_buffer_out_node_t *, uint64_t);
-//     void (*clear)(transmission_control_block_buffer_out_node_t *);
-// };
-
-// extern transmission_control_block_buffer_out_node_t * transmission_control_block_buffer_out_node_gen(transmission_control_block_buffer_out_t * buffer, const void * data, uint64_t n);
-
-// #define transmission_control_block_buffer_out_node_rem(node)                            ((node)->func->rem(node))
-// #define transmission_control_block_buffer_out_node_front(node)                          ((node)->func->front(node))
-// #define transmission_control_block_buffer_out_node_back(node)                           ((node)->func->back(node))
-// #define transmission_control_block_buffer_out_node_shrink(node)                         ((node)->func->shrink(node))
-// #define transmission_control_block_buffer_out_node_length(node)                         ((node) ? (node)->func->length(node) : 0)
-// #define transmission_control_block_buffer_out_node_remain(node)                         ((node) ? (node)->func->remain(node) : 0)
-// #define transmission_control_block_buffer_out_node_position_get(node)                   ((node)->func->position_get(node))
-// #define transmission_control_block_buffer_out_node_position_set(node, n)                ((node)->func->position_set(node, n))
-// #define transmission_control_block_buffer_out_node_size_get(node)                       ((node)->func->size_get(node))
-// #define transmission_control_block_buffer_out_node_size_set(node, n)                    ((node)->func->size_set(node, n))
-// #define transmission_control_block_buffer_out_node_capacity_get(node)                   ((node)->func->capacity_get(node))
-// #define transmission_control_block_buffer_out_node_capacity_set(node, n)                ((node)->func->capacity_set(node, n))
-// #define transmission_control_block_buffer_out_node_clear(node)                          ((node)->func->clear(node))
-
-// #define transmission_control_block_buffer_out_node_transmit_count_get(node)             ((node)->transmit.count)
-
-// #define transmission_control_block_buffer_out_node_segment_set(node, v)                 ((node)->segment = v)
-// #define transmission_control_block_buffer_out_node_segment_get(node)                    ((node)->segment)
-
-// // @deprecated
-// #define transmission_control_block_buffer_out_node_sequence_set(node, v)                ((node)->sequence = v)
-// // @deprecated
-// #define transmission_control_block_buffer_out_node_sequence_get(node)                   ((node)->sequence + (uint32_t)((node)->position))
-
-// #define transmission_control_block_buffer_out_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))
-
-// typedef transmission_control_block_buffer_in_node_t * (*transmission_control_block_buffer_in_node_factory_t)(transmission_control_block_buffer_in_t *, const void *, uint64_t);
-
-// struct transmission_control_block_buffer_in {
-//     transmission_control_block_buffer_in_func_t * func;
-//     sync_t * sync;
-//     uint64_t size;
-//     transmission_control_block_buffer_in_node_t * head;
-//     transmission_control_block_buffer_in_node_t * tail;
-//     transmission_control_block_buffer_in_node_t * front;
-
-//     uint64_t page;
-//     transmission_control_block_buffer_in_node_factory_t nodegen;
-// };
-
-// struct transmission_control_block_buffer_in_func {
-//     transmission_control_block_buffer_in_t * (*rem)(transmission_control_block_buffer_in_t *);
-//     void (*push)(transmission_control_block_buffer_in_t *, const void *, uint64_t);
-//     void (*pop)(transmission_control_block_buffer_in_t *, uint64_t);
-//     void (*clear)(transmission_control_block_buffer_in_t *);
-//     void (*shrink)(transmission_control_block_buffer_in_t *);
-//     transmission_control_block_buffer_in_node_t * (*front)(transmission_control_block_buffer_in_t *);
-//     transmission_control_block_buffer_in_node_t * (*back)(transmission_control_block_buffer_in_t *, uint64_t);
-//     transmission_control_block_buffer_in_node_t * (*head)(transmission_control_block_buffer_in_t *);
-
-//     transmission_control_block_buffer_in_node_t * (*add)(transmission_control_block_buffer_in_t *, transmission_control_block_buffer_in_node_t *);
-//     transmission_control_block_buffer_in_node_t * (*del)(transmission_control_block_buffer_in_t *, transmission_control_block_buffer_in_node_t *);
-// };
-
-// extern transmission_control_block_buffer_in_t * transmission_control_block_buffer_in_gen(transmission_control_block_buffer_in_node_factory_t nodegen, uint64_t page);
-
-// extern void transmission_control_block_buffer_in_func_transmit_on(transmission_control_block_buffer_in_t * buffer, transmission_control_block_buffer_in_node_t * node);
-
-// #define transmission_control_block_buffer_in_rem(buffer)                           ((buffer)->func->rem(buffer))
-// #define transmission_control_block_buffer_in_push(buffer, data, n)                 ((buffer)->func->push(buffer, data, n))
-// #define transmission_control_block_buffer_in_pop(buffer, n)                        ((buffer)->func->pop(buffer, n))
-// #define transmission_control_block_buffer_in_clear(buffer)                         ((buffer)->func->clear(buffer))
-// #define transmission_control_block_buffer_in_front(buffer)                         ((buffer)->func->front(buffer))
-// #define transmission_control_block_buffer_in_back(buffer, hint)                    ((buffer)->func->back(buffer, hint))
-// #define transmission_control_block_buffer_in_add(buffer, node)                     ((buffer)->func->add(buffer, node))
-// #define transmission_control_block_buffer_in_del(buffer, node)                     ((buffer)->func->del(buffer, node))
-
-// #define transmission_control_block_buffer_in_nodegen(buffer, data, n)              ((buffer)->nodegen(buffer, data, n))
-
-// #define transmission_control_block_buffer_in_transmit_on                           transmission_control_block_buffer_func_transmit_on
-
-// #define transmission_control_block_buffer_in_head(buffer)                          ((buffer)->head)
-// #define transmission_control_block_buffer_in_tail(buffer)                          ((buffer)->tail)
-
-// struct transmission_control_block_buffer_in_node {
-//     transmission_control_block_buffer_in_node_func_t * func;
-//     sync_t * sync;
-//     buffer_list_t * collection;
-//     transmission_control_block_buffer_in_node_t * prev;
-//     transmission_control_block_buffer_in_node_t * next;
-//     uint64_t position;
-//     uint64_t size;
-//     uint64_t capacity;
-//     void * mem;
-
-//     uint32_t sequence;
-//     uint32_t acknowledge;
-
-//     struct {
-//         nanosecond_t time;
-//         uint8_t count;
-//     } transmit;
-
-//     nanosecond_t time;
-// };
-
-// struct transmission_control_block_buffer_in_node_func {
-//     transmission_control_block_buffer_in_node_t * (*rem)(transmission_control_block_buffer_in_node_t *);
-//     void * (*front)(transmission_control_block_buffer_in_node_t *);
-//     void * (*back)(transmission_control_block_buffer_in_node_t *);
-//     int32_t (*shrink)(transmission_control_block_buffer_in_node_t *);
-//     uint64_t (*length)(transmission_control_block_buffer_in_node_t *);
-//     uint64_t (*remain)(transmission_control_block_buffer_in_node_t *);
-//     uint64_t (*position_get)(transmission_control_block_buffer_in_node_t *);
-//     void (*position_set)(transmission_control_block_buffer_in_node_t *, uint64_t);
-//     uint64_t (*size_get)(transmission_control_block_buffer_in_node_t *);
-//     void (*size_set)(transmission_control_block_buffer_in_node_t *, uint64_t);
-//     uint64_t (*capacity_get)(transmission_control_block_buffer_in_node_t *);
-//     void (*capacity_set)(transmission_control_block_buffer_in_node_t *, uint64_t);
-//     void (*clear)(transmission_control_block_buffer_in_node_t *);
-// };
-
-// extern transmission_control_block_buffer_in_node_t * transmission_control_block_buffer_in_node_gen(transmission_control_block_buffer_in_t * buffer, const void * data, uint64_t n);
-
-// #define transmission_control_block_buffer_in_node_rem(node)                            ((node)->func->rem(node))
-// #define transmission_control_block_buffer_in_node_front(node)                          ((node)->func->front(node))
-// #define transmission_control_block_buffer_in_node_back(node)                           ((node)->func->back(node))
-// #define transmission_control_block_buffer_in_node_shrink(node)                         ((node)->func->shrink(node))
-// #define transmission_control_block_buffer_in_node_length(node)                         ((node) ? (node)->func->length(node) : 0)
-// #define transmission_control_block_buffer_in_node_remain(node)                         ((node) ? (node)->func->remain(node) : 0)
-// #define transmission_control_block_buffer_in_node_position_get(node)                   ((node)->func->position_get(node))
-// #define transmission_control_block_buffer_in_node_position_set(node, n)                ((node)->func->position_set(node, n))
-// #define transmission_control_block_buffer_in_node_size_get(node)                       ((node)->func->size_get(node))
-// #define transmission_control_block_buffer_in_node_size_set(node, n)                    ((node)->func->size_set(node, n))
-// #define transmission_control_block_buffer_in_node_capacity_get(node)                   ((node)->func->capacity_get(node))
-// #define transmission_control_block_buffer_in_node_capacity_set(node, n)                ((node)->func->capacity_set(node, n))
-// #define transmission_control_block_buffer_in_node_clear(node)                          ((node)->func->clear(node))
-
-// #define transmission_control_block_buffer_in_node_transmit_count_get(node)             ((node)->transmit.count)
-// #define transmission_control_block_buffer_in_node_sequence_set(node, v)                ((node)->sequence = v)
-// #define transmission_control_block_buffer_in_node_sequence_get(node)                   ((node)->sequence + (uint32_t)((node)->position))
-
-// #define transmission_control_block_buffer_in_node_retransmission_increase(node)        (nanosecond_get(address_of((node)->transmit.time)), ((node)->transmit.count = (node)->transmit.count + 1))
 
 #define transmission_control_protocol_module_maximum_segment_size                       1460
 #define transmission_control_protocol_module_scale_factor                               8

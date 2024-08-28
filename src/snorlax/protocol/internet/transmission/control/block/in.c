@@ -29,8 +29,8 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
         snorlaxdbg(block->buffer.in  != nil, false, "critical", "");
         snorlaxdbg(block->buffer.out != nil, false, "critical", "");
 
-        block->buffer.in  = transmission_control_block_buffer_gen(transmission_control_block_buffer_in_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
-        block->buffer.out = transmission_control_block_buffer_gen(transmission_control_block_buffer_out_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
+        block->buffer.in  = transmission_control_buffer_gen(transmission_control_buffer_in_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
+        block->buffer.out = transmission_control_buffer_gen(transmission_control_buffer_out_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
 
         /**
          * @see     [RFC9293 / 3.1. Header Format](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#31-header-format)
@@ -47,8 +47,16 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
 
         snorlaxdbg(false, transmission_control_block_remote_maximum_segment_get(block) == 0, "critical", "");
 
+        /**
+         * Upon receiving a SYN segment with a Window Scale option containing `shift.cnt = S`, a TCP must set `Snd.Wind.Shift` to `S` and must sete `Rcv.Wind.Shift` to `R`;
+         * otherwise, it must set both `Snd.Wind.Shift` and `Rcv.Wind.Shift` to zero.
+         * 
+         * @see     [2.3. Using the Window Scale Option](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC7323/TCPWindowScaleOption.md#23-using-the-window-scale-option)
+         */
         transmission_control_block_window_set(block, transmission_control_protocol_module_window_get(block->module));
-        transmission_control_block_window_scale_set(block, transmission_control_protocol_module_scale_get(block->module));
+        if(transmission_control_block_remote_window_scale_get(block) > 0) {
+            transmission_control_block_window_scale_set(block, transmission_control_protocol_module_scale_get(block->module));
+        }
         transmission_control_block_sequence_set(block, transmission_control_protocol_module_func_sequence_gen(block->module, context->parent, context));
         transmission_control_block_acknowledge_set(block, transmission_control_protocol_context_sequence_get(context) + 1);
 

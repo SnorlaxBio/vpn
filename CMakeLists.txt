@@ -150,13 +150,13 @@ set(SNORLAX_PROTOCOL_SOURCE     src/snorlax/protocol.c
                                 src/snorlax/protocol/internet/transmission/control/packet.c
                                 src/snorlax/protocol/internet/transmission/control/module.c
                                 src/snorlax/protocol/internet/transmission/control/context.c
+                                src/snorlax/protocol/internet/transmission/control/buffer.c
+                                src/snorlax/protocol/internet/transmission/control/buffer/node.c
                                 src/snorlax/protocol/internet/transmission/control/block.c
                                 src/snorlax/protocol/internet/transmission/control/block/client.c
                                 src/snorlax/protocol/internet/transmission/control/block/client/handler.c
                                 src/snorlax/protocol/internet/transmission/control/block/on.c
                                 src/snorlax/protocol/internet/transmission/control/block/in.c
-                                src/snorlax/protocol/internet/transmission/control/block/buffer.c
-                                src/snorlax/protocol/internet/transmission/control/block/buffer/node.c
                                 src/snorlax/protocol/internet/transmission/control/block/complete/in.c)
 
 set(SNORLAX_PROTOCOL_HEADER     src/snorlax/protocol.h
