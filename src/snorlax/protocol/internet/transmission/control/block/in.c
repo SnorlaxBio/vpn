@@ -29,8 +29,8 @@ extern int32_t transmission_control_block_in_closed(transmission_control_block_t
         snorlaxdbg(block->buffer.in  != nil, false, "critical", "");
         snorlaxdbg(block->buffer.out != nil, false, "critical", "");
 
-        block->buffer.in  = transmission_control_buffer_gen(transmission_control_buffer_in_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
-        block->buffer.out = transmission_control_buffer_gen(transmission_control_buffer_out_gen, transmission_control_protocol_module_maximum_segment_get(block->module));
+        block->buffer.in  = transmission_control_buffer_gen(transmission_control_buffer_in_gen, block->module);
+        block->buffer.out = transmission_control_buffer_gen(transmission_control_buffer_out_gen, block->module);
 
         /**
          * @see     [RFC9293 / 3.1. Header Format](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#31-header-format)
@@ -116,8 +116,6 @@ extern int32_t transmission_control_block_in_synchronize_sequence_recv(transmiss
     snorlaxdbg(block == nil, false, "critical", "");
 #endif // RELEASE
 
-    
-
     // AVAILABLE STATE CHECK ... FIN WAIT, CLOSED, CLOSING, ... ETC ...
 
     uint8_t flags = transmission_control_protocol_context_flags_get(context);
@@ -133,50 +131,25 @@ extern int32_t transmission_control_block_in_synchronize_sequence_recv(transmiss
         }
 
         if(flags & transmission_control_block_in_synchronize_sequence_recv_flags_duplicate) {
-            snorlaxdbg(true, false, "implement", "retransmission or packet drop");
+            snorlaxdbg(true, false, "implement", "retransmission, packet drop or close to invalid");
             return success;
         }
 
         if(flags & transmission_control_flag_control_ack) {
-            snorlaxdbg(transmission_control_protocol_context_sequence_get(context) != transmission_control_block_acknowledge_get(block), false, "critical", "%u / %u", transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block));
-            snorlaxdbg(transmission_control_protocol_context_acknowledge_get(context) != transmission_control_block_sequence_get(block) + 1, false, "critical", "");
+            uint32_t len = transmission_control_protocol_context_acknowledge_get(context) - transmission_control_block_sequence_get(block);
 
-            // transmission_control_block_buffer_out_t * out = block->buffer.out;
-            // uint8_t flags = 
+            snorlaxdbg(false, true, "implement", "synack 에서 데이터를 보냈다면, len >= 1 보다 크다.");
 
-            // TODO: TRANSMISSION CONTROL BLOCK ACKNOWLEDGE UPDATE
-            // if(transmission_control_block_acknowledge_update(block, transmission_control_protocol_context_sequence_get(context), out)) {
-            //     transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
-            // } else {
-            //     snorlaxdbg(false, true, "notice", "packet drop");
-            // }
+            if(len == 1) {
+                transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
+                transmission_control_block_sequence_set(block, transmission_control_protocol_context_acknowledge_get(context));
+            } else {
+                snorlaxdbg(true, false, "implement or error handling", "");
+            }
 
+            snorlaxdbg(transmission_control_protocol_context_sequence_get(context) != transmission_control_block_acknowledge_get(block), false, "implement or error handling", "");
 
-            // if(transmission_control_block_acknowledge_get(block) <= transmission_control_protocol_context_sequence_get(context)) {
-            //     if(transmission_control_block_remote_sequence_update(block, transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block))) {
-            //         transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
-            //     }
-            // }
-
-            // if(transmission_control_block_remote_sequence_update(block, transmission_control_protocol_context_sequence_get(context), transmission_control_block_acknowledge_get(block))) {
-            //     transmission_control_block_remote_sequence_set(block, transmission_control_protocol_context_sequence_get(context));
-            // }
-
-            // if(transmission_control_block_remote_acknowledge_update(block, transmission_control_protocol_context_acknowledge_get(context), ))
-            
-            // transmission_control_block_remote_acknowledge_set(block, transmission_control_protocol_context_acknowledge_get(context));
-
-            // transmission_control_block_buffer_out_t * out = block->buffer.out;
-            // transmission_control_block_buffer_out_node_t * front = transmission_control_block_buffer_out_head(out);
-            // snorlaxdbg(front == nil, false, "critical", "");
-            // front = transmission_control_block_buffer_out_del(out, front);
-            // snorlaxdbg(false, true, "implement", "remove retransmission timer");
-
-            // transmission_control_block_sequence_set(block, transmission_control_block_remote_acknowledge_get(block));
-
-            // snorlaxdbg(false, true, "check", "window check");
-
-            // transmission_control_block_state_set(block, transmission_control_state_establish);
+            transmission_control_block_state_set(block, transmission_control_state_establish);
 
             return success;
         }

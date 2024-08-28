@@ -55,8 +55,8 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
 
         uint64_t headerlen = 0;
 
-        transmission_control_protocol_option_maximum_segment_size_t mss = { .kind = 2, .length = 4, .size = transmission_control_block_maximum_segment_get(block) };
-        transmission_control_protocol_context_buffer_reversal_push(block, (uint8_t *) address_of(mss), sizeof(transmission_control_protocol_option_maximum_segment_size_t));
+        transmission_control_protocol_option_maximum_segment_size_t mss = { .kind = 2, .length = 4, .size = htons(transmission_control_block_maximum_segment_get(block)) };
+        transmission_control_protocol_context_buffer_reversal_push((protocol_context_t *) response, (uint8_t *) address_of(mss), sizeof(transmission_control_protocol_option_maximum_segment_size_t));
         headerlen = headerlen + sizeof(transmission_control_protocol_option_maximum_segment_size_t);
 
         /**
@@ -66,15 +66,14 @@ extern int32_t transmission_control_block_complete_in_synchronize_sequence_recv(
          * @see     [2.3. Using the Window Scale Option](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC7323/TCPWindowScaleOption.md#23-using-the-window-scale-option)
          */
         if(transmission_control_block_window_scale_get(block) > 0) {
-            transmission_control_protocol_option_window_scale_t ws = { .kind = 2, .length = 3, .size = transmission_control_block_window_scale_get(block), .pad = 1 };
-            transmission_control_protocol_context_buffer_reversal_push(block, (uint8_t *) address_of(ws), sizeof(transmission_control_protocol_option_window_scale_t));
+            transmission_control_protocol_option_window_scale_t ws = { .kind = 3, .length = 3, .size = transmission_control_block_window_scale_get(block), .pad = 1 };
+            transmission_control_protocol_context_buffer_reversal_push((protocol_context_t *) response, (uint8_t *) address_of(ws), sizeof(transmission_control_protocol_option_window_scale_t));
+            headerlen = headerlen + sizeof(transmission_control_protocol_option_window_scale_t);
         }
-
-        headerlen = headerlen + sizeof(transmission_control_protocol_option_window_scale_t);
 
         protocol_path_node_t * path = protocol_path_begin(block->path);
 
-        transmission_control_protocol_context_buffer_reversal_reserve(response, transmission_control_protocol_packet_length_min);
+        transmission_control_protocol_context_buffer_reversal_reserve((protocol_context_t *) response, transmission_control_protocol_packet_length_min);
         headerlen = headerlen + transmission_control_protocol_packet_length_min;
         transmission_control_protocol_context_headerlen_add(response, headerlen);
 
@@ -122,6 +121,7 @@ extern int32_t transmission_control_block_complete_in_establish(transmission_con
 #endif // RELEASE
 
     if(transmission_control_block_state_is_changed(block)) {
+        snorlaxdbg(false, true, "state", "establish");
         // snorlaxdbg(transmission_control_block_buffer_out_head(block->buffer.out), false, "implement", "");
 
         snorlaxdbg(false, true, "implement", "");

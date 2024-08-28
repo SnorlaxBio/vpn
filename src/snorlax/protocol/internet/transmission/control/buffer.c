@@ -33,16 +33,17 @@ static transmission_control_buffer_func_t func = {
     (transmission_control_buffer_func_del_t) buffer_list_func_del
 };
 
-extern transmission_control_buffer_t * transmission_control_buffer_gen(transmission_control_buffer_node_factory_t nodegen, uint64_t mss) {
+extern transmission_control_buffer_t * transmission_control_buffer_gen(transmission_control_buffer_node_factory_t nodegen, transmission_control_protocol_module_t * module) {
 #ifndef   RELEASE
     snorlaxdbg(nodegen == nil, false, "critical", "");
-    snorlaxdbg(mss == 0, false, "critical", "");
+    snorlaxdbg(module == nil, false, "critical", "");
 #endif // RELEASE
     transmission_control_buffer_t * buffer = (transmission_control_buffer_t *) calloc(1, sizeof(transmission_control_buffer_t));
 
     buffer->func    = address_of(func);
-    buffer->page    = mss;
+    buffer->page    = transmission_control_protocol_module_maximum_segment_get(module);
     buffer->nodegen = nodegen;
+    buffer->window  = transmission_control_protocol_module_window_get(module);
 
     return buffer;
 }

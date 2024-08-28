@@ -245,7 +245,7 @@ struct transmission_control_buffer_func {
     transmission_control_buffer_node_t * (*del)(transmission_control_buffer_t *, transmission_control_buffer_node_t *);
 };
 
-extern transmission_control_buffer_t * transmission_control_buffer_gen(transmission_control_buffer_node_factory_t nodegen, uint64_t mss);
+extern transmission_control_buffer_t * transmission_control_buffer_gen(transmission_control_buffer_node_factory_t nodegen, transmission_control_protocol_module_t * module);
 
 #define transmission_control_buffer_window_cal(buffer)                      ((uint32_t) ((buffer)->window)) * (1u << ((buffer)->scale)))
 
@@ -462,8 +462,8 @@ extern int32_t transmission_control_block_remote_sequence_update(transmission_co
  */
 #define transmission_control_block_remote_sequence_set(block, v)            ((block)->buffer.in->sequence = v)
 #define transmission_control_block_remote_sequence_get(block)               ((block)->buffer.in->sequence)
-#define transmission_control_block_remote_acknowledge_set(block, v)         ((block)->buffer.out->sequence = v)
-#define transmission_control_block_remote_acknowledge_get(block)            ((block)->buffer.out->sequence)
+#define transmission_control_block_remote_acknowledge_set(block, v)         ((block)->buffer.out->acknowledge = v)
+#define transmission_control_block_remote_acknowledge_get(block)            ((block)->buffer.out->acknowledge)
 
 #define transmission_control_block_window_set(block, v)                     ((block)->buffer.out->window = v)
 #define transmission_control_block_window_get(block)                        ((block)->buffer.out->window)
@@ -623,8 +623,8 @@ extern int32_t transmssion_control_protocol_context_is_connect_ack(transmission_
 // extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context);
 // extern void transmission_control_protocol_context_func_buffer_reserve(transmission_control_protocol_context_t * context, uint64_t n);
 
-#define transmission_control_protocol_context_buffer_reversal_reserve(context, n)               (protocol_context_buffer_reversal_reserve((protocol_context_t *) (context), n))
-#define transmission_control_protocol_context_buffer_reversal_push(context, data, datalen)      (protocol_context_buffer_reversal_push((protocol_context_t *) (context), data, datalen))
+#define transmission_control_protocol_context_buffer_reversal_reserve(context, n)               (protocol_context_buffer_reversal_reserve(context, n))
+#define transmission_control_protocol_context_buffer_reversal_push(context, data, datalen)      (protocol_context_buffer_reversal_push(context, data, datalen))
 
 #define transmission_control_protocol_context_rem(context)                                      ((context)->func->rem(context))
 #define transmission_control_protocol_context_valid(context)                                    ((context)->func->valid(context))

@@ -54,7 +54,7 @@ extern transmission_control_buffer_node_t * transmission_control_buffer_node(tra
 
     nanosecond_get(address_of(node->time));
 
-    snorlaxdbg(true, false, "implement", "");
+    snorlaxdbg(false, true, "implement", "additional data ... set");
 
     transmission_control_buffer_add(collection, node);
 

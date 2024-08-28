@@ -38,9 +38,18 @@ extern uint64_t protocol_context_buffer_reversal_push(protocol_context_t * conte
 #endif // RELEASE
 
     if(n > 0) {
+        snorlaxdbg(context->packet == nil, false, "critical", "");
+        snorlaxdbg(data == nil, false, "critical", "");
+        snorlaxdbg(n == 0, false, "critical", "");
+
+        snorlaxdbg(false, true, "debug", "packet => %p, packetlen => %lu, bufferlen => %lu", context->packet, context->packetlen, *context->bufferlen);
+
         context->packet = context->packet - n;
         context->packetlen = context->packetlen + n;
-        context->bufferlen = context->bufferlen - n;
+        *context->bufferlen = *context->bufferlen - n;
+
+        snorlaxdbg(false, true, "debug", "packet => %p, packetlen => %lu, bufferlen => %lu", context->packet, context->packetlen, *context->bufferlen);
+        
         memcpy(context->packet, data, n);
     }
 }
