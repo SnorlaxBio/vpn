@@ -10,3 +10,12 @@ RESET 은 SYN SEQ & ACK 특히, SEQ 가 상태에 맞지 않게 오는 경우 RS
 역방향으로 패킷을 전송하는 문맥을 만든다.
 
 ### 20240829 | STATE MACHINE 다시 짜자... 
+
+- complete in 에서 current 상태를 변경하자.
+- in 상태에서는 prev 상태를 업데이트 하자.
+- 상태가 변경되면 fail 을 수행하지 말자.
+
+
+- in 상태 처리가 끝나면 리턴할 때 prev state 를 업데이트 하자. 고민이다. 
+
+### 20240829 | SEQ, ACK 처리 전에 BUFFER IN, BUFFER OUT 을 구현하자.

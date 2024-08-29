@@ -20,6 +20,96 @@
 #include <snorlax/socket/event/subscription.h>
 #include <snorlax/socket/client.h>
 #include <snorlax/socket/client/event/subscription.h>
+#include <snorlax/socket/server.h>
+#include <snorlax/socket/server/event/subscription.h>
+
+
+#define transmission_control_state_avail_in                         (0x8000u)
+#define transmission_control_state_avail_out                        (0x4000u)
+#define transmission_control_state_avail_accept                     (0x2000u)
+#define transmission_control_state_finishing                        (0x1000u)
+#define transmission_control_state_avail_io                         (transmission_control_state_avail_in | transmission_control_state_avail_out)
+
+/**
+ * Represents no connection state at all.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_closed                           (transmission_control_state_finishing    |  0)
+
+/**
+ * Represents waiting for a connection request from any remote Transmission Control Protocol <sup>TCP</sup> peer and port.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_listen                           (transmission_control_state_avail_accept |  1)
+
+/**
+ * Represents waiting for a matching connection request after having sent a connection request.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_synchronize_sequence_sent        (transmission_control_state_avail_io     |  2)
+
+/**
+ * Represents waiting for a conforming connection request acknowledgment after having both received and sent a connection request.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_synchronize_sequence_recv        (transmission_control_state_avail_io     |  3)
+
+/**
+ * Represents an open connection, data received can be delivered to the user.
+ * 
+ * The normal state for the data transfer phase of the connection.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_established                      (transmission_control_state_avail_io     |  4)
+
+/**
+ * Represents waiting for a connection termination request from the remote Transmission Control Protocol <sup>TCP</sup> peer, or an acknowledgment of the connection termination request previously sent.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_finish_wait_first                (transmission_control_state_finishing    |  5)
+
+/**
+ * Represents waiting for a connection termination request from the remote Transmission Control Protocol <sup>TCP</sup> peer.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_finish_wait_second               (transmission_control_state_finishing    |  6)
+
+/**
+ * Represents waiting for a connection termination request from the local user.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_close_wait                       (transmission_control_state_finishing    |  7)
+
+/**
+ * Represents waiting for a connection termination request from the remote Transmission Control Protocol <sup>TCP</sup> peer.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_closing                          (transmission_control_state_finishing    |  8)
+
+/**
+ * Represents waiting for an acknowledgment of the connection termination request previously sent to the remote Transmission Control Protocol <sup>TCP</sup> peer.
+ * 
+ * This termination request sent to the remote Transmission Control Protocol <sup>TCP</sup> peer already included an acknowledgment of the termination request sent from the remote Transmission Control Protocol <sup>TCP</sup> peer.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_last_acknowledge                 (transmission_control_state_finishing    |  9)
+
+/**
+ * Represents waiting for enough time to pass to be sure the remote Transmission Control Protocol <sup>TCP</sup> peer received the acknowledgment of its connection termination request and to avoid new connections being impacted by delayed segments from previous connections.
+ * 
+ * @see     [3.3.2. State Machine Overview](https://www.ietf.org/rfc/rfc9293.html#section-3.3.2)
+ */
+#define transmission_control_state_time_wait                        (transmission_control_state_finishing    | 10)
 
 struct transmission_control_protocol_option_maximum_segment_size;
 struct transmission_control_protocol_option_window_scale;
@@ -30,10 +120,23 @@ struct transmission_control_block_agent;
 struct transmission_control_block_agent_func;
 struct transmission_control_block_client;
 struct transmission_control_block_client_func;
+struct transmission_control_block_server;
+struct transmission_control_block_server_func;
+
 struct transmission_control_buffer;
 struct transmission_control_buffer_func;
 struct transmission_control_buffer_node;
 struct transmission_control_buffer_node_func;
+
+struct transmission_control_buffer_in;
+struct transmission_control_buffer_in_func;
+struct transmission_control_buffer_in_node;
+struct transmission_control_buffer_in_node_func;
+
+struct transmission_control_buffer_out;
+struct transmission_control_buffer_out_func;
+struct transmission_control_buffer_out_node;
+struct transmission_control_buffer_out_node_func;
 
 typedef hashtable_t transmission_control_block_map_t;
 
@@ -50,18 +153,34 @@ typedef struct transmission_control_block_agent                         transmis
 typedef struct transmission_control_block_agent_func                    transmission_control_block_agent_func_t;
 typedef struct transmission_control_block_client                        transmission_control_block_client_t;
 typedef struct transmission_control_block_client_func                   transmission_control_block_client_func_t;
-typedef struct transmission_control_buffer                              transmission_control_buffer_t;
-typedef struct transmission_control_buffer_func                         transmission_control_buffer_func_t;
-typedef struct transmission_control_buffer_node                         transmission_control_buffer_node_t;
-typedef struct transmission_control_buffer_node_func                    transmission_control_buffer_node_func_t;
+typedef struct transmission_control_block_server                        transmission_control_block_server_t;
+typedef struct transmission_control_block_server_func                   transmission_control_block_server_func_t;
 
-typedef transmission_control_buffer_node_t                    transmission_control_buffer_in_t;
-typedef transmission_control_buffer_node_t                    transmission_control_buffer_out_t;
+typedef struct transmission_control_buffer                                          transmission_control_buffer_t;
+typedef struct transmission_control_buffer_func                                     transmission_control_buffer_func_t;
+typedef struct transmission_control_buffer_node                                     transmission_control_buffer_node_t;
+typedef struct transmission_control_buffer_node_func                                transmission_control_buffer_node_func_t;
 
-typedef struct transmission_control_protocol_packet                         transmission_control_protocol_packet_t;
-typedef uint8_t                                                             transmission_control_protocol_option_t;
-typedef struct transmission_control_protocol_option_maximum_segment_size    transmission_control_protocol_option_maximum_segment_size_t;
-typedef struct transmission_control_protocol_option_window_scale            transmission_control_protocol_option_window_scale_t;
+typedef struct transmission_control_buffer_in                                       transmission_control_buffer_in_t;
+typedef struct transmission_control_buffer_in_func                                  transmission_control_buffer_in_func_t;
+typedef struct transmission_control_buffer_in_node                                  transmission_control_buffer_in_node_t;
+typedef struct transmission_control_buffer_in_node_func                             transmission_control_buffer_in_node_func_t;
+
+typedef struct transmission_control_buffer_out                                      transmission_control_buffer_out_t;
+typedef struct transmission_control_buffer_out_func                                 transmission_control_buffer_out_func_t;
+typedef struct transmission_control_buffer_out_node                                 transmission_control_buffer_out_node_t;
+typedef struct transmission_control_buffer_out_node_func                            transmission_control_buffer_out_node_func_t;
+
+typedef transmission_control_buffer_t                                               transmission_control_buffer_in_t;
+typedef transmission_control_buffer_t                                               transmission_control_buffer_out_t;
+
+typedef transmission_control_buffer_node_t                                          transmission_control_buffer_node_in_t;
+typedef transmission_control_buffer_node_t                                          transmission_control_buffer_node_out_t;
+
+typedef struct transmission_control_protocol_packet                                 transmission_control_protocol_packet_t;
+typedef uint8_t                                                                     transmission_control_protocol_option_t;
+typedef struct transmission_control_protocol_option_maximum_segment_size            transmission_control_protocol_option_maximum_segment_size_t;
+typedef struct transmission_control_protocol_option_window_scale                    transmission_control_protocol_option_window_scale_t;
 
 typedef struct transmission_control_protocol_module                                 transmission_control_protocol_module_t;
 typedef struct transmission_control_protocol_module_func                            transmission_control_protocol_module_func_t;
@@ -117,6 +236,8 @@ struct transmission_control_protocol_packet {
 
 extern uint8_t * transmission_control_protocol_packet_reserve_header(uint8_t * buffer, uint64_t * bufferlen);
 
+extern int32_t transmission_control_protocol_ack_acceptable(uint32_t unacknowledged, uint32_t next, uint32_t value);
+
 extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
 #define transmission_control_protocol_default_max_segment_size              1024
@@ -159,6 +280,7 @@ struct transmission_control_block_agent_func {
     int64_t (*send)(transmission_control_block_agent_t *, transmission_control_buffer_out_t *, transmission_control_buffer_out_t *);
     int64_t (*recv)(transmission_control_block_agent_t *);
     int32_t (*close)(transmission_control_block_agent_t *);
+    int32_t (*abort)(transmission_control_block_agent_t *);
     int32_t (*shutdown)(transmission_control_block_agent_t *, uint32_t);
 
     int32_t (*in)(transmission_control_block_agent_t *, transmission_control_protocol_context_t *);
@@ -188,14 +310,44 @@ struct transmission_control_block_client {
 struct transmission_control_block_client_func {
     transmission_control_block_client_t * (*rem)(transmission_control_block_client_t *);
 
-    int32_t (*open)(transmission_control_block_client_t *, socket_client_factory_t, event_engine_t *);
+    int32_t (*open)(transmission_control_block_client_t *, socket_client_factory_t, event_engine_t *);      // active open / connect
     int64_t (*send)(transmission_control_block_client_t *, transmission_control_buffer_out_t *, transmission_control_buffer_out_t *);
     int64_t (*recv)(transmission_control_block_client_t *);
     int32_t (*close)(transmission_control_block_client_t *);
+    int32_t (*abort)(transmission_control_block_client_t *);
     int32_t (*shutdown)(transmission_control_block_client_t *, uint32_t);
 
     int32_t (*in)(transmission_control_block_client_t *, transmission_control_protocol_context_t *);
     int32_t (*out)(transmission_control_block_client_t *);
+};
+
+/**
+ * 임시적으로 정의하였다. 필요하면 구현하자.
+ */
+typedef socket_client_t * (*socket_server_factory_t)(int32_t, int32_t, int32_t, void *, uint64_t);    // TODO: MOVE 
+typedef void (*transmission_control_block_server_handler_t)(transmission_control_block_server_t *, uint32_t, void *);
+
+___extend(transmission_control_block_agent_t)
+struct transmission_control_block_server {
+    transmission_control_block_server_func_t * func;
+    sync_t * sync;
+    ___reference transmission_control_block_t * block;
+    socket_server_event_subscription_t * subscription;
+    transmission_control_block_server_handler_t on;
+};
+
+struct transmission_control_block_server_func {
+    transmission_control_block_server_t * (*rem)(transmission_control_block_server_t *);
+
+    int32_t (*open)(transmission_control_block_server_t *, socket_server_factory_t, event_engine_t *);      // active open
+    int64_t (*send)(transmission_control_block_server_t *, transmission_control_buffer_out_t *, transmission_control_buffer_out_t *);
+    int64_t (*recv)(transmission_control_block_server_t *);
+    int32_t (*close)(transmission_control_block_server_t *);
+    int32_t (*abort)(transmission_control_block_server_t *);
+    int32_t (*shutdown)(transmission_control_block_server_t *, uint32_t);
+
+    int32_t (*in)(transmission_control_block_server_t *, transmission_control_protocol_context_t *);
+    int32_t (*out)(transmission_control_block_server_t *);
 };
 
 
@@ -215,6 +367,22 @@ extern transmission_control_block_client_t * transmission_control_block_client_g
 
 typedef transmission_control_buffer_node_t * (*transmission_control_buffer_node_factory_t)(transmission_control_buffer_t *, const void *, uint64_t);
 
+/**
+ * 
+ * @var transmission_control_buffer::sequence
+ * 
+ * uint32_t
+ * 
+ * transmission_control_buffer::sequence = SND.UNA
+ * 
+ * Send Unacknowledged <sup>SND.UNA</sup> = Oldest unacknowledged sequence number.
+ * 
+ * @var transmission_control_buffer::acknowledge
+ * 
+ * uint32_t 
+ * 
+ * Send Next <sup>SND.NXT</sup> = Next sequence number to be sent.
+ */
 struct transmission_control_buffer {
     transmission_control_buffer_func_t *        func;
     sync_t *                                    sync;
@@ -257,13 +425,18 @@ extern transmission_control_buffer_t * transmission_control_buffer_gen(transmiss
 #define transmission_control_buffer_back(buffer, hint)                      ((buffer)->func->back(buffer, hint))
 #define transmission_control_buffer_add(buffer, node)                       ((buffer)->func->add(buffer, node))
 #define transmission_control_buffer_del(buffer, node)                       ((buffer)->func->del(buffer, node))
-
-#define transmission_control_buffer_out_nodegen(buffer, data, n)            ((buffer)->nodegen(buffer, data, n))
-
 #define transmission_control_buffer_maximum_size_set(buffer, v)             ((buffer)->page = v)
 #define transmission_control_buffer_maximum_size_get(buffer)                ((uint16_t)((buffer)->page))
 
-___extend(buffer_list_t)
+#define transmission_control_buffer_nodegen(buffer, data, n)                ((buffer)->nodegen(buffer, data, n))
+
+// #define transmission_control_buffer_acceptable(buffer, )
+
+
+
+
+
+___extend(buffer_list_node_t)
 struct transmission_control_buffer_node {
     transmission_control_buffer_node_func_t *   func;
     sync_t *                                    sync;
@@ -287,6 +460,7 @@ struct transmission_control_buffer_node {
     uint32_t                                    acknowledge;
 };
 
+___extend(buffer_list_func_t)
 struct transmission_control_buffer_node_func {
     transmission_control_buffer_node_t * (*rem)(transmission_control_buffer_node_t *);
     void * (*front)(transmission_control_buffer_node_t *);
@@ -305,8 +479,8 @@ struct transmission_control_buffer_node_func {
 
 extern transmission_control_buffer_node_t * transmission_control_buffer_node(transmission_control_buffer_t * buffer, const void * data, uint64_t n);
 
-#define transmission_control_buffer_in_gen                              transmission_control_buffer_node
-#define transmission_control_buffer_out_gen                             transmission_control_buffer_node
+// #define transmission_control_buffer_in_gen                              transmission_control_buffer_node
+// #define transmission_control_buffer_out_gen                             transmission_control_buffer_node
 
 #define transmission_control_buffer_node_rem(node)                      ((node)->func->rem(node))
 #define transmission_control_buffer_node_front(node)                    ((node)->func->front(node))
@@ -324,8 +498,126 @@ extern transmission_control_buffer_node_t * transmission_control_buffer_node(tra
 #define transmission_control_buffer_node_segment_get(node)              ((node)->segment)
 #define transmission_control_buffer_node_segment_set(node, p)           ((node)->segment = p)
 
+typedef transmission_control_buffer_out_node_t * (*transmission_control_buffer_out_node_factory_t)(transmission_control_buffer_out_t *, const void *, uint64_t);
+
+___extend(transmission_control_buffer_t)
+struct transmission_control_buffer_out {
+    transmission_control_buffer_out_func_t *        func;
+    sync_t *                                        sync;
+    uint64_t                                        size;
+    transmission_control_buffer_out_node_t *        head;
+    transmission_control_buffer_out_node_t *        tail;
+    transmission_control_buffer_node_t *            front;
+    uint64_t                                        page;               // maximum segment size
+    transmission_control_buffer_out_node_factory_t  nodegen;
+
+    uint32_t                                        sequence;
+    uint32_t                                        acknowledge;
+    uint16_t                                        window;
+    uint8_t                                         scale;
+    uint16_t                                        shift;
+};
+
+struct transmission_control_buffer_out_func {
+    transmission_control_buffer_out_t * (*rem)(transmission_control_buffer_out_t *);
+    void (*push)(transmission_control_buffer_out_t *, const void *, uint64_t);
+    void (*pop)(transmission_control_buffer_out_t *, uint64_t);
+    void (*clear)(transmission_control_buffer_out_t *);
+    void (*shrink)(transmission_control_buffer_out_t *);
+    transmission_control_buffer_out_node_t * (*front)(transmission_control_buffer_out_t *);
+    transmission_control_buffer_out_node_t * (*back)(transmission_control_buffer_out_t *, uint64_t);
+    transmission_control_buffer_out_node_t * (*head)(transmission_control_buffer_out_t *);
+    transmission_control_buffer_out_node_t * (*add)(transmission_control_buffer_out_t *, transmission_control_buffer_out_node_t *);
+    transmission_control_buffer_out_node_t * (*del)(transmission_control_buffer_out_t *, transmission_control_buffer_out_node_t *);
+};
+
+extern transmission_control_buffer_out_t * transmission_control_buffer_out_gen(transmission_control_buffer_out_node_factory_t nodegen, transmission_control_protocol_module_t * module);
+
+#define transmission_control_buffer_out_window_cal(buffer)                      ((uint32_t) ((buffer)->window)) * (1u << ((buffer)->scale)))
+
+#define transmission_control_buffer_out_rem(buffer)                             ((buffer)->func->rem(buffer))
+#define transmission_control_buffer_out_push(buffer, data, n)                   ((buffer)->func->push(buffer, data, n))
+#define transmission_control_buffer_out_pop(buffer, n)                          ((buffer)->func->pop(buffer, n))
+#define transmission_control_buffer_out_clear(buffer)                           ((buffer)->func->clear(buffer))
+#define transmission_control_buffer_out_front(buffer)                           ((buffer)->func->front(buffer))
+#define transmission_control_buffer_out_back(buffer, hint)                      ((buffer)->func->back(buffer, hint))
+#define transmission_control_buffer_out_add(buffer, node)                       ((buffer)->func->add(buffer, node))
+#define transmission_control_buffer_out_del(buffer, node)                       ((buffer)->func->del(buffer, node))
+#define transmission_control_buffer_out_maximum_size_set(buffer, v)             ((buffer)->page = v)
+#define transmission_control_buffer_out_maximum_size_get(buffer)                ((uint16_t)((buffer)->page))
+
+#define transmission_control_buffer_out_nodegen(buffer, data, n)                ((buffer)->nodegen(buffer, data, n))
+
+___extend(transmission_control_buffer_node_t)
+struct transmission_control_buffer_out_node {
+    transmission_control_buffer_out_node_func_t *   func;
+    sync_t *                                        sync;
+    buffer_list_t *                                 collection;
+    transmission_control_buffer_out_node_t *        prev;
+    transmission_control_buffer_out_node_t *        next;
+    uint64_t                                        position;
+    uint64_t                                        size;
+    uint64_t                                        capacity;
+    void *                                          mem;
+
+    ___reference uint8_t *                          segment;
+    nanosecond_t                                    time;
+
+    struct {
+        nanosecond_t                                time;
+        uint8_t                                     count;
+    } transmit;
+
+    uint32_t                                        sequence;
+    uint32_t                                        acknowledge;
+};
+
+___extend(transmission_control_buffer_node_func_t)
+struct transmission_control_buffer_out_node_func {
+    transmission_control_buffer_out_node_t * (*rem)(transmission_control_buffer_out_node_t *);
+    void * (*front)(transmission_control_buffer_out_node_t *);
+    void * (*back)(transmission_control_buffer_out_node_t *);
+    int32_t (*shrink)(transmission_control_buffer_out_node_t *);
+    uint64_t (*length)(transmission_control_buffer_out_node_t *);
+    uint64_t (*remain)(transmission_control_buffer_out_node_t *);
+    uint64_t (*position_get)(transmission_control_buffer_out_node_t *);
+    void (*position_set)(transmission_control_buffer_out_node_t *, uint64_t);
+    uint64_t (*size_get)(transmission_control_buffer_out_node_t *);
+    void (*size_set)(transmission_control_buffer_out_node_t *, uint64_t);
+    uint64_t (*capacity_get)(transmission_control_buffer_out_node_t *);
+    void (*capacity_set)(transmission_control_buffer_out_node_t *, uint64_t);
+    void (*clear)(transmission_control_buffer_out_node_t *);
+};
+
 #define transmission_control_buffer_out_segment_get(node)               ((node)->segment)
 #define transmission_control_buffer_out_segment_set(node, p)            ((node)->segment = p)
+
+___implement extern void transmission_control_buffer_in_append(transmission_control_buffer_in_t * in, transmission_control_buffer_node_in_t * node);
+
+/**
+ * 전송을 위한 세그먼트에서 사용할 ACKNOWLEDGE NUMBER 를 계산한다.
+ * 
+ * 수신 버퍼의 `sequence` 는 리스트 버퍼의 프런트의 SEQUENCE NUMBER 로
+ * 처리한 데이터의 번호다. 즉, 사용자에게 보내야 하는 번호다.
+ * 
+ * @param in        transmission_control_buffer_in_t    receive buffer object
+ * 
+ * @return          uint32_t    sequence
+ */
+#define transmission_control_buffer_in_acknowledge_cal(in)                      ((in)->sequence)
+
+/**
+ * 전달 받은 세그먼트의 SEQUENCE 번호에 수신받은 데이터 길이를 더하여 마지막으로 수신한 값으로 설정한다.
+ * 이 함수를 호출할 때는 SEQUENCE 번호가 유효한 번호여야 한다.
+ * 앞에 버퍼가 존재해야 하지만 그렇지 못하다면 홀을 만들고 버퍼의 ACKNOWEDGE 는 설정하지 않는다.
+ * 
+ * SEQ, ACK 번호에 문제가 발생하면 RESET 을 보내기 때문에, 이 함수가 호출되는 시점에서는 WINDOW 사이즈를 넘어가지 않는다고 판단한다.
+ * 
+ * @param in        transmission_control_buffer_in_t    receive buffer object
+ */
+#define transmission_control_buffer_in_append(in, node)                         (transmission_control_buffer_in_append(in, node))
+
+
 
 /**
  * Inherited hashtable_node_t
@@ -399,23 +691,7 @@ extern int32_t transmission_control_block_complete_in_exception(transmission_con
 
 #define transmission_control_window_size_init                       (65536 / 2)
 
-#define transmission_control_state_avail_in                         (0x8000u)
-#define transmission_control_state_avail_out                        (0x4000u)
-#define transmission_control_state_avail_accept                     (0x2000u)
-#define transmission_control_state_finishing                        (0x1000u)
-#define transmission_control_state_avail_io                         (transmission_control_state_avail_in | transmission_control_state_avail_out)
 
-#define transmission_control_state_closed                           (transmission_control_state_finishing    |  0)
-#define transmission_control_state_listen                           (transmission_control_state_avail_accept |  1)
-#define transmission_control_state_synchronize_sequence_sent        (transmission_control_state_avail_io     |  2)
-#define transmission_control_state_synchronize_sequence_recv        (transmission_control_state_avail_io     |  3)
-#define transmission_control_state_establish                        (transmission_control_state_avail_io     |  4)
-#define transmission_control_state_finish_wait_first                (transmission_control_state_finishing    |  5)
-#define transmission_control_state_finish_wait_second               (transmission_control_state_finishing    |  6)
-#define transmission_control_state_close_wait                       (transmission_control_state_finishing    |  7)
-#define transmission_control_state_closing                          (transmission_control_state_finishing    |  8)
-#define transmission_control_state_last_acknowledge                 (transmission_control_state_finishing    |  9)
-#define transmission_control_state_time_wait                        (transmission_control_state_finishing    | 10)
 
 #define transmission_control_flag_control_cwr                       (0x01u << 7u)
 #define transmission_control_flag_control_ece                       (0x01u << 6u)
