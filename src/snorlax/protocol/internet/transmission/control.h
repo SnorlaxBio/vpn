@@ -236,9 +236,35 @@ struct transmission_control_protocol_packet {
 
 extern uint8_t * transmission_control_protocol_packet_reserve_header(uint8_t * buffer, uint64_t * bufferlen);
 
-extern int32_t transmission_control_protocol_ack_acceptable(uint32_t unacknowledged, uint32_t next, uint32_t value);
 
 extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
+
+extern int32_t transmission_control_func_check_acceptable_seq(uint32_t sequence, uint32_t window, uint32_t n, uint32_t length);
+
+#define transmission_control_check_out_of_window(sequence, window, n)                   ((window) <= (n) - (sequence))       // check ((n) - (sequence) <= (window))
+
+
+
+// #define transmission_control_check_acceptable_seq(sequence, window, n, length)
+
+#define transmission_control_check_acceptable_ack(acknowledge, sequence, length, n)     (((n) - (acknowledge)) <= (((sequence) + (length)) - (n)))
+#define transmission_control_check_acceptable_seq(sequence, window, n, length)          (transmission_control_func_check_acceptable_seq(sequence, window, n, length))
+
+
+
+// (((n) - (sequence) < (window)) || (((n) + (length)) - (sequence) < (window)))
+// #define transmission_control_check_valid_ack()
+
+
+
+// ((((n) - (acknowledge)) <= ((sequence) + (length)) - (acknowledge)) && ((((sequence) + (length)) - (n)) <= (((sequence) + (length)) - (acknowledge))))
+
+
+
+
+// length == 0 ? ((((sequence) + (length)) - (acknowledge))) <= ((n) - (acknowledge)) : 
+// (n) - (acknowledge) 
+
 
 #define transmission_control_protocol_default_max_segment_size              1024
 
@@ -498,100 +524,6 @@ extern transmission_control_buffer_node_t * transmission_control_buffer_node(tra
 #define transmission_control_buffer_node_segment_get(node)              ((node)->segment)
 #define transmission_control_buffer_node_segment_set(node, p)           ((node)->segment = p)
 
-typedef transmission_control_buffer_out_node_t * (*transmission_control_buffer_out_node_factory_t)(transmission_control_buffer_out_t *, const void *, uint64_t);
-
-___extend(transmission_control_buffer_t)
-struct transmission_control_buffer_out {
-    transmission_control_buffer_out_func_t *        func;
-    sync_t *                                        sync;
-    uint64_t                                        size;
-    transmission_control_buffer_out_node_t *        head;
-    transmission_control_buffer_out_node_t *        tail;
-    transmission_control_buffer_node_t *            front;
-    uint64_t                                        page;               // maximum segment size
-    transmission_control_buffer_out_node_factory_t  nodegen;
-
-    uint32_t                                        sequence;
-    uint32_t                                        acknowledge;
-    uint16_t                                        window;
-    uint8_t                                         scale;
-    uint16_t                                        shift;
-};
-
-struct transmission_control_buffer_out_func {
-    transmission_control_buffer_out_t * (*rem)(transmission_control_buffer_out_t *);
-    void (*push)(transmission_control_buffer_out_t *, const void *, uint64_t);
-    void (*pop)(transmission_control_buffer_out_t *, uint64_t);
-    void (*clear)(transmission_control_buffer_out_t *);
-    void (*shrink)(transmission_control_buffer_out_t *);
-    transmission_control_buffer_out_node_t * (*front)(transmission_control_buffer_out_t *);
-    transmission_control_buffer_out_node_t * (*back)(transmission_control_buffer_out_t *, uint64_t);
-    transmission_control_buffer_out_node_t * (*head)(transmission_control_buffer_out_t *);
-    transmission_control_buffer_out_node_t * (*add)(transmission_control_buffer_out_t *, transmission_control_buffer_out_node_t *);
-    transmission_control_buffer_out_node_t * (*del)(transmission_control_buffer_out_t *, transmission_control_buffer_out_node_t *);
-};
-
-extern transmission_control_buffer_out_t * transmission_control_buffer_out_gen(transmission_control_buffer_out_node_factory_t nodegen, transmission_control_protocol_module_t * module);
-
-#define transmission_control_buffer_out_window_cal(buffer)                      ((uint32_t) ((buffer)->window)) * (1u << ((buffer)->scale)))
-
-#define transmission_control_buffer_out_rem(buffer)                             ((buffer)->func->rem(buffer))
-#define transmission_control_buffer_out_push(buffer, data, n)                   ((buffer)->func->push(buffer, data, n))
-#define transmission_control_buffer_out_pop(buffer, n)                          ((buffer)->func->pop(buffer, n))
-#define transmission_control_buffer_out_clear(buffer)                           ((buffer)->func->clear(buffer))
-#define transmission_control_buffer_out_front(buffer)                           ((buffer)->func->front(buffer))
-#define transmission_control_buffer_out_back(buffer, hint)                      ((buffer)->func->back(buffer, hint))
-#define transmission_control_buffer_out_add(buffer, node)                       ((buffer)->func->add(buffer, node))
-#define transmission_control_buffer_out_del(buffer, node)                       ((buffer)->func->del(buffer, node))
-#define transmission_control_buffer_out_maximum_size_set(buffer, v)             ((buffer)->page = v)
-#define transmission_control_buffer_out_maximum_size_get(buffer)                ((uint16_t)((buffer)->page))
-
-#define transmission_control_buffer_out_nodegen(buffer, data, n)                ((buffer)->nodegen(buffer, data, n))
-
-___extend(transmission_control_buffer_node_t)
-struct transmission_control_buffer_out_node {
-    transmission_control_buffer_out_node_func_t *   func;
-    sync_t *                                        sync;
-    buffer_list_t *                                 collection;
-    transmission_control_buffer_out_node_t *        prev;
-    transmission_control_buffer_out_node_t *        next;
-    uint64_t                                        position;
-    uint64_t                                        size;
-    uint64_t                                        capacity;
-    void *                                          mem;
-
-    ___reference uint8_t *                          segment;
-    nanosecond_t                                    time;
-
-    struct {
-        nanosecond_t                                time;
-        uint8_t                                     count;
-    } transmit;
-
-    uint32_t                                        sequence;
-    uint32_t                                        acknowledge;
-};
-
-___extend(transmission_control_buffer_node_func_t)
-struct transmission_control_buffer_out_node_func {
-    transmission_control_buffer_out_node_t * (*rem)(transmission_control_buffer_out_node_t *);
-    void * (*front)(transmission_control_buffer_out_node_t *);
-    void * (*back)(transmission_control_buffer_out_node_t *);
-    int32_t (*shrink)(transmission_control_buffer_out_node_t *);
-    uint64_t (*length)(transmission_control_buffer_out_node_t *);
-    uint64_t (*remain)(transmission_control_buffer_out_node_t *);
-    uint64_t (*position_get)(transmission_control_buffer_out_node_t *);
-    void (*position_set)(transmission_control_buffer_out_node_t *, uint64_t);
-    uint64_t (*size_get)(transmission_control_buffer_out_node_t *);
-    void (*size_set)(transmission_control_buffer_out_node_t *, uint64_t);
-    uint64_t (*capacity_get)(transmission_control_buffer_out_node_t *);
-    void (*capacity_set)(transmission_control_buffer_out_node_t *, uint64_t);
-    void (*clear)(transmission_control_buffer_out_node_t *);
-};
-
-#define transmission_control_buffer_out_segment_get(node)               ((node)->segment)
-#define transmission_control_buffer_out_segment_set(node, p)            ((node)->segment = p)
-
 ___implement extern void transmission_control_buffer_in_append(transmission_control_buffer_in_t * in, transmission_control_buffer_node_in_t * node);
 
 /**
@@ -707,6 +639,8 @@ extern int32_t transmission_control_block_complete_in_exception(transmission_con
 #define transmission_control_protocol_header_len                    20
 
 extern transmission_control_block_t * transmission_control_block_gen(hashtable_node_key_t * key, transmission_control_protocol_module_t * module);
+
+
 
 extern int32_t transmission_control_block_func_number_update(uint32_t * field, uint32_t no, uint32_t n);        // @deprecated
 
