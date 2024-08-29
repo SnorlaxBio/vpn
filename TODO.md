@@ -1,43 +1,12 @@
-### 20240825 | [PROTOCOL] MODULE ON/OFF 함수를 만들자.
+### 20240829 | [SIMULTANEOUS CONNECTION SYNCHRONIZATION](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#3-functional-specification)
+### 20240829 | [RESET](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#3-functional-specification)
 
-### 20240825 | (network_netlink_request_t *) buffer_head(buffer->out)) 에서 형변환을 하는데, 문장이 길다. 매크로를 호출할 때 현 변환을 하게 하자. | OK
+RESET 은 SYN SEQ & ACK 특히, SEQ 가 상태에 맞지 않게 오는 경우 RST 를 보내야 한다. - NO SUCH CONNECTION EXISTS...
 
-  `buffer_head(buffer->out)` 를 `network_netlink_message_t` 혹은 `network_netlink_request_t` 로 변경해야 한다. 하나의 타임만 나오면 상관이 없지만,
-  여러 타입을 가질 수 있기 때문에 적당한 이름은 없다.
+`transmission_control_protocol_context_reply_gen_reset(...): transmission_control_protocol_context_t *` 라는 함수를 만들어서, 이러한 경우가 있으면 바로 호출하여 전달할 수 있도록 하자.
 
------------------------------------------------------------------------------------------
+### 20240829 | transmission_control_protocol_context_t * transmission_control_protocol_context_reply_gen(transmission_control_protocol_context_t * context)
 
-### 20240706 | NamedPipe, TCP, UDP, Unix Domain
-### 20240815 | Router 관련한 패킷을 어떻게 처리해야 하는가? | OK
+역방향으로 패킷을 전송하는 문맥을 만든다.
 
-이 녀석은 아직 라우터가 아니다. 그렇기 때문에, 현재는 구현 필요성이 아니다.
-
-### 20240815 | SERVER & INLINE SERVER 만들 것 ... INLINE SERVER 란 ? | OK
-
-  - Server, Client
-  - Single: Packet 전송이 클라이언트에서 이루어진다.
-
-### 20240816 | TCP TEST 방법을 찾자.
-
-- snorlax network tcp/ip socket ... test
-- simple connect 
-
-### 20240823 | TCP SEQNUMBER ... 
-
-- SEND / RECV
-
-https://www.kernel.org/doc/Documentation/networking/segmentation-offloads.txt
-
-TCP segmentation allows a device to segment a single frame into multiple frames with a data payload size specified in skb_shinfo()->gso_size.
-When TCP segmentation requested the bit for either SKB_GSO_TCPV4 or SKB_GSO_TCPV6 should be set in skb_shinfo()->gso_type and skb_shinfo()->gso_size should be set to a non-zero value.
-
-TCP segmentation is dependent on support for the use of partial checksum offload.  For this reason TSO is normally disabled if the Tx checksum offload for a given device is disabled.
-
-In order to support TCP segmentation offload it is necessary to populate the network and transport header offsets of the skbuff so that the device
-drivers will be able determine the offsets of the IP or IPv6 header and the TCP header.  In addition as CHECKSUM_PARTIAL is required csum_start should also point to the TCP header of the packet.
-
-For IPv4 segmentation we support one of two types in terms of the IP ID. The default behavior is to increment the IP ID with every segment.  If the GSO type SKB_GSO_TCP_FIXEDID is specified then we will not increment the IP ID and all segments will use the same IP ID.  If a device has NETIF_F_TSO_MANGLEID set then the IP ID can be ignored when performing TSO and we will either increment the IP ID for all frames, or leave it at a static value based on driver preference.
-
-### 20240824 | TUN 의 INPUT 버퍼를 LIST 형으로 변경하자.
-
-### 20240824 | 버퍼에 콜백을 만들어서 반영하자. - 이것은 고민을 하자.
+### 20240829 | STATE MACHINE 다시 짜자... 

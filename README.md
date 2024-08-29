@@ -10,6 +10,20 @@ netsh interface portproxy add v4tov4 listenport=6207 listenaddress=172.30.1.59 c
 netsh interface portproxy delete v4tov4 listenport=6207 listenaddress=172.30.1.59
 ```
 
+- DEVELOPMENT ENV (UBUNTU)
+
+```sh
+$ sudo apt install cmake
+$ sudo apt install build-essential
+```
+- BUILD
+
+```sh
+$ cmake -DCMAKE_BUILD_TYPE=Debug -B build
+$ cmake --build build --target all
+```
+
+
 > 코드를 짜는 것에 있어서 약자를 쓰지 않고, 함수의 길이가 길더라도 소스를 유추할 수 있도록, 
 > 이름을 정하기로 하였습니다.
 > 이렇게 짜고 나니, 변수나 함수의 길이가 길어서 가독성이 떨어지는 경향이 있다.
