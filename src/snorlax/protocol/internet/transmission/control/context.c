@@ -210,3 +210,28 @@ static void transmission_control_protocol_context_func_checksum_build(transmissi
 
     transmission_control_protocol_context_checksum_set(context, context->checksumcal);
 }
+
+/**
+ * 
+ * - Note that when the receive window is zero no segments should be acceptable except Acknowledgment <sup>ACK</sup> segments.
+ * 
+ * @see         [3.4. Sequence Numbers](https://www.ietf.org/rfc/rfc9293.html)
+ */
+extern int32_t transmission_control_protocol_context_func_check_acceptable_seq(transmission_control_protocol_context_t * context) {
+#ifndef   RELEASE
+    snorlaxdbg(false, ___flow, "flow", "transmission_control_protocol_context_func_check_acceptable('%p')", context);
+
+    snorlaxdbg(context == nil, false, "crtical", "");
+    snorlaxdbg(context->block == nil, false, "crtical", "");
+#endif // RELEASE
+
+    transmission_control_block_t * block = context->block;
+
+    snorlaxdbg(___check, !___check, "check", "Note that when the receive window is zero no segments should be acceptable except Acknowledgment <sup>ACK</sup> segments.");
+
+    return transmission_control_check_acceptable_seq(transmission_control_block_remote_sequence_get(block),
+                                                     transmission_control_block_remote_window_get(block),
+                                                     transmission_control_protocol_context_sequence_get(context),
+                                                     transmission_control_protocol_context_datalen_get(context));
+
+}

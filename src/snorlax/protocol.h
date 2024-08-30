@@ -225,4 +225,12 @@ extern protocol_path_t * protocol_path_gen(protocol_context_t * original, uint64
 #define protocol_path_begin(path)                           ((path)->node)
 #define protocol_path_end(path)                             ((path)->end)
 
+#ifndef   ___flow
+#define   ___flow       true
+#endif // ___flow
+
+#ifndef   ___check
+#define   ___check      true
+#endif // ___check
+
 #endif // __SNORLAX__PROTOCOL__H__

@@ -239,15 +239,77 @@ extern uint8_t * transmission_control_protocol_packet_reserve_header(uint8_t * b
 
 extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_protocol_packet_t * segment, uint64_t segmentlen, internet_protocol_pseudo_t * pseudo, uint64_t pseudolen);
 
+/**
+ * Check segment acceptability.
+ * 
+ * When data is received, the following comparison are needed:
+ * 
+ * - Receive Next <sup>RCV.NXT</sup> = Next sequence number expected on an incoming segment, and is the left or lower edge of the receive window.
+ * - Receive Window <sup>RCV.NXT</sup> + Receive Window <sup>RCV.WND</sup> - 1 = Last sequence number expected on an incoming segment, and is the right or upper edge of the receive window.
+ * - Segment Sequence <sup>SEG.SEQ</sup> = First sequence number occupied by the incoming segment.
+ * - Segment Sequence <sup>SEG.SEQ</sup> + Segment Length <sup>SEG.LEN</sup> - 1 = Last sequence number occupied by the incoming segment.
+ * 
+ * A segment is judged to occupy a portion of valid receive sequence space if
+ * 
+ * Receive Next <sup>RCV.NXT</sup> =< Segment Sequence <sup>SEG.SEQ</sup> < Receive Next <sup>RCV.NXT</sup> + Receive Window <sup>RCV.WND</sup>
+ * 
+ * or
+ * 
+ * Receive Next <sup>RCV.NXT</sup> =< Segment Sequence <sup>SEG.SEQ</sup> + Segment Length <sup>SEG.LEN</sup> - 1 < Receive Next <sup>RCV.NXT</sup> + Receive Window <sup>RCV.WND</sup>
+ * 
+ * Actually, it is a little more complicated than this. Due to zero windows and zero length segments, we have four cases for the acceptability of an incoming segment:
+ * 
+ * | Segment Length     | Receive Window     | Test                                                                                                                                         |
+ * | ------------------ | ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+ * | 0                  | 0                  | Segment Sequence <sup>SEG.SEQ</sup> = Receive Next <sup>RCV.NXT</sup>                                                                        |
+ * | 0                  | Receive Window > 0 | Receive Next <sup>RCV.NXT</sup> =< Segment Sequence <sup>SEG.SEQ</sup> < Receive Next <sup>RCV.NXT</sup> + Receive Window <sup>RCV.WND</sup> |
+ * | Segment Length > 0 | 0                  | Not acceptable                                                                                                                               |
+ * | Segment Length > 0 | Receive Window > 0 | Receive Next <sup>RCV.NXT</sup> =< Segment Sequence <sup>SEG.SEQ</sup> < Receive Next <sup>RCV.NXT</sup> + Receive Window <sup>RCV.WND</sup><br />Receive Next <sup>RCV.NXT</sup> =< Segment Sequence <sup>SEG.SEQ</sup> + Segment Length <sup>SEG.LEN</sup> - 1 < Receive Next <sup>RCV.NXT</sup> + Receive Window <sup>RCV.WND</sup> |
+ * 
+ * Note that when the receive window is zero no segments should be acceptable except Acknowledgment <sup>ACK</sup> segments.
+ * 
+ * @param in    sequence    | uint32_t | Receive Next <sup>RCV.NXT</sup> = Next sequence number expected on an incoming segment, and is the left or lower edge of the receive window.
+ * @param in    window      | uint32_t | Receive Window <sup>RCV.WND</sup> = Receive Window
+ * @param in    n           | uint32_t | Segment Sequence <sup>SEG.SEQ</sup> = First sequence number of a segment.
+ * @param in    length      | uint32_t | Segment Length <sup>SEG.LEN</sup> = The number of octets occupied by the data in the segment (counting Synchronize Sequence Number <sup>SYN</sup> and Finish <sup>FIN</sup>)
+ * 
+ * @return      bool        | If return true, segment is acceptable, otherwise, segment is not acceptable.
+ * 
+ * @see         [3.4. Sequence Numbers](https://www.ietf.org/rfc/rfc9293.html)
+ */
 extern int32_t transmission_control_func_check_acceptable_seq(uint32_t sequence, uint32_t window, uint32_t n, uint32_t length);
 
 #define transmission_control_check_out_of_window(sequence, window, n)                   ((window) <= (n) - (sequence))       // check ((n) - (sequence) <= (window))
 
-
-
 // #define transmission_control_check_acceptable_seq(sequence, window, n, length)
 
-#define transmission_control_check_acceptable_ack(acknowledge, sequence, length, n)     (((n) - (acknowledge)) <= (((sequence) + (length)) - (n)))
+/**
+ * Check segment acknowledgment acceptability.
+ * 
+ * @param in    acknowledge | uint32_t | Send Unacknowledge <sup>SND.UNA</sup> = Oldest unacknowledged sequence number.
+ * @param in    sequence    | uint32_t | Send Next <sup>SND.NXT</sup> = Next sequence number to be sent.
+ * @param in    n           | uint32_t | Segment Acknowledge <sup>SEG.ACK</sup> = Acknowledgment from the receiving Transmission Control Protocol <sup>TCP</sup> peer (next sequence number expected by the receiving Transmission Control Protocol <sup>TCP</sup> peer)
+ * 
+ * @return      bool        | If return ture, segment acknowledge is acceptable, otherwise, segment acknowledge is not acceptable.
+ * 
+ * @see         [3.4. Sequence Numbers](https://www.ietf.org/rfc/rfc9293.html)
+ */
+#define transmission_control_check_acceptable_ack(acknowledge, sequence, n)     (((n) - (acknowledge)) <= (((sequence)) - (n)))
+
+/**
+ * Check segment sequence acceptability.
+ * 
+ * 
+ * 
+ * @param in    sequence    | uint32_t | Receive Next <sup>RCV.NXT</sup> = Next sequence number expected on an incoming segment, and is the left or lower edge of the receive window.
+ * @param in    window      | uint32_t | Receive Window <sup>RCV.WND</sup> = Receive Window
+ * @param in    n           | uint32_t | Segment Sequence <sup>SEG.SEQ</sup> = First sequence number of a segment.
+ * @param in    length      | uint32_t | Segment Length <sup>SEG.LEN</sup> = The number of octets occupied by the data in the segment (counting Synchronize Sequence Number <sup>SYN</sup> and Finish <sup>FIN</sup>)
+ * 
+ * @return      bool        | If return true, segment sequence is acceptable, otherwise, segment sequence is not acceptable.
+ * 
+ * @see         [3.4. Sequence Numbers](https://www.ietf.org/rfc/rfc9293.html)
+ */
 #define transmission_control_check_acceptable_seq(sequence, window, n, length)          (transmission_control_func_check_acceptable_seq(sequence, window, n, length))
 
 
@@ -830,6 +892,8 @@ extern uint32_t transmission_control_protocol_direction_cal(transmission_control
 extern int32_t transmission_control_protocol_context_is_connect_syn(transmission_control_protocol_context_t * context);
 extern int32_t transmssion_control_protocol_context_is_connect_ack(transmission_control_protocol_context_t * context);
 
+extern int32_t transmission_control_protocol_context_func_check_acceptable_seq(transmission_control_protocol_context_t * context);
+
 // extern int32_t transmssion_control_protocol_context_is_accept_syn(transmission_control_protocol_context_t * context);
 // extern void transmission_control_protocol_context_func_buffer_reserve(transmission_control_protocol_context_t * context, uint64_t n);
 
@@ -918,6 +982,18 @@ extern int32_t transmssion_control_protocol_context_is_connect_ack(transmission_
 #define transmission_control_protocol_context_option_begin(context)                             ((context)->option)
 #define transmission_control_protocol_context_option_end(context, option)                       (((context)->option == nil || *(option) == 0 || (((uint8_t *)((context)->packet) + ((context)->headerlen)) <= (option))) ? true : false)
 #define transmission_control_protocol_context_option_next(option)                               (*(option) == 0 ? nil : (*(option) == 1 ? ((option) + 1) : (option) + *((option) + 1)))
+
+
+#define transmission_control_protocol_context_check_acceptable_seq(context)                     (transmission_control_protocol_context_func_check_acceptable_seq(context))
+
+/**
+ * Check incoming segment acknowledgment acceptibility.
+ * 
+ * @param in        context | transmission_control_protocol_context_t * | incoming segment.
+ * 
+ * @return          bool    | If return true, segment acknowledgment is acceptable, otherwise, segment acknowledgment is not acceptable.
+ */
+#define transmission_control_protocol_context_check_acceptable_ack(context)                     transmission_control_check_acceptable_ack(transmission_control_block_remote_acknowledge_get((context)->block), transmission_control_block_sequence_get((context)->block), transmission_control_protocol_context_acknowledge_get(context))
 
 struct transmission_control_protocol_option_maximum_segment_size {
     uint8_t kind;
