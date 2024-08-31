@@ -34,6 +34,10 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
 /**
  * Generate Initial Sequence Number <sup>ISN</sup>.
  * 
+ * In the absence of knowledge about the sequence numbers used on a particular connection,
+ * the TCP specification recommends that the source delay for MSL seconds before emitting segments on the conneciton,
+ * to allow time for segments from earlier connectino incarnation to drain from the system. <sub>[3.4.3. The TCP Quiet Time Concept](https://www.ietf.org/rfc/rfc9293.html)</sub>
+ * 
  * @param in        version  | uint8_t   | Internet Protocol <sup>IP</sup> version (4 or 6)
  * @param in        remote   | uint8_t * | remote Internet Protocol <sup>IP</sup> address
  * @param in        local    | uint8_t * | local Internet Protocol <sup>IP</sup> address

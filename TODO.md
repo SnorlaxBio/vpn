@@ -1,3 +1,13 @@
+### 20240831 | EVA TIME EVENT
+
+### 20240831 | DELETE CONTROL BLOCK QUEUE ...
+
+같은 HASHTABLE 로 HASH FUNCTION 을 바꾸어 사용하도록 하자.
+HASH FUNCTION 은 타임 값에 따라서 설정을 하도록 하자. 즉, HASH 함수로 키를 사용하는 것이 아니라, 타임 값이 바로 HASH 값이 된다. 검색은 필요하지 않다. 그리고 하나의 노드가 무한히 늘어날 수 있다.
+
+
+------------------------------
+
 ### 20240829 | [SIMULTANEOUS CONNECTION SYNCHRONIZATION](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#3-functional-specification)
 ### 20240829 | [RESET](https://github.com/SnorlaxBio/dev/blob/main/RFC/RFC9293/FunctionalSpecification.md#3-functional-specification)
 

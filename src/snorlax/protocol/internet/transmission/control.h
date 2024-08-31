@@ -23,6 +23,29 @@
 #include <snorlax/socket/server.h>
 #include <snorlax/socket/server/event/subscription.h>
 
+/**
+ * 
+ */
+#define transmission_control_maximum_segment_lifetime               (2 * 60 * 1000)
+
+/**
+ * 
+ * The problem is that the recovering host may not know for how long it was down between rebooting nor does it know whether there are still old duplicates in the system from earlier connection incarnations.
+ * 
+ * One way to deal with this problem is to deliberately delay emitting segments for one MSL after recovery from a reboot -- this is the "quiet time" specification.
+ * Hosts that prefer to avoid waiting and are willing to risk possible confusion of old and new packets at a given destination may choose not to wait for the "quiet time".
+ * Implementers may provide TCP users with the ability to select on a connection-by-connection basis whether to wait after a reboot,
+ * or may informally implement the "quiet time" for all connections.
+ * Obviously, even where a user selects to "wait", this is not necessary after the host has been "up" for at least MSL seconds.
+ * 
+ * To summarize: every segment emitted occupied one or more sequence numbers in the sequence space, and the numbers occupied by a segment are "busy" or "in use" until MSL seconds have passed.
+ * Upon rebooting, a block of space-time is occupied by the octets and SYN and FIN flags of any potentially still in-flight segments.
+ * If a new connection is started too soon and uses any of the sequence numbers in the space-time footprint of those potentially still in-flight segments of the previous connection incarnation,
+ * there is a potential sequence number overlap area that could cause confusion at the receiver.
+ * 
+ * @see         [3.4.3. The TCP Quiet Time Concept](https://www.ietf.org/rfc/rfc9293.html)
+ */
+#define transmission_control_quiet_time                             (transmission_control_maximum_segment_lifetime)
 
 #define transmission_control_state_avail_in                         (0x8000u)
 #define transmission_control_state_avail_out                        (0x4000u)
@@ -616,6 +639,13 @@ ___implement extern void transmission_control_buffer_in_append(transmission_cont
 
 
 /**
+ * 
+ * @todo            컨트롤 블록을 바로 삭제하지 말고, 삭제 큐에 삽입한 후에,
+ *                  TCP QUIET TIME 이후에 삭제하도록 하자.
+ *                  - 타이머
+ *                  - 해쉬테이블 삭제 큐 노드
+ *                  - 
+ * 
  * Inherited hashtable_node_t
  */
 ___extend(hashtable_node_t)
