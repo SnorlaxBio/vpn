@@ -3,7 +3,7 @@
  * @brief
  * @details
  * 
- * @author      snorlax <ceo@snorlax.bio>
+ * @author      snorlax <opuntia@snorlax.bio>
  * @since       Aug 8, 2024
  */
 
@@ -278,6 +278,18 @@ extern uint16_t transmission_control_protocol_checksum_cal(transmission_control_
  * @see         [3.4. Sequence Numbers](https://www.ietf.org/rfc/rfc9293.html)
  */
 extern int32_t transmission_control_func_check_acceptable_seq(uint32_t sequence, uint32_t window, uint32_t n, uint32_t length);
+
+/**
+ * Generate Initial Sequence Number.
+ * 
+ *
+ * 
+ * @return      uint32_t    | Generated sequence number
+ * 
+ * @see         [3.4.1. Initial Sequence Number Selection](https://www.ietf.org/rfc/rfc9293.html)
+ */
+___implement
+extern uint32_t transmission_control_func_sequence_gen(uint32_t remote, uint32_t local, uint32_t ports, uint32_t secret);
 
 #define transmission_control_check_out_of_window(sequence, window, n)                   ((window) <= (n) - (sequence))       // check ((n) - (sequence) <= (window))
 

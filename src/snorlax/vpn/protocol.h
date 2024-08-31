@@ -3,7 +3,7 @@
  * @brief       Virtual Private Network <sup>VPN</sup>
  * @details
  * 
- * @author      snorlax <ceo@snorlax.bio>
+ * @author      snorlax <opuntia@snorlax.bio>
  * @since       July 19, 2024
  */
 

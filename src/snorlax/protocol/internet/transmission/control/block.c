@@ -3,7 +3,7 @@
  * @brief
  * @details
  * 
- * @author      snorlax <ceo@snorlax.bio>
+ * @author      snorlax <opuntia@snorlax.bio>
  * @since       Aug 23, 2024
  * @see         [Transmission Control Protocol <sup>TCP</sup>](https://datatracker.ietf.org/doc/html/rfc9293)
  */
