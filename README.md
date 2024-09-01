@@ -1,7 +1,7 @@
 Snorlax Virtual Private Network 
 ===============================
 
-<sup style="font-size: .2em;">⠃⠁⠇⠞⠊⠛ 🌵</sup>
+<sup style="font-size: .2em;"> Snorlax Virtual Private Network ⠃⠁⠇⠞⠊⠛ 🌵</sup>
 
 - DEVELOPMENT ENV (UBUNTU)
 
