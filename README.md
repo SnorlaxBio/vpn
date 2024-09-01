@@ -1,7 +1,5 @@
-Snorlax Virtual Private Network <sup>🌵</sup>
-=============================================
-
-
+Snorlax Virtual Private Network <sup style="font-size: .2em;">⠃⠁⠇⠞⠊⠛🌵 </sup>
+================================================================================
 
 - DEVELOPMENT ENV (UBUNTU)
 
@@ -15,3 +13,5 @@ $ sudo apt install build-essential
 $ cmake -DCMAKE_BUILD_TYPE=Debug -B build
 $ cmake --build build --target all
 ```
+
+
